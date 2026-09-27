@@ -57,13 +57,14 @@ def create_token(user_id: str, kind: str = "access") -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
 
 
-def set_auth_cookies(resp: Response, user_id: str):
+def set_auth_cookies(resp: Response, user_id: str) -> Dict[str, str]:
     access = create_token(user_id, "access")
     refresh = create_token(user_id, "refresh")
     resp.set_cookie("access_token", access, httponly=True, secure=True, samesite="none",
                     max_age=ACCESS_TTL_MIN * 60, path="/")
     resp.set_cookie("refresh_token", refresh, httponly=True, secure=True, samesite="none",
                     max_age=REFRESH_TTL_DAYS * 24 * 3600, path="/")
+    return {"access_token": access, "refresh_token": refresh}
 
 
 def clear_auth_cookies(resp: Response):
@@ -264,10 +265,10 @@ async def register(body: RegisterIn, response: Response):
             "at": now_iso(),
         })
 
-    set_auth_cookies(response, user_id)
+    tokens = set_auth_cookies(response, user_id)
     doc.pop("password_hash", None)
     doc.pop("_id", None)
-    return doc
+    return {**doc, **tokens}
     doc.pop("password_hash", None)
     doc.pop("_id", None)
     return doc
@@ -279,10 +280,10 @@ async def login(body: LoginIn, response: Response):
     user = await db.users.find_one({"email": email})
     if not user or not user.get("password_hash") or not verify_password(body.password, user["password_hash"]):
         raise HTTPException(401, "Invalid email or password")
-    set_auth_cookies(response, user["user_id"])
+    tokens = set_auth_cookies(response, user["user_id"])
     user.pop("password_hash", None)
     user.pop("_id", None)
-    return user
+    return {**user, **tokens}
 
 
 @api.post("/auth/logout")
@@ -339,7 +340,8 @@ async def google_callback(body: GoogleCallbackIn, response: Response):
         })
     set_auth_cookies(response, user_id)
     user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
-    return user
+    tokens = {"access_token": create_token(user_id, "access"), "refresh_token": create_token(user_id, "refresh")}
+    return {**user, **tokens}
 
 
 class ProfilePatch(BaseModel):
