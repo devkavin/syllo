@@ -120,11 +120,15 @@ class SubjectIn(BaseModel):
     name: str
     color: str = "sage"  # from palette
     description: Optional[str] = ""
+    focus_minutes: int = 25
+    break_minutes: int = 5
 
 class SubjectPatch(BaseModel):
     name: Optional[str] = None
     color: Optional[str] = None
     description: Optional[str] = None
+    focus_minutes: Optional[int] = None
+    break_minutes: Optional[int] = None
 
 class UnitIn(BaseModel):
     subject_id: str
@@ -315,6 +319,9 @@ async def update_me(patch: ProfilePatch, user=Depends(get_current_user)):
 @api.get("/subjects")
 async def list_subjects(user=Depends(get_current_user)):
     items = await db.subjects.find({"user_id": user["user_id"]}, {"_id": 0}).sort("created_at", 1).to_list(500)
+    for s in items:
+        s.setdefault("focus_minutes", 25)
+        s.setdefault("break_minutes", 5)
     return items
 
 

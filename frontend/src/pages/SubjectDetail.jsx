@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Plus, ChevronDown, ChevronRight, Circle, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, Circle, CheckCircle2, Loader2, Timer, Check } from "lucide-react";
 
 export default function SubjectDetail() {
   const { id } = useParams();
@@ -52,6 +52,12 @@ export default function SubjectDetail() {
     try { await http.patch(`/lessons/${lesson.lesson_id}`, { status: next }); } catch (e) { setErr(formatError(e)); load(); }
   };
 
+  const savePreset = async (focus, brk) => {
+    setSubject((s) => ({ ...s, focus_minutes: focus, break_minutes: brk }));
+    try { await http.patch(`/subjects/${id}`, { focus_minutes: focus, break_minutes: brk }); }
+    catch (e) { setErr(formatError(e)); }
+  };
+
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-64 bg-muted rounded" /><div className="h-64 bg-muted rounded-xl" /></div>;
   if (!subject) return <div>Subject not found. <Link to="/subjects" className="underline">Go back</Link></div>;
 
@@ -72,6 +78,8 @@ export default function SubjectDetail() {
         <h2 className="font-serif text-xl">Units</h2>
         <button className="btn btn-outline" onClick={addUnit} data-testid="new-unit-btn"><Plus className="w-4 h-4" /> New unit</button>
       </div>
+
+      <PresetCard subject={subject} onSave={savePreset} />
 
       {err && <div className="text-destructive text-sm">{err}</div>}
 
@@ -122,6 +130,64 @@ export default function SubjectDetail() {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function PresetCard({ subject, onSave }) {
+  const [focus, setFocus] = React.useState(subject.focus_minutes || 25);
+  const [brk, setBrk] = React.useState(subject.break_minutes || 5);
+  const [saved, setSaved] = React.useState(false);
+  React.useEffect(() => {
+    setFocus(subject.focus_minutes || 25);
+    setBrk(subject.break_minutes || 5);
+  }, [subject.subject_id, subject.focus_minutes, subject.break_minutes]);
+
+  const dirty = focus !== (subject.focus_minutes || 25) || brk !== (subject.break_minutes || 5);
+  const save = async () => {
+    await onSave(Number(focus) || 25, Number(brk) || 5);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1600);
+  };
+
+  return (
+    <div className="card-elevated p-5" data-testid="preset-card">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(133 24% 92%)", color: "hsl(133 30% 24%)" }}>
+          <Timer className="w-4 h-4" />
+        </div>
+        <span className="section-title">Focus preset</span>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Pick the focus and break lengths that fit this subject. The timer will pick them up when you study.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <PresetSlider label="Focus" value={focus} onChange={setFocus} min={5} max={90} step={5} testid="preset-focus" />
+        <PresetSlider label="Break" value={brk} onChange={setBrk} min={1} max={30} step={1} testid="preset-break" />
+      </div>
+      <div className="flex justify-end mt-4">
+        {saved && <span className="text-xs text-primary inline-flex items-center gap-1 mr-3" data-testid="preset-saved"><Check className="w-3 h-3" /> Saved</span>}
+        <button className="btn btn-primary" onClick={save} disabled={!dirty} data-testid="preset-save">Save preset</button>
+      </div>
+    </div>
+  );
+}
+
+function PresetSlider({ label, value, onChange, min, max, step, testid }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between">
+        <label className="text-xs text-muted-foreground">{label}</label>
+        <span className="font-mono text-base">{value}m</span>
+      </div>
+      <input
+        type="range"
+        min={min} max={max} step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full mt-2"
+        data-testid={testid}
+      />
     </div>
   );
 }

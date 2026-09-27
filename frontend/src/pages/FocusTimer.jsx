@@ -11,6 +11,13 @@ const MODES = {
   stopwatch:{ label: "Stopwatch",    default: 0 },
 };
 
+// Get the seconds a mode should start at, respecting subject presets when available
+function modeSeconds(mode, subject) {
+  if (mode === "pomodoro" && subject?.focus_minutes) return subject.focus_minutes * 60;
+  if (mode === "short" && subject?.break_minutes) return subject.break_minutes * 60;
+  return MODES[mode].default;
+}
+
 const STORAGE = "syllo.timer.v1";
 
 export default function FocusTimer() {
@@ -60,24 +67,33 @@ export default function FocusTimer() {
     return () => clearInterval(tick.current);
     // eslint-disable-next-line
   }, [running, mode]);
-
   const start = () => {
     if (!startedAt) setStartedAt(new Date().toISOString());
     setRunning(true);
     setMsg("");
   };
   const pause = () => setRunning(false);
+  const activeSubject = subjects.find((s) => s.subject_id === subjectId);
   const reset = () => {
     setRunning(false); setStartedAt(null);
-    setSeconds(MODES[mode].default);
+    setSeconds(modeSeconds(mode, activeSubject));
   };
   const changeMode = (m) => {
-    setMode(m); setSeconds(MODES[m].default); setRunning(false); setStartedAt(null);
+    setMode(m); setSeconds(modeSeconds(m, activeSubject)); setRunning(false); setStartedAt(null);
+  };
+  // when user picks a subject and timer isn't running, adopt its preset for the current mode
+  const onPickSubject = (sid) => {
+    setSubjectId(sid);
+    if (!running) {
+      const sub = subjects.find((s) => s.subject_id === sid);
+      setSeconds(modeSeconds(mode, sub));
+      setStartedAt(null);
+    }
   };
 
   const currentDuration = () => {
     if (mode === "stopwatch") return seconds;
-    return MODES[mode].default - seconds;
+    return modeSeconds(mode, activeSubject) - seconds;
   };
 
   const tryLogSession = async (auto = false) => {
@@ -99,7 +115,6 @@ export default function FocusTimer() {
     } catch (e) { setErr(formatError(e)); }
   };
 
-  const activeSubject = subjects.find((s) => s.subject_id === subjectId);
   const dot = activeSubject ? subjectClasses(activeSubject.color, isDark).dot : "hsl(var(--muted-foreground))";
 
   const view = (
@@ -121,6 +136,11 @@ export default function FocusTimer() {
           </button>
         ))}
       </div>
+      {activeSubject && (mode === "pomodoro" || mode === "short") && (
+        <div className="text-xs text-muted-foreground -mt-4" data-testid="preset-hint">
+          Using {activeSubject.name}'s preset: {activeSubject.focus_minutes || 25}m focus, {activeSubject.break_minutes || 5}m break.
+        </div>
+      )}
 
       <div className="mx-auto w-64 h-64 rounded-full grid place-items-center border border-border relative">
         <div className="font-mono text-6xl tabular-nums font-semibold tracking-wider" data-testid="timer-display">
@@ -150,7 +170,7 @@ export default function FocusTimer() {
         <select
           className="input mt-1"
           value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
+          onChange={(e) => onPickSubject(e.target.value)}
           data-testid="timer-subject-select"
         >
           <option value="">No subject</option>
