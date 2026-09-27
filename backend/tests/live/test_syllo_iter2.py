@@ -7,6 +7,8 @@ from datetime import datetime, timezone, timedelta
 import pytest
 import requests
 
+pytestmark = pytest.mark.live
+
 BASE = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE:
     with open("/app/frontend/.env") as f:
