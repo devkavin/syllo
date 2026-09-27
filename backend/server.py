@@ -226,6 +226,11 @@ async def register(body: RegisterIn, response: Response):
         "theme": "light",
         "timezone_offset_min": 0,
         "daily_goal_minutes": 60,
+        "role": "user",
+        "plan": "freshman",
+        "ai_credits_remaining": FREE_PLAN_CREDITS_START,
+        "credit_period": _month_str(),
+        "credit_bonuses": {},
         "created_at": now_iso(),
     }
     await db.users.insert_one(doc)
@@ -292,6 +297,11 @@ async def google_callback(body: GoogleCallbackIn, response: Response):
             "theme": "light",
             "timezone_offset_min": 0,
             "daily_goal_minutes": 60,
+            "role": "user",
+            "plan": "freshman",
+            "ai_credits_remaining": FREE_PLAN_CREDITS_START,
+            "credit_period": _month_str(),
+            "credit_bonuses": {},
             "created_at": now_iso(),
         })
     set_auth_cookies(response, user_id)
@@ -954,6 +964,458 @@ async def search(q: str, user=Depends(get_current_user)):
     return {"subjects": subjects, "lessons": lessons, "notebooks": notebooks, "tasks": tasks}
 
 
+# ---------- AI (Gemini) + Billing + Admin ----------
+from google import genai as _genai
+from google.genai import types as _genai_types
+import asyncio as _asyncio
+from emergentintegrations.payments.stripe.checkout import (
+    StripeCheckout, CheckoutSessionRequest,
+)
+
+FREE_PLAN_CREDITS_START = int(os.environ.get("FREE_PLAN_CREDITS", "30"))
+FREE_PLAN_MAX = int(os.environ.get("FREE_PLAN_MAX", "60"))
+GEMINI_MODEL = "gemini-3.8-flash"
+
+PLANS = [
+    {"id": "freshman", "name": "Freshman", "price_cents": 0, "credits": FREE_PLAN_MAX,
+     "features": ["60 AI helps per month", "All study tools", "Streak and analytics"]},
+    {"id": "scholar", "name": "Scholar", "price_cents": 600, "credits": 600,
+     "features": ["600 AI helps per month", "Priority answers", "Unlimited notebooks & subjects"]},
+    {"id": "deans_list", "name": "Dean's List", "price_cents": 1200, "credits": 3000,
+     "features": ["3000 AI helps per month", "Everything in Scholar", "Early access to new features"]},
+]
+
+BONUS_QUESTS = [
+    {"id": "onboarded",   "label": "Finish setting up",              "credits": 10},
+    {"id": "first_session","label": "Log your first focus session", "credits": 10},
+    {"id": "first_lesson", "label": "Mark your first lesson done",  "credits": 10},
+]
+
+
+async def _get_setting(key: str, default: Any = None) -> Any:
+    row = await db.admin_settings.find_one({"_id": key}, {"_id": 0, "value": 1})
+    if row and "value" in row:
+        return row["value"]
+    return default
+
+
+async def _set_setting(key: str, value: Any):
+    await db.admin_settings.update_one({"_id": key}, {"$set": {"value": value}}, upsert=True)
+
+
+async def _gemini_key() -> str:
+    k = await _get_setting("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+    if not k:
+        raise HTTPException(503, "AI is not configured yet")
+    return k
+
+
+async def _stripe_key() -> str:
+    return await _get_setting("stripe_api_key") or os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+
+
+def _month_str():
+    now = datetime.now(timezone.utc)
+    return f"{now.year:04d}-{now.month:02d}"
+
+
+async def _monthly_refill_if_needed(user):
+    month = _month_str()
+    if user.get("credit_period") == month:
+        return user
+    plan_id = user.get("plan") or "freshman"
+    plan = next((p for p in PLANS if p["id"] == plan_id), PLANS[0])
+    new_credits = FREE_PLAN_CREDITS_START if plan_id == "freshman" else plan["credits"]
+    await db.users.update_one(
+        {"user_id": user["user_id"]},
+        {"$set": {"credit_period": month, "ai_credits_remaining": new_credits,
+                  "credit_bonuses": {} if plan_id == "freshman" else user.get("credit_bonuses", {})}},
+    )
+    user["credit_period"] = month
+    user["ai_credits_remaining"] = new_credits
+    if plan_id == "freshman":
+        user["credit_bonuses"] = {}
+    return user
+
+
+async def _consume_credit(user_id: str) -> int:
+    doc = await db.users.find_one_and_update(
+        {"user_id": user_id, "ai_credits_remaining": {"$gt": 0}},
+        {"$inc": {"ai_credits_remaining": -1}},
+        return_document=True,
+    )
+    if not doc:
+        raise HTTPException(402, "You've used all your AI helps for the month. Upgrade to keep going.")
+    return doc.get("ai_credits_remaining", 0) - 1
+
+
+async def _refund_credit(user_id: str):
+    await db.users.update_one({"user_id": user_id}, {"$inc": {"ai_credits_remaining": 1}})
+
+
+async def _gemini_generate(prompt: Any, system: str, temperature: float = 0.4, max_tokens: int = 500) -> str:
+    key = await _gemini_key()
+    client = _genai.Client(api_key=key)
+    def call():
+        r = client.models.generate_content(
+            model=GEMINI_MODEL, contents=prompt,
+            config=_genai_types.GenerateContentConfig(
+                system_instruction=system,
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+                thinking_config=_genai_types.ThinkingConfig(thinking_budget=0),
+            ),
+        )
+        return (r.text or "").strip()
+    return await _asyncio.to_thread(call)
+
+
+async def _log_ai_usage(user_id: str, feature: str, ok: bool):
+    await db.ai_usage_log.insert_one({
+        "user_id": user_id, "feature": feature, "ok": ok, "at": now_iso(),
+    })
+
+
+class ChatIn(BaseModel):
+    message: str
+    history: List[Dict[str, str]] = []
+
+class SummarizeIn(BaseModel):
+    text: str
+
+class ExplainIn(BaseModel):
+    concept: str
+    subject_name: Optional[str] = None
+
+
+@api.post("/ai/chat")
+async def ai_chat(body: ChatIn, user=Depends(get_current_user)):
+    await _monthly_refill_if_needed(user)
+    remaining = await _consume_credit(user["user_id"])
+    try:
+        # Build multi-turn contents
+        contents = []
+        for h in (body.history or [])[-20:]:
+            role = "user" if h.get("role") == "user" else "model"
+            text = str(h.get("text", ""))[:4000]
+            if text:
+                contents.append(_genai_types.Content(role=role, parts=[_genai_types.Part.from_text(text=text)]))
+        contents.append(_genai_types.Content(role="user", parts=[_genai_types.Part.from_text(text=body.message[:4000])]))
+        text = await _gemini_generate(
+            contents,
+            "You are Syllo's calm Study Companion for a student. Answer clearly in 2-4 short paragraphs. Avoid em dashes. Avoid AI jargon. Be warm and encouraging.",
+            temperature=0.4, max_tokens=2000,
+        )
+        await _log_ai_usage(user["user_id"], "chat", True)
+        return {"text": text, "credits_remaining": remaining}
+    except HTTPException:
+        await _refund_credit(user["user_id"]); raise
+    except Exception as e:
+        await _refund_credit(user["user_id"])
+        await _log_ai_usage(user["user_id"], "chat", False)
+        log.exception("chat failed")
+        raise HTTPException(502, f"Gemini call failed: {str(e)[:200]}")
+
+
+@api.post("/ai/summarize")
+async def ai_summarize(body: SummarizeIn, user=Depends(get_current_user)):
+    await _monthly_refill_if_needed(user)
+    remaining = await _consume_credit(user["user_id"])
+    try:
+        text = await _gemini_generate(
+            f"Notebook content:\n\n{body.text[:8000]}",
+            "Read the notebook and return exactly 3 short bullet lines starting with '- ', then one line starting with 'Question:' proposing a self-check question. Do not use em dashes.",
+            temperature=0.3, max_tokens=1500,
+        )
+        await _log_ai_usage(user["user_id"], "summarize", True)
+        return {"text": text, "credits_remaining": remaining}
+    except HTTPException:
+        await _refund_credit(user["user_id"]); raise
+    except Exception as e:
+        await _refund_credit(user["user_id"])
+        await _log_ai_usage(user["user_id"], "summarize", False)
+        raise HTTPException(502, f"Gemini call failed: {str(e)[:200]}")
+
+
+@api.post("/ai/explain")
+async def ai_explain(body: ExplainIn, user=Depends(get_current_user)):
+    await _monthly_refill_if_needed(user)
+    remaining = await _consume_credit(user["user_id"])
+    try:
+        sub = f" (subject: {body.subject_name})" if body.subject_name else ""
+        text = await _gemini_generate(
+            f"Explain this concept for a student{sub}: {body.concept[:400]}",
+            "Explain in exactly 2 or 3 sentences a beginner can follow, using one simple example if useful. Do not use em dashes.",
+            temperature=0.3, max_tokens=1200,
+        )
+        await _log_ai_usage(user["user_id"], "explain", True)
+        return {"text": text, "credits_remaining": remaining}
+    except HTTPException:
+        await _refund_credit(user["user_id"]); raise
+    except Exception as e:
+        await _refund_credit(user["user_id"])
+        await _log_ai_usage(user["user_id"], "explain", False)
+        raise HTTPException(502, f"Gemini call failed: {str(e)[:200]}")
+
+
+@api.get("/ai/reflection")
+async def ai_reflection(user=Depends(get_current_user)):
+    await _monthly_refill_if_needed(user)
+    # Gather stats
+    now = datetime.now(timezone.utc)
+    week_start = (now - timedelta(days=7)).isoformat()
+    sessions = await db.sessions.find(
+        {"user_id": user["user_id"], "started_at": {"$gte": week_start}}, {"_id": 0},
+    ).to_list(500)
+    seconds = sum(s.get("duration_seconds", 0) for s in sessions)
+    lessons_done = await db.lessons.count_documents({"user_id": user["user_id"], "status": "done"})
+    streak = await db.streaks.find_one({"user_id": user["user_id"]}, {"_id": 0}) or {"current": 0}
+    remaining = await _consume_credit(user["user_id"])
+    try:
+        prompt = (
+            f"This week the student studied {round(seconds/3600, 1)} hours across {len(sessions)} sessions. "
+            f"Their current streak is {streak.get('current', 0)} days and they have finished {lessons_done} lessons in total."
+        )
+        text = await _gemini_generate(
+            prompt,
+            "Write a warm, personal, 3 to 5 sentence weekly reflection for the student. Highlight one strength and suggest one small next step. Do not use em dashes. Do not use hype language.",
+            temperature=0.5, max_tokens=1200,
+        )
+        await _log_ai_usage(user["user_id"], "reflection", True)
+        return {"text": text, "credits_remaining": remaining}
+    except HTTPException:
+        await _refund_credit(user["user_id"]); raise
+    except Exception as e:
+        await _refund_credit(user["user_id"])
+        await _log_ai_usage(user["user_id"], "reflection", False)
+        raise HTTPException(502, f"Gemini call failed: {str(e)[:200]}")
+
+
+# ---------- Billing (Stripe) ----------
+class CheckoutIn(BaseModel):
+    plan_id: str
+    origin_url: str
+
+
+@api.get("/billing/plans")
+async def billing_plans(user=Depends(get_current_user)):
+    return {"plans": PLANS}
+
+
+@api.get("/billing/usage")
+async def billing_usage(user=Depends(get_current_user)):
+    user = await _monthly_refill_if_needed(user)
+    plan_id = user.get("plan") or "freshman"
+    plan = next((p for p in PLANS if p["id"] == plan_id), PLANS[0])
+    return {
+        "plan": plan,
+        "credits_remaining": user.get("ai_credits_remaining", 0),
+        "credit_period": user.get("credit_period"),
+        "bonuses_claimed": user.get("credit_bonuses", {}),
+        "quests": BONUS_QUESTS,
+        "free_start": FREE_PLAN_CREDITS_START,
+        "free_max": FREE_PLAN_MAX,
+    }
+
+
+@api.post("/billing/checkout")
+async def billing_checkout(body: CheckoutIn, request: Request, user=Depends(get_current_user)):
+    plan = next((p for p in PLANS if p["id"] == body.plan_id), None)
+    if not plan or plan["price_cents"] == 0:
+        raise HTTPException(400, "Not a paid plan")
+    api_key = await _stripe_key()
+    host = str(request.base_url).rstrip("/")
+    webhook_url = f"{host}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+    amount = plan["price_cents"] / 100.0
+    origin = body.origin_url.rstrip("/")
+    req = CheckoutSessionRequest(
+        amount=amount, currency="usd",
+        success_url=f"{origin}/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{origin}/payment/cancel",
+        metadata={"user_id": user["user_id"], "plan_id": plan["id"]},
+    )
+    session = await stripe_checkout.create_checkout_session(req)
+    await db.payment_transactions.insert_one({
+        "session_id": session.session_id, "user_id": user["user_id"],
+        "plan_id": plan["id"], "amount_cents": plan["price_cents"], "currency": "usd",
+        "status": "initiated", "payment_status": "pending",
+        "created_at": now_iso(), "updated_at": now_iso(),
+    })
+    return {"url": session.url, "session_id": session.session_id}
+
+
+@api.get("/billing/status/{session_id}")
+async def billing_status(session_id: str):
+    rec = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not rec:
+        raise HTTPException(404, "Not found")
+    if rec.get("payment_status") != "paid":
+        try:
+            api_key = await _stripe_key()
+            host = ""
+            stripe_checkout = StripeCheckout(api_key=api_key, webhook_url="")
+            status = await stripe_checkout.get_checkout_status(session_id)
+            if status.payment_status == "paid":
+                await _grant_plan_from_session(session_id)
+                rec = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        except Exception:
+            pass
+    return {"session_id": rec["session_id"], "status": rec.get("status"), "payment_status": rec.get("payment_status")}
+
+
+async def _grant_plan_from_session(session_id: str):
+    rec = await db.payment_transactions.find_one({"session_id": session_id})
+    if not rec or rec.get("payment_status") == "paid":
+        return
+    plan = next((p for p in PLANS if p["id"] == rec.get("plan_id")), None)
+    if not plan:
+        return
+    await db.payment_transactions.update_one(
+        {"session_id": session_id, "payment_status": {"$ne": "paid"}},
+        {"$set": {"status": "completed", "payment_status": "paid", "updated_at": now_iso()}},
+    )
+    await db.users.update_one(
+        {"user_id": rec["user_id"]},
+        {"$set": {"plan": plan["id"], "ai_credits_remaining": plan["credits"], "credit_period": _month_str()}},
+    )
+
+
+@app.post("/api/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body_bytes = await request.body()
+    sig = request.headers.get("Stripe-Signature", "")
+    try:
+        api_key = await _stripe_key()
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url="")
+        resp = await stripe_checkout.handle_webhook(body_bytes, sig)
+    except Exception as e:
+        log.warning("stripe webhook parse failed: %s", e)
+        raise HTTPException(400, "Invalid webhook")
+    if resp.event_id:
+        exists = await db.stripe_events.find_one({"event_id": resp.event_id})
+        if exists:
+            return {"ok": True}
+        await db.stripe_events.insert_one({"event_id": resp.event_id, "at": now_iso()})
+    if resp.payment_status == "paid" and resp.session_id:
+        await _grant_plan_from_session(resp.session_id)
+    return {"ok": True}
+
+
+# ---------- Bonus Quests ----------
+@api.post("/bonuses/claim/{quest_id}")
+async def claim_bonus(quest_id: str, user=Depends(get_current_user)):
+    quest = next((q for q in BONUS_QUESTS if q["id"] == quest_id), None)
+    if not quest:
+        raise HTTPException(404, "Unknown quest")
+    await _monthly_refill_if_needed(user)
+    fresh = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0})
+    bonuses = fresh.get("credit_bonuses") or {}
+    if bonuses.get(quest_id):
+        return {"already_claimed": True, "credits_remaining": fresh.get("ai_credits_remaining", 0)}
+    # Verify eligibility
+    ok = False
+    if quest_id == "onboarded":
+        ok = bool(fresh.get("onboarded"))
+    elif quest_id == "first_session":
+        ok = await db.sessions.count_documents({"user_id": user["user_id"]}) > 0
+    elif quest_id == "first_lesson":
+        ok = await db.lessons.count_documents({"user_id": user["user_id"], "status": "done"}) > 0
+    if not ok:
+        raise HTTPException(400, "Quest not completed yet")
+    bonuses[quest_id] = True
+    plan_id = fresh.get("plan") or "freshman"
+    cap = FREE_PLAN_MAX if plan_id == "freshman" else None
+    new_credits = fresh.get("ai_credits_remaining", 0) + quest["credits"]
+    if cap is not None:
+        new_credits = min(new_credits, cap)
+    await db.users.update_one(
+        {"user_id": user["user_id"]},
+        {"$set": {"credit_bonuses": bonuses, "ai_credits_remaining": new_credits}},
+    )
+    return {"ok": True, "credits_remaining": new_credits}
+
+
+# ---------- Admin ----------
+async def require_admin(user=Depends(get_current_user)) -> Dict[str, Any]:
+    if user.get("role") != "admin":
+        raise HTTPException(403, "Admin only")
+    return user
+
+
+class SettingsPatch(BaseModel):
+    stripe_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
+
+
+@api.get("/admin/overview")
+async def admin_overview(_=Depends(require_admin)):
+    total_users = await db.users.count_documents({})
+    by_plan = {}
+    for p in PLANS:
+        by_plan[p["id"]] = await db.users.count_documents({"plan": p["id"]})
+    by_plan.setdefault("freshman", total_users - sum(by_plan.values()))
+    txns = await db.payment_transactions.find({"payment_status": "paid"}, {"_id": 0}).to_list(1000)
+    revenue_cents = sum(t.get("amount_cents", 0) for t in txns)
+    ai_calls = await db.ai_usage_log.count_documents({})
+    ai_ok = await db.ai_usage_log.count_documents({"ok": True})
+    signups_7d = await db.users.count_documents({"created_at": {"$gte": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()}})
+    return {
+        "total_users": total_users,
+        "by_plan": by_plan,
+        "revenue_cents": revenue_cents,
+        "paid_users": total_users - by_plan.get("freshman", 0),
+        "ai_calls": ai_calls,
+        "ai_ok_rate": round((ai_ok / ai_calls) * 100, 1) if ai_calls else 100.0,
+        "signups_last_7_days": signups_7d,
+    }
+
+
+@api.get("/admin/users")
+async def admin_users(_=Depends(require_admin), limit: int = 100):
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(limit)
+    return users
+
+
+class UserAdminPatch(BaseModel):
+    plan: Optional[str] = None
+    ai_credits_remaining: Optional[int] = None
+    role: Optional[str] = None
+
+
+@api.patch("/admin/users/{uid}")
+async def admin_patch_user(uid: str, body: UserAdminPatch, _=Depends(require_admin)):
+    updates = {k: v for k, v in body.model_dump().items() if v is not None}
+    if not updates:
+        return {"ok": True}
+    await db.users.update_one({"user_id": uid}, {"$set": updates})
+    return await db.users.find_one({"user_id": uid}, {"_id": 0, "password_hash": 0})
+
+
+@api.get("/admin/transactions")
+async def admin_transactions(_=Depends(require_admin), limit: int = 100):
+    txns = await db.payment_transactions.find({}, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    return txns
+
+
+@api.get("/admin/settings")
+async def admin_get_settings(_=Depends(require_admin)):
+    return {
+        "stripe_api_key_set": bool(await _get_setting("stripe_api_key") or os.environ.get("STRIPE_API_KEY")),
+        "gemini_api_key_set": bool(await _get_setting("gemini_api_key") or os.environ.get("GEMINI_API_KEY")),
+        "plans": PLANS,
+    }
+
+
+@api.patch("/admin/settings")
+async def admin_patch_settings(body: SettingsPatch, _=Depends(require_admin)):
+    if body.stripe_api_key:
+        await _set_setting("stripe_api_key", body.stripe_api_key)
+    if body.gemini_api_key:
+        await _set_setting("gemini_api_key", body.gemini_api_key)
+    return {"ok": True}
+
+
 # ---------- Startup ----------
 @app.on_event("startup")
 async def startup():
@@ -969,7 +1431,40 @@ async def startup():
     await db.timetable.create_index([("user_id", 1), ("day_of_week", 1)])
     await db.reviews.create_index([("user_id", 1), ("next_review_at", 1)])
 
-    # Seed demo user
+    # Seed admin user
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_pw = os.environ.get("ADMIN_PASSWORD")
+    if admin_email and admin_pw:
+        existing_admin = await db.users.find_one({"email": admin_email})
+        if not existing_admin:
+            uid = f"user_{uuid.uuid4().hex[:16]}"
+            await db.users.insert_one({
+                "user_id": uid, "email": admin_email, "name": "Syllo Admin",
+                "picture": None, "auth_provider": "password",
+                "password_hash": hash_password(admin_pw),
+                "onboarded": True, "theme": "light", "timezone_offset_min": 0,
+                "daily_goal_minutes": 60, "role": "admin",
+                "plan": "deans_list", "ai_credits_remaining": 3000,
+                "credit_period": _month_str(), "credit_bonuses": {},
+                "created_at": now_iso(),
+            })
+            log.info("Seeded admin %s", admin_email)
+        elif existing_admin.get("role") != "admin":
+            await db.users.update_one({"email": admin_email}, {"$set": {"role": "admin"}})
+
+    # Backfill fields on existing users
+    await db.users.update_many(
+        {"role": {"$exists": False}},
+        {"$set": {"role": "user", "plan": "freshman",
+                  "ai_credits_remaining": FREE_PLAN_CREDITS_START,
+                  "credit_period": _month_str(), "credit_bonuses": {}}},
+    )
+
+    # Indexes for new collections
+    await db.payment_transactions.create_index("session_id", unique=True)
+    await db.payment_transactions.create_index("user_id")
+    await db.ai_usage_log.create_index([("user_id", 1), ("at", -1)])
+    await db.stripe_events.create_index("event_id", unique=True)
     demo_email = os.environ.get("DEMO_EMAIL", "demo@syllo.app")
     demo_pw = os.environ.get("DEMO_PASSWORD", "syllo123")
     existing = await db.users.find_one({"email": demo_email})

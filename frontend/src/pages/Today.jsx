@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useUsage } from "@/lib/usage";
 import { Link } from "react-router-dom";
 import { subjectClasses, formatSeconds, greeting } from "@/lib/palette";
 import {
   Flame, Clock, CheckCircle2, Circle, PlayCircle, Calendar,
-  Sparkles, Target, Sun, Moon, Coffee, Trophy, ArrowUpRight
+  Sparkles, Target, Sun, Moon, Coffee, Trophy, ArrowUpRight, Gift, Loader2
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 
@@ -103,6 +104,12 @@ export default function Today() {
 
       {/* Streak Calendar (30-day heatmap) */}
       <StreakCalendar heatmap={heatmap} streak={data?.streak} isDark={isDark} />
+
+      {/* Bonus quests + Reflection */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <BonusQuests />
+        <WeeklyReflection />
+      </section>
 
       {/* Schedule + Reviews */}
       {(data?.timetable?.length > 0 || data?.reviews_due?.length > 0) && (
@@ -341,6 +348,105 @@ function GoalCard({ doneMin, goalMin, goalPct, goalMet }) {
 
 function EmptyBlock({ label }) {
   return <div className="text-sm text-muted-foreground italic py-6 text-center">{label}</div>;
+}
+
+function BonusQuests() {
+  const { usage, refresh, setRemaining } = useUsage();
+  const [busyId, setBusyId] = useState(null);
+  const [claimed, setClaimed] = useState(null);
+  if (!usage || usage.plan?.id !== "freshman") return null;
+  const quests = usage.quests || [];
+  const already = usage.bonuses_claimed || {};
+  const remaining = quests.filter((q) => !already[q.id]).length;
+  if (remaining === 0) return null;
+
+  const claim = async (q) => {
+    setBusyId(q.id);
+    try {
+      const { data } = await http.post(`/bonuses/claim/${q.id}`);
+      if (data.credits_remaining !== undefined) setRemaining(data.credits_remaining);
+      setClaimed(q.id);
+      refresh();
+    } catch (e) {
+      alert(e?.response?.data?.detail || "Not eligible yet.");
+    } finally { setBusyId(null); }
+  };
+
+  return (
+    <div className="card-elevated p-5" data-testid="bonus-quests">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(30 60% 92%)", color: "hsl(30 60% 32%)" }}>
+          <Gift className="w-4 h-4" />
+        </div>
+        <span className="section-title">Earn more helps</span>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">Small steps unlock more free AI helps. Each one gives you 10 more.</p>
+      <ul className="space-y-2">
+        {quests.map((q) => {
+          const done = !!already[q.id];
+          return (
+            <li key={q.id} className="flex items-center gap-3 text-sm" data-testid={`quest-${q.id}`}>
+              <span className={`w-6 h-6 grid place-items-center rounded-full ${done ? "bg-primary text-primary-foreground" : "bg-accent"}`}>
+                {done ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs">+{q.credits}</span>}
+              </span>
+              <span className={`flex-1 ${done ? "line-through text-muted-foreground" : ""}`}>{q.label}</span>
+              {!done && (
+                <button
+                  onClick={() => claim(q)}
+                  disabled={busyId === q.id}
+                  className="btn btn-outline text-xs !py-1"
+                  data-testid={`quest-claim-${q.id}`}
+                >
+                  {busyId === q.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Claim"}
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {claimed && <div className="text-xs text-primary mt-3">Nice. Credits added.</div>}
+    </div>
+  );
+}
+
+function WeeklyReflection() {
+  const [text, setText] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const { setRemaining } = useUsage();
+
+  const generate = async () => {
+    setBusy(true); setErr("");
+    try {
+      const { data } = await http.get("/ai/reflection");
+      setText(data.text);
+      setRemaining(data.credits_remaining);
+    } catch (e) { setErr(e?.response?.data?.detail || "Could not generate."); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="card-elevated p-5" data-testid="weekly-reflection">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(267 30% 92%)", color: "hsl(267 40% 32%)" }}>
+          <Sparkles className="w-4 h-4" />
+        </div>
+        <span className="section-title">Weekly reflection</span>
+      </div>
+      {!text ? (
+        <>
+          <p className="text-sm text-muted-foreground mb-4">A short, warm summary of your week. Uses one AI help.</p>
+          <button className="btn btn-outline" onClick={generate} disabled={busy} data-testid="reflection-generate">
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            Reflect on my week
+          </button>
+        </>
+      ) : (
+        <div className="text-sm font-serif italic leading-relaxed" data-testid="reflection-text">{text}</div>
+      )}
+      {err && <div className="text-destructive text-xs mt-3">{err}</div>}
+    </div>
+  );
 }
 
 function StreakCalendar({ heatmap, streak, isDark }) {

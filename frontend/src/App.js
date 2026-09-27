@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
+import { UsageProvider } from "@/lib/usage";
 import AppShell from "@/components/AppShell";
 import Today from "@/pages/Today";
 import Subjects from "@/pages/Subjects";
@@ -17,6 +18,9 @@ import AuthCallback from "@/pages/AuthCallback";
 import Onboarding from "@/pages/Onboarding";
 import Timetable from "@/pages/Timetable";
 import Reviews from "@/pages/Reviews";
+import Upgrade from "@/pages/Upgrade";
+import Admin from "@/pages/Admin";
+import { PaymentSuccess, PaymentCancel } from "@/pages/Payment";
 import "@/App.css";
 
 function Protected({ children }) {
@@ -40,6 +44,14 @@ function OnboardingRoute() {
   return <Onboarding />;
 }
 
+function AdminRoute({ children }) {
+  const { user } = useAuth();
+  if (user === undefined) return <div className="min-h-screen grid place-items-center text-muted-foreground text-sm">Loading</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "admin") return <Navigate to="/today" replace />;
+  return <AppShell>{children}</AppShell>;
+}
+
 function Router() {
   const location = useLocation();
   if (location.hash?.includes("session_id=")) {
@@ -51,6 +63,8 @@ function Router() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/onboarding" element={<OnboardingRoute />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/payment/cancel" element={<PaymentCancel />} />
       <Route path="/today" element={<Protected><Today /></Protected>} />
       <Route path="/subjects" element={<Protected><Subjects /></Protected>} />
       <Route path="/subjects/:id" element={<Protected><SubjectDetail /></Protected>} />
@@ -61,6 +75,8 @@ function Router() {
       <Route path="/timer" element={<Protected><FocusTimer /></Protected>} />
       <Route path="/analytics" element={<Protected><Analytics /></Protected>} />
       <Route path="/settings" element={<Protected><Settings /></Protected>} />
+      <Route path="/upgrade" element={<Protected><Upgrade /></Protected>} />
+      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/today" replace />} />
     </Routes>
   );
@@ -70,9 +86,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Router />
-        </BrowserRouter>
+        <UsageProvider>
+          <BrowserRouter>
+            <Router />
+          </BrowserRouter>
+        </UsageProvider>
       </AuthProvider>
     </ThemeProvider>
   );

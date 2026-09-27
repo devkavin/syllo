@@ -134,6 +134,7 @@
             radial-gradient(40% 70% at 80% 20%, hsl(30 70% 60% / 0.14), transparent 60%);
         z-index: -1;
         filter: blur(6px);
+        pointer-events: none;
     }
     .grain::after {
         content: "";

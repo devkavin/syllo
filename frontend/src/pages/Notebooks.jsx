@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
-import { Plus, FileText, Trash2, Loader2, Check } from "lucide-react";
+import { Plus, FileText, Trash2, Loader2, Check, Sparkles, X } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
+import { useUsage } from "@/lib/usage";
 
 const SAVE_DEBOUNCE = 800;
 
@@ -13,8 +14,11 @@ export default function Notebooks() {
   const [notebook, setNotebook] = useState(null);
   const [saveState, setSaveState] = useState("idle"); // idle | saving | saved
   const [err, setErr] = useState("");
+  const [summary, setSummary] = useState(null);
+  const [summarizing, setSummarizing] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { setRemaining } = useUsage();
   const saveTimer = useRef(null);
 
   const load = async () => {
@@ -33,7 +37,19 @@ export default function Notebooks() {
       setActiveId(id);
       setNotebook(data);
       setSaveState("idle");
+      setSummary(null);
     } catch (e) { setErr(formatError(e)); }
+  };
+
+  const summarize = async () => {
+    if (!notebook?.content?.trim()) { setErr("Add some notes first."); return; }
+    setSummarizing(true); setErr("");
+    try {
+      const { data } = await http.post("/ai/summarize", { text: notebook.content });
+      setSummary(data.text);
+      setRemaining(data.credits_remaining);
+    } catch (e) { setErr(formatError(e)); }
+    finally { setSummarizing(false); }
   };
 
   const subjectMap = useMemo(() => Object.fromEntries(subjects.map((s) => [s.subject_id, s])), [subjects]);
@@ -124,6 +140,16 @@ export default function Notebooks() {
                 </select>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  className="btn btn-outline !py-1 !px-2 text-xs"
+                  onClick={summarize}
+                  disabled={summarizing}
+                  data-testid="notebook-summarize-btn"
+                  title="Summarize with Study Companion"
+                >
+                  {summarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  Summarize
+                </button>
                 <span data-testid="notebook-autosave-indicator" className="inline-flex items-center gap-1">
                   {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
                   {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
@@ -147,6 +173,15 @@ export default function Notebooks() {
               onChange={onContentChange}
               data-testid="notebook-content-textarea"
             />
+            {summary && (
+              <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40" data-testid="notebook-summary">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-0"><Sparkles className="w-3.5 h-3.5" /> Study Companion</div>
+                  <button className="btn btn-ghost !p-1" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
+                </div>
+                <div className="text-sm whitespace-pre-wrap">{summary}</div>
+              </div>
+            )}
           </div>
         )}
         {err && <div className="text-destructive text-sm mt-2">{err}</div>}

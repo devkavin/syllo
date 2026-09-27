@@ -39,6 +39,16 @@ Build Syllo, a polished personal academic workspace for students. Originally spe
 - Daily goal on Today: progress ring toward daily_goal_minutes; Settings slider persists it
 - 34/34 backend tests pass; all new frontend flows verified
 
+## Implemented (2026-09-27, iteration 3)
+- AI Study Companion powered by Google Gemini 3.8 Flash (free tier) accessible everywhere via sidebar drawer, with usage-aware credits + graceful "You're out of helps" upsell
+- Notebook Summarizer button (3 bullets + self-check question), Concept Explainer endpoint, Weekly Reflection card on Today
+- Billing: 3 plans (Freshman free, Scholar $6/mo, Dean's List $12/mo) with Stripe Checkout, success/cancel pages, webhook + poll status, idempotent event handling
+- Bonus quests: 30 free credits at signup, +10 each for completing onboarding, first focus session, first lesson done (max 60 on Freshman)
+- Usage indicator in sidebar showing plan + credits remaining
+- Admin panel at /admin (role gated): overview stats, users table with plan/role editors, transactions list, integration settings (Stripe key + Gemini key editable at runtime with env fallback)
+- Admin seeded: admin@syllo.kavinhq.com / Password@123 on Dean's List
+- Backend: /api/ai/*, /api/billing/*, /api/bonuses/*, /api/admin/*, /api/webhook/stripe
+
 ## Prioritized Backlog
 - P1: Onboarding flow for brand-new users (name, subjects, daily goal)
 - P1: Timetable and planner (recurring class blocks)
