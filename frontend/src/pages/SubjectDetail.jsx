@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Plus, ChevronDown, ChevronRight, Circle, CheckCircle2, Loader2, Timer, Check } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, Timer, Check } from "lucide-react";
 
 export default function SubjectDetail() {
   const { id } = useParams();
@@ -109,17 +109,42 @@ export default function SubjectDetail() {
                   <div className="border-t border-border px-4 py-3 space-y-1">
                     {lessons.length === 0 ? (
                       <div className="text-sm text-muted-foreground py-2">No lessons yet.</div>
-                    ) : lessons.map((l) => (
+                    ) : lessons.map((l) => {
+                      const statusMeta =
+                        l.status === "done"      ? { label: "Done",        color: "hsl(133 30% 40%)" } :
+                        l.status === "in_progress" ? { label: "In progress", color: "hsl(30 60% 45%)" } :
+                                                     { label: "Not started", color: "hsl(var(--muted-foreground))" };
+                      return (
                       <div key={l.lesson_id} className="flex items-center gap-3 py-1.5" data-testid={`lesson-${l.lesson_id}`}>
-                        <button onClick={() => cycleStatus(l)} data-testid={`lesson-status-${l.lesson_id}`} className="text-muted-foreground hover:text-foreground">
-                          {l.status === "done" ? <CheckCircle2 className="w-4 h-4 text-primary" />
-                            : l.status === "in_progress" ? <Loader2 className="w-4 h-4" />
-                            : <Circle className="w-4 h-4" />}
+                        <button
+                          onClick={() => cycleStatus(l)}
+                          data-testid={`lesson-status-${l.lesson_id}`}
+                          title={`Status: ${statusMeta.label}. Click to change.`}
+                          className="text-muted-foreground hover:text-foreground transition-colors"
+                          style={{ color: statusMeta.color }}
+                          aria-label={`Status: ${statusMeta.label}`}
+                        >
+                          <StatusIcon status={l.status} />
                         </button>
-                        <div className={`text-sm flex-1 ${l.status === "done" ? "text-muted-foreground line-through" : ""}`}>{l.title}</div>
+                        <div className={`text-sm flex-1 min-w-0 flex items-center gap-2 ${l.status === "done" ? "text-muted-foreground line-through" : ""}`}>
+                          <span className="truncate">{l.title}</span>
+                          {l.status !== "not_started" && (
+                            <span
+                              className="badge shrink-0"
+                              style={{
+                                background: `${statusMeta.color}14`,
+                                color: statusMeta.color,
+                                borderColor: `${statusMeta.color}33`,
+                              }}
+                              data-testid={`lesson-status-pill-${l.lesson_id}`}
+                            >
+                              {statusMeta.label}
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs text-muted-foreground font-mono">{Math.round((l.total_seconds || 0) / 60)}m</div>
                       </div>
-                    ))}
+                    );})}
                     <button className="btn btn-ghost text-xs mt-1" onClick={() => addLesson(u.unit_id)} data-testid={`add-lesson-${u.unit_id}`}>
                       <Plus className="w-3.5 h-3.5" /> Add a lesson
                     </button>
@@ -131,6 +156,30 @@ export default function SubjectDetail() {
         </div>
       )}
     </div>
+  );
+}
+
+function StatusIcon({ status }) {
+  if (status === "done") {
+    return (
+      <svg viewBox="0 0 20 20" className="w-4 h-4" aria-hidden="true">
+        <circle cx="10" cy="10" r="8.25" fill="currentColor" />
+        <path d="M6 10.2 L9 13 L14 7.5" stroke="hsl(var(--card))" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (status === "in_progress") {
+    return (
+      <svg viewBox="0 0 20 20" className="w-4 h-4" aria-hidden="true">
+        <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10 1.75 A8.25 8.25 0 0 1 10 18.25 Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 20 20" className="w-4 h-4" aria-hidden="true">
+      <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
   );
 }
 
