@@ -27,9 +27,10 @@ export default function Settings() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8" data-testid="settings-page">
-      <div>
-        <h1 className="font-serif text-3xl tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-1">Small preferences that make Syllo yours.</p>
+      <div className="hero-glow relative rise">
+        <div className="section-title mb-2">Your preferences</div>
+        <h1 className="font-serif text-4xl tracking-tight">Settings</h1>
+        <p className="text-muted-foreground mt-2">Small preferences that make Syllo yours.</p>
       </div>
 
       <section className="card p-5 space-y-3">

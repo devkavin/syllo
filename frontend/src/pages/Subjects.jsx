@@ -21,11 +21,12 @@ export default function Subjects() {
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="space-y-6" data-testid="subjects-page">
-      <div className="flex items-end justify-between">
+    <div className="space-y-8" data-testid="subjects-page">
+      <div className="hero-glow relative rise flex items-end justify-between">
         <div>
-          <h1 className="font-serif text-3xl tracking-tight">Subjects</h1>
-          <p className="text-muted-foreground mt-1">Your curriculum, calmly organised.</p>
+          <div className="section-title mb-2">Your curriculum</div>
+          <h1 className="font-serif text-4xl tracking-tight leading-tight">Subjects</h1>
+          <p className="text-muted-foreground mt-2 max-w-md">A quiet shelf for everything you're learning.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowNew(true)} data-testid="new-subject-btn">
           <Plus className="w-4 h-4" /> New subject
@@ -54,17 +55,22 @@ export default function Subjects() {
                 key={s.subject_id}
                 to={`/subjects/${s.subject_id}`}
                 data-testid={`subject-card-${s.subject_id}`}
-                className="card p-5 hover:shadow-sm transition-all hover:-translate-y-0.5"
+                className="card-elevated p-5 hover:-translate-y-1 transition-all duration-200 relative overflow-hidden group"
+                style={{ background: `linear-gradient(180deg, ${c.bg} 0%, hsl(var(--card)) 55%)` }}
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="absolute top-0 left-0 right-0 h-1" style={{ background: c.dot }} />
+                <div className="flex items-center gap-2 mb-4">
                   <span className="subject-dot" style={{ background: c.dot }} />
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                  <span className="section-title !text-[10px]" style={{ color: c.text }}>
                     {SUBJECT_COLORS[s.color]?.name || "Subject"}
                   </span>
                 </div>
-                <div className="font-serif text-xl mb-1">{s.name}</div>
+                <div className="font-serif text-2xl mb-1 tracking-tight">{s.name}</div>
                 <div className="text-sm text-muted-foreground line-clamp-2">
                   {s.description || "Open to view units and lessons."}
+                </div>
+                <div className="text-xs mt-4 opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1" style={{ color: c.text }}>
+                  Open subject →
                 </div>
               </Link>
             );

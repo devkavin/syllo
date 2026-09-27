@@ -38,11 +38,12 @@ export default function Timetable() {
   };
 
   return (
-    <div className="space-y-6" data-testid="timetable-page">
-      <div className="flex items-end justify-between">
+    <div className="space-y-8" data-testid="timetable-page">
+      <div className="hero-glow relative rise flex items-end justify-between">
         <div>
-          <h1 className="font-serif text-3xl tracking-tight">Timetable</h1>
-          <p className="text-muted-foreground mt-1">A weekly rhythm for classes and study.</p>
+          <div className="section-title mb-2">Your week</div>
+          <h1 className="font-serif text-4xl tracking-tight">Timetable</h1>
+          <p className="text-muted-foreground mt-2">A weekly rhythm for classes and study.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowNew(true)} data-testid="new-block-btn"><Plus className="w-4 h-4" /> New block</button>
       </div>

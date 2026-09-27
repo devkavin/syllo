@@ -43,11 +43,12 @@ export default function Tasks() {
   };
 
   return (
-    <div className="space-y-6" data-testid="tasks-page">
-      <div className="flex items-end justify-between">
+    <div className="space-y-8" data-testid="tasks-page">
+      <div className="hero-glow relative rise flex items-end justify-between">
         <div>
-          <h1 className="font-serif text-3xl tracking-tight">Tasks</h1>
-          <p className="text-muted-foreground mt-1">Small steps, gently kept.</p>
+          <div className="section-title mb-2">Your list</div>
+          <h1 className="font-serif text-4xl tracking-tight">Tasks</h1>
+          <p className="text-muted-foreground mt-2">Small steps, gently kept.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowNew(true)} data-testid="new-task-btn"><Plus className="w-4 h-4" /> New task</button>
       </div>

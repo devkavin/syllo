@@ -65,10 +65,11 @@ export default function Reviews() {
   };
 
   return (
-    <div className="space-y-6" data-testid="reviews-page">
-      <div>
-        <h1 className="font-serif text-3xl tracking-tight">Reviews</h1>
-        <p className="text-muted-foreground mt-1">A small daily loop that keeps what you've learned close.</p>
+    <div className="space-y-8" data-testid="reviews-page">
+      <div className="hero-glow relative rise">
+        <div className="section-title mb-2">Spaced practice</div>
+        <h1 className="font-serif text-4xl tracking-tight">Reviews</h1>
+        <p className="text-muted-foreground mt-2 max-w-md">A small daily loop that keeps what you've learned close.</p>
       </div>
       {err && <div className="text-destructive text-sm">{err}</div>}
 

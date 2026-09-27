@@ -22,9 +22,10 @@ export default function Analytics() {
 
   return (
     <div className="space-y-8" data-testid="analytics-page">
-      <div>
-        <h1 className="font-serif text-3xl tracking-tight">Analytics</h1>
-        <p className="text-muted-foreground mt-1">A calm look at your rhythm.</p>
+      <div className="hero-glow relative rise">
+        <div className="section-title mb-2">Your rhythm</div>
+        <h1 className="font-serif text-4xl tracking-tight">Analytics</h1>
+        <p className="text-muted-foreground mt-2">A calm look at how you've been studying.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
