@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap");
 
 @layer base {
     :root {
@@ -73,13 +73,22 @@
         padding: 0;
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
-        font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+        font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        font-feature-settings: "ss01", "cv11";
+        letter-spacing: -0.005em;
     }
     .font-serif {
-        font-family: "Newsreader", Georgia, serif;
+        font-family: "Bricolage Grotesque", "Manrope", ui-sans-serif, system-ui, sans-serif;
+        font-optical-sizing: auto;
+        font-variation-settings: "wdth" 100;
+        letter-spacing: -0.02em;
+    }
+    .font-display {
+        font-family: "Bricolage Grotesque", "Manrope", ui-sans-serif, system-ui, sans-serif;
+        font-optical-sizing: auto;
+        letter-spacing: -0.02em;
     }
     .font-mono {
         font-family: "JetBrains Mono", monospace;

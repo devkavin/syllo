@@ -680,12 +680,14 @@ async def analytics(user=Depends(get_current_user)):
             by_subject[s["subject_id"]] = by_subject.get(s["subject_id"], 0) + s.get("duration_seconds", 0)
         total += s.get("duration_seconds", 0)
 
-    # last 14 days
+    # last 30 days heatmap
     today = datetime.now(timezone.utc) + timedelta(minutes=tz_off)
-    daily = []
-    for i in range(13, -1, -1):
+    heatmap = []
+    for i in range(29, -1, -1):
         d = (today - timedelta(days=i)).date().isoformat()
-        daily.append({"day": d, "seconds": by_day.get(d, 0)})
+        heatmap.append({"day": d, "seconds": by_day.get(d, 0)})
+    # last 14 days (kept for compatibility)
+    daily = heatmap[-14:]
     subject_series = [
         {
             "subject_id": sid,
@@ -696,7 +698,7 @@ async def analytics(user=Depends(get_current_user)):
         for sid, secs in sorted(by_subject.items(), key=lambda x: -x[1])
     ]
     streak = await db.streaks.find_one({"user_id": user["user_id"]}, {"_id": 0}) or {"current": 0, "longest": 0}
-    return {"total_seconds": total, "daily": daily, "by_subject": subject_series, "streak": streak}
+    return {"total_seconds": total, "daily": daily, "heatmap": heatmap, "by_subject": subject_series, "streak": streak}
 
 
 # ---------- Seed demo data ----------

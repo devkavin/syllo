@@ -15,14 +15,20 @@ export default function Today() {
   const isDark = theme === "dark";
   const [data, setData] = useState(null);
   const [subjects, setSubjects] = useState([]);
+  const [heatmap, setHeatmap] = useState([]);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     try {
-      const [t, s] = await Promise.all([http.get("/today"), http.get("/subjects")]);
+      const [t, s, a] = await Promise.all([
+        http.get("/today"),
+        http.get("/subjects"),
+        http.get("/analytics"),
+      ]);
       setData(t.data);
       setSubjects(s.data);
+      setHeatmap(a.data?.heatmap || []);
     } catch (e) { setErr(formatError(e)); }
     finally { setLoading(false); }
   };
@@ -94,6 +100,9 @@ export default function Today() {
         />
         <GoalCard doneMin={doneMin} goalMin={goalMin} goalPct={goalPct} goalMet={goalMet} />
       </div>
+
+      {/* Streak Calendar (30-day heatmap) */}
+      <StreakCalendar heatmap={heatmap} streak={data?.streak} isDark={isDark} />
 
       {/* Schedule + Reviews */}
       {(data?.timetable?.length > 0 || data?.reviews_due?.length > 0) && (
@@ -332,6 +341,109 @@ function GoalCard({ doneMin, goalMin, goalPct, goalMet }) {
 
 function EmptyBlock({ label }) {
   return <div className="text-sm text-muted-foreground italic py-6 text-center">{label}</div>;
+}
+
+function StreakCalendar({ heatmap, streak, isDark }) {
+  if (!heatmap || heatmap.length === 0) return null;
+  const maxSec = Math.max(1, ...heatmap.map((d) => d.seconds));
+  // Build 5 columns of ~6 days each (30 days total). We'll display as 6 rows x 5 cols with weekday labels
+  // Simpler: horizontal strip of 30 cells grouped into weeks.
+  // Layout: 30 cells, arranged in 5 columns (weeks) x 7 rows (weekdays) with today at bottom-right of last column.
+  // Compute weekday of each date and place accordingly.
+  const dayCells = heatmap.map((d) => {
+    const date = new Date(d.day + "T00:00:00");
+    const jsDow = date.getDay(); // 0=Sun
+    const isoDow = (jsDow + 6) % 7; // 0=Mon..6=Sun
+    return { ...d, isoDow, date };
+  });
+  // Group into columns by week starting Monday
+  const cols = [];
+  let currentCol = new Array(7).fill(null);
+  let started = false;
+  for (const c of dayCells) {
+    if (!started && c.isoDow !== 0) {
+      currentCol[c.isoDow] = c;
+      started = true;
+      continue;
+    }
+    if (c.isoDow === 0 && started) {
+      cols.push(currentCol);
+      currentCol = new Array(7).fill(null);
+    }
+    if (!started) started = true;
+    currentCol[c.isoDow] = c;
+  }
+  if (currentCol.some(Boolean)) cols.push(currentCol);
+
+  const intensity = (sec) => {
+    if (!sec) return 0;
+    const r = sec / maxSec;
+    if (r < 0.25) return 1;
+    if (r < 0.5) return 2;
+    if (r < 0.75) return 3;
+    return 4;
+  };
+  const swatch = (level) => {
+    if (level === 0) return isDark ? "hsl(32 8% 17%)" : "hsl(42 22% 92%)";
+    const alphas = [0, 0.28, 0.48, 0.72, 1];
+    const base = isDark ? "133 26% 55%" : "133 30% 40%";
+    return `hsl(${base} / ${alphas[level]})`;
+  };
+
+  const total = heatmap.reduce((a, d) => a + d.seconds, 0);
+  const activeDays = heatmap.filter((d) => d.seconds > 0).length;
+  const weekdayLabels = ["Mon", "", "Wed", "", "Fri", "", "Sun"];
+
+  return (
+    <section className="card-elevated p-5" data-testid="streak-calendar">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(18 40% 92%)", color: "hsl(18 60% 30%)" }}>
+            <Flame className="w-4 h-4" />
+          </div>
+          <span className="section-title">Last thirty days</span>
+        </div>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <span><span className="font-mono text-foreground">{activeDays}</span> active</span>
+          <span><span className="font-mono text-foreground">{formatSeconds(total)}</span> studied</span>
+          <span><span className="font-mono text-foreground">{streak?.current || 0}</span> day streak</span>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <div className="hidden sm:flex flex-col justify-between py-0.5 text-[9px] text-muted-foreground pr-1">
+          {weekdayLabels.map((w, i) => (
+            <span key={i} className="h-3.5 leading-3.5">{w}</span>
+          ))}
+        </div>
+        <div className="flex gap-1.5 flex-1 overflow-x-auto">
+          {cols.map((col, ci) => (
+            <div key={ci} className="flex flex-col gap-1.5">
+              {col.map((cell, ri) => (
+                <div
+                  key={ri}
+                  data-testid={cell ? `heatmap-cell-${cell.day}` : undefined}
+                  title={cell ? `${cell.day}: ${formatSeconds(cell.seconds)}` : ""}
+                  className="w-3.5 h-3.5 rounded-[3px] transition-colors"
+                  style={{
+                    background: cell ? swatch(intensity(cell.seconds)) : "transparent",
+                    outline: cell && cell.day === heatmap[heatmap.length - 1].day
+                      ? `1px solid hsl(var(--foreground) / 0.35)` : "none",
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="hidden sm:flex flex-col justify-end gap-1.5 pl-2">
+          <span className="text-[9px] text-muted-foreground">Less</span>
+          {[1, 2, 3, 4].map((l) => (
+            <div key={l} className="w-3.5 h-3.5 rounded-[3px]" style={{ background: swatch(l) }} />
+          ))}
+          <span className="text-[9px] text-muted-foreground">More</span>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function SkeletonToday() {

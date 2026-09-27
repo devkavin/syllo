@@ -42,8 +42,8 @@ export default function Analytics() {
           {data.daily.map((d) => {
             const h = Math.max(3, Math.round((d.seconds / maxDay) * 100));
             return (
-              <div key={d.day} className="flex-1 flex flex-col items-center gap-1" title={`${d.day}: ${formatSeconds(d.seconds)}`}>
-                <div className="w-full rounded-t-md" style={{ height: `${h}%`, background: "hsl(var(--primary) / 0.7)" }} />
+              <div key={d.day} className="flex-1 h-full flex flex-col items-center justify-end gap-1" title={`${d.day}: ${formatSeconds(d.seconds)}`}>
+                <div className="w-full rounded-t-md" style={{ height: `${h}%`, background: "hsl(var(--primary) / 0.75)" }} />
                 <div className="text-[10px] text-muted-foreground">{d.day.slice(5)}</div>
               </div>
             );
