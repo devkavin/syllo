@@ -108,6 +108,7 @@ class RegisterIn(BaseModel):
     email: EmailStr
     password: str
     name: str
+    referral_code: Optional[str] = None
 
 class LoginIn(BaseModel):
     email: EmailStr
@@ -215,6 +216,19 @@ async def register(body: RegisterIn, response: Response):
     if await db.users.find_one({"email": email}):
         raise HTTPException(400, "Email already registered")
     user_id = f"user_{uuid.uuid4().hex[:16]}"
+    referral_code = uuid.uuid4().hex[:8]
+
+    # Resolve referrer (if any)
+    referrer = None
+    if body.referral_code:
+        rc = body.referral_code.strip().lower()
+        if rc:
+            referrer = await db.users.find_one({"referral_code": rc})
+
+    starting_credits = FREE_PLAN_CREDITS_START + (15 if referrer else 0)
+    if referrer:
+        starting_credits = min(starting_credits, FREE_PLAN_MAX)
+
     doc = {
         "user_id": user_id,
         "email": email,
@@ -228,13 +242,32 @@ async def register(body: RegisterIn, response: Response):
         "daily_goal_minutes": 60,
         "role": "user",
         "plan": "freshman",
-        "ai_credits_remaining": FREE_PLAN_CREDITS_START,
+        "ai_credits_remaining": starting_credits,
         "credit_period": _month_str(),
         "credit_bonuses": {},
+        "referral_code": referral_code,
+        "referred_by": referrer["user_id"] if referrer else None,
         "created_at": now_iso(),
     }
     await db.users.insert_one(doc)
+
+    if referrer:
+        # Bump referrer's credits by 15, capped by their plan
+        plan = await get_plan(referrer.get("plan") or "freshman") or (await get_plans())[0]
+        cap = FREE_PLAN_MAX if plan["id"] == "freshman" else plan["credits"]
+        new_r = min(cap, (referrer.get("ai_credits_remaining") or 0) + 15)
+        await db.users.update_one({"user_id": referrer["user_id"]}, {"$set": {"ai_credits_remaining": new_r}})
+        await db.referrals.insert_one({
+            "referrer_id": referrer["user_id"],
+            "referred_id": user_id,
+            "credits_each": 15,
+            "at": now_iso(),
+        })
+
     set_auth_cookies(response, user_id)
+    doc.pop("password_hash", None)
+    doc.pop("_id", None)
+    return doc
     doc.pop("password_hash", None)
     doc.pop("_id", None)
     return doc
@@ -1456,6 +1489,22 @@ async def admin_patch_settings(body: SettingsPatch, _=Depends(require_admin)):
     return {"ok": True}
 
 
+@api.get("/me/referrals")
+async def my_referrals(user=Depends(get_current_user)):
+    if not user.get("referral_code"):
+        code = uuid.uuid4().hex[:8]
+        await db.users.update_one({"user_id": user["user_id"]}, {"$set": {"referral_code": code}})
+        user["referral_code"] = code
+    count = await db.referrals.count_documents({"referrer_id": user["user_id"]})
+    credits_earned = count * 15
+    return {
+        "referral_code": user["referral_code"],
+        "count": count,
+        "credits_earned": credits_earned,
+        "per_signup_credits": 15,
+    }
+
+
 # ---------- Stripe Customer Portal ----------
 class PortalIn(BaseModel):
     origin_url: str
@@ -1524,6 +1573,11 @@ async def startup():
     await db.payment_transactions.create_index("user_id")
     await db.ai_usage_log.create_index([("user_id", 1), ("at", -1)])
     await db.stripe_events.create_index("event_id", unique=True)
+    await db.users.create_index("referral_code", sparse=True)
+    await db.referrals.create_index("referrer_id")
+    # Backfill referral codes for existing users
+    async for u in db.users.find({"referral_code": {"$exists": False}}, {"user_id": 1}):
+        await db.users.update_one({"user_id": u["user_id"]}, {"$set": {"referral_code": uuid.uuid4().hex[:8]}})
     demo_email = os.environ.get("DEMO_EMAIL", "demo@syllo.app")
     demo_pw = os.environ.get("DEMO_PASSWORD", "syllo123")
     existing = await db.users.find_one({"email": demo_email})

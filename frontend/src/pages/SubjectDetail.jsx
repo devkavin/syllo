@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Plus, ChevronDown, ChevronRight, Timer, Check } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, Timer, Check, StickyNote } from "lucide-react";
+import ExplainPopover from "@/components/ExplainPopover";
 
 export default function SubjectDetail() {
   const { id } = useParams();
@@ -115,35 +116,14 @@ export default function SubjectDetail() {
                         l.status === "in_progress" ? { label: "In progress", color: "hsl(30 60% 45%)" } :
                                                      { label: "Not started", color: "hsl(var(--muted-foreground))" };
                       return (
-                      <div key={l.lesson_id} className="flex items-center gap-3 py-1.5" data-testid={`lesson-${l.lesson_id}`}>
-                        <button
-                          onClick={() => cycleStatus(l)}
-                          data-testid={`lesson-status-${l.lesson_id}`}
-                          title={`Status: ${statusMeta.label}. Click to change.`}
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                          style={{ color: statusMeta.color }}
-                          aria-label={`Status: ${statusMeta.label}`}
-                        >
-                          <StatusIcon status={l.status} />
-                        </button>
-                        <div className={`text-sm flex-1 min-w-0 flex items-center gap-2 ${l.status === "done" ? "text-muted-foreground line-through" : ""}`}>
-                          <span className="truncate">{l.title}</span>
-                          {l.status !== "not_started" && (
-                            <span
-                              className="badge shrink-0"
-                              style={{
-                                background: `${statusMeta.color}14`,
-                                color: statusMeta.color,
-                                borderColor: `${statusMeta.color}33`,
-                              }}
-                              data-testid={`lesson-status-pill-${l.lesson_id}`}
-                            >
-                              {statusMeta.label}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground font-mono">{Math.round((l.total_seconds || 0) / 60)}m</div>
-                      </div>
+                      <LessonRow
+                        key={l.lesson_id}
+                        lesson={l}
+                        statusMeta={statusMeta}
+                        subjectName={subject.name}
+                        onStatus={() => cycleStatus(l)}
+                        onNotesSaved={(nl) => setLessonsByUnit((m) => ({ ...m, [l.unit_id]: m[l.unit_id].map((x) => x.lesson_id === l.lesson_id ? nl : x) }))}
+                      />
                     );})}
                     <button className="btn btn-ghost text-xs mt-1" onClick={() => addLesson(u.unit_id)} data-testid={`add-lesson-${u.unit_id}`}>
                       <Plus className="w-3.5 h-3.5" /> Add a lesson
@@ -159,8 +139,7 @@ export default function SubjectDetail() {
   );
 }
 
-function StatusIcon({ status }) {
-  if (status === "done") {
+function StatusIcon({ status }) {  if (status === "done") {
     return (
       <svg viewBox="0 0 20 20" className="w-4 h-4" aria-hidden="true">
         <circle cx="10" cy="10" r="8.25" fill="currentColor" />
@@ -180,6 +159,87 @@ function StatusIcon({ status }) {
     <svg viewBox="0 0 20 20" className="w-4 h-4" aria-hidden="true">
       <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
     </svg>
+  );
+}
+
+function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) {
+  const [open, setOpen] = useState(false);
+  const [notes, setNotes] = useState(lesson.notes || "");
+  const [saveState, setSaveState] = useState("idle");
+  const timer = useRef(null);
+  const containerRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  useEffect(() => { setNotes(lesson.notes || ""); }, [lesson.lesson_id, lesson.notes]);
+
+  const onChange = (e) => {
+    setNotes(e.target.value); setSaveState("saving");
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(async () => {
+      try {
+        const { data } = await http.patch(`/lessons/${lesson.lesson_id}`, { notes: e.target.value });
+        setSaveState("saved");
+        onNotesSaved?.(data);
+      } catch { setSaveState("idle"); }
+    }, 800);
+  };
+
+  return (
+    <div data-testid={`lesson-${lesson.lesson_id}`}>
+      <div className="flex items-center gap-3 py-1.5">
+        <button
+          onClick={onStatus}
+          data-testid={`lesson-status-${lesson.lesson_id}`}
+          title={`Status: ${statusMeta.label}. Click to change.`}
+          className="text-muted-foreground hover:text-foreground transition-colors"
+          style={{ color: statusMeta.color }}
+          aria-label={`Status: ${statusMeta.label}`}
+        >
+          <StatusIcon status={lesson.status} />
+        </button>
+        <div className={`text-sm flex-1 min-w-0 flex items-center gap-2 ${lesson.status === "done" ? "text-muted-foreground line-through" : ""}`}>
+          <span className="truncate">{lesson.title}</span>
+          {lesson.status !== "not_started" && (
+            <span
+              className="badge shrink-0"
+              style={{
+                background: `${statusMeta.color}14`,
+                color: statusMeta.color,
+                borderColor: `${statusMeta.color}33`,
+              }}
+              data-testid={`lesson-status-pill-${lesson.lesson_id}`}
+            >
+              {statusMeta.label}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={() => setOpen((o) => !o)}
+          data-testid={`lesson-notes-toggle-${lesson.lesson_id}`}
+          className={`btn btn-ghost !p-1.5 ${(lesson.notes && lesson.notes.trim()) ? "text-primary" : "text-muted-foreground"}`}
+          title={open ? "Hide notes" : "Open notes"}
+        >
+          <StickyNote className="w-3.5 h-3.5" />
+        </button>
+        <div className="text-xs text-muted-foreground font-mono">{Math.round((lesson.total_seconds || 0) / 60)}m</div>
+      </div>
+      {open && (
+        <div ref={containerRef} className="ml-7 mt-1 mb-3 p-3 rounded-lg border border-border bg-accent/20 relative" data-testid={`lesson-notes-panel-${lesson.lesson_id}`}>
+          <textarea
+            ref={textareaRef}
+            className="w-full resize-y min-h-[80px] bg-transparent outline-none text-sm font-serif leading-relaxed placeholder:text-muted-foreground/60"
+            placeholder="Notes for this lesson. Select text to explain it."
+            value={notes}
+            onChange={onChange}
+            data-testid={`lesson-notes-textarea-${lesson.lesson_id}`}
+          />
+          <div className="text-[10px] text-muted-foreground mt-1">
+            {saveState === "saving" ? "Saving..." : saveState === "saved" ? "Saved" : ""}
+          </div>
+          <ExplainPopover textareaRef={textareaRef} containerRef={containerRef} subjectName={subjectName} extraTestId={`explain-popover-${lesson.lesson_id}`} />
+        </div>
+      )}
+    </div>
   );
 }
 

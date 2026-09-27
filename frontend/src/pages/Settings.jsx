@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
 import { http, formatError } from "@/lib/api";
-import { Loader2, ExternalLink } from "lucide-react";
+import { Loader2, ExternalLink, Gift, Copy, Check } from "lucide-react";
 
 export default function Settings() {
   const { user, updateMe } = useAuth();
@@ -104,6 +104,8 @@ export default function Settings() {
         </div>
       </section>
 
+      <InviteCard />
+
       <section className="card p-5 space-y-3">
         <h2 className="font-serif text-xl">Data</h2>
         <p className="text-sm text-muted-foreground">Add a small set of sample subjects and tasks to your workspace if it's empty.</p>
@@ -114,5 +116,55 @@ export default function Settings() {
       {err && <div className="text-destructive text-sm">{err}</div>}
       <button className="btn btn-primary" onClick={save} data-testid="settings-save">Save changes</button>
     </div>
+  );
+}
+
+function InviteCard() {
+  const [data, setData] = useState(null);
+  const [copied, setCopied] = useState("");
+  useEffect(() => { http.get("/me/referrals").then((r) => setData(r.data)).catch(() => {}); }, []);
+  if (!data) return null;
+  const link = `${window.location.origin}/register?ref=${data.referral_code}`;
+
+  const copy = async (val, tag) => {
+    try { await navigator.clipboard.writeText(val); setCopied(tag); setTimeout(() => setCopied(""), 1500); } catch {}
+  };
+
+  return (
+    <section className="card p-5 space-y-3" data-testid="settings-invite">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(30 60% 92%)", color: "hsl(30 60% 32%)" }}>
+          <Gift className="w-4 h-4" />
+        </div>
+        <h2 className="font-serif text-xl !mb-0">Study with a friend</h2>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Share Syllo. When a friend signs up with your code, you both get {data.per_signup_credits} extra helps. That's it. One time, one bonus.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-muted-foreground">Your code</label>
+          <div className="flex gap-2 mt-1">
+            <input className="input font-mono uppercase" readOnly value={data.referral_code} data-testid="invite-code" />
+            <button className="btn btn-outline" onClick={() => copy(data.referral_code, "code")} data-testid="invite-copy-code">
+              {copied === "code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Or share the link</label>
+          <div className="flex gap-2 mt-1">
+            <input className="input text-xs" readOnly value={link} data-testid="invite-link" />
+            <button className="btn btn-outline" onClick={() => copy(link, "link")} data-testid="invite-copy-link">
+              {copied === "link" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="text-xs text-muted-foreground flex items-center gap-4 pt-1">
+        <span><span className="font-mono text-foreground">{data.count}</span> friend{data.count === 1 ? "" : "s"} joined</span>
+        <span><span className="font-mono text-foreground">{data.credits_earned}</span> extra helps earned</span>
+      </div>
+    </section>
   );
 }

@@ -1,23 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { formatError } from "@/lib/api";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Gift } from "lucide-react";
 
 export default function Register() {
   const nav = useNavigate();
+  const [sp] = useSearchParams();
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referral, setReferral] = useState(sp.get("ref") || "");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true); setErr("");
-    try { await register(email, password, name); nav("/today"); }
-    catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
+    try {
+      await register(email, password, name, referral || undefined);
+      nav("/today");
+    } catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
   };
   const googleLogin = () => {
     // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
@@ -44,6 +48,18 @@ export default function Register() {
         <div>
           <label className="text-xs text-muted-foreground">Password</label>
           <input className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required data-testid="register-password" />
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground inline-flex items-center gap-1"><Gift className="w-3 h-3" /> Friend code (optional)</label>
+          <input
+            className="input mt-1 !uppercase"
+            value={referral}
+            onChange={(e) => setReferral(e.target.value)}
+            placeholder="8 characters"
+            maxLength={12}
+            data-testid="register-referral"
+          />
+          {referral && <div className="text-xs text-muted-foreground mt-1">You and your friend will both get a small welcome bonus.</div>}
         </div>
         {err && <div className="text-destructive text-sm">{err}</div>}
         <button className="btn btn-primary w-full" disabled={busy} data-testid="register-submit">
