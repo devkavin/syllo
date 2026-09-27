@@ -182,6 +182,27 @@ class SessionIn(BaseModel):
     started_at: str  # ISO
     note: Optional[str] = ""
 
+class TimetableIn(BaseModel):
+    title: str
+    subject_id: Optional[str] = None
+    day_of_week: int  # 0=Mon .. 6=Sun
+    start_time: str  # "HH:MM"
+    end_time: str    # "HH:MM"
+    location: Optional[str] = ""
+    kind: str = "class"  # class | study
+
+class TimetablePatch(BaseModel):
+    title: Optional[str] = None
+    subject_id: Optional[str] = None
+    day_of_week: Optional[int] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    location: Optional[str] = None
+    kind: Optional[str] = None
+
+class ReviewOutcome(BaseModel):
+    quality: str  # good | again
+
 
 # ---------- Auth Routes ----------
 @api.post("/auth/register")
@@ -200,6 +221,7 @@ async def register(body: RegisterIn, response: Response):
         "onboarded": False,
         "theme": "light",
         "timezone_offset_min": 0,
+        "daily_goal_minutes": 60,
         "created_at": now_iso(),
     }
     await db.users.insert_one(doc)
@@ -265,6 +287,7 @@ async def google_callback(body: GoogleCallbackIn, response: Response):
             "onboarded": False,
             "theme": "light",
             "timezone_offset_min": 0,
+            "daily_goal_minutes": 60,
             "created_at": now_iso(),
         })
     set_auth_cookies(response, user_id)
@@ -277,6 +300,7 @@ class ProfilePatch(BaseModel):
     theme: Optional[str] = None
     timezone_offset_min: Optional[int] = None
     onboarded: Optional[bool] = None
+    daily_goal_minutes: Optional[int] = None
 
 
 @api.patch("/auth/me")
@@ -397,6 +421,21 @@ async def patch_lesson(lid: str, body: LessonPatch, user=Depends(get_current_use
     r = await db.lessons.update_one({"lesson_id": lid, "user_id": user["user_id"]}, {"$set": updates})
     if r.matched_count == 0:
         raise HTTPException(404, "Lesson not found")
+    # If marked done and no review exists yet, schedule one for tomorrow
+    if updates.get("status") == "done":
+        existing = await db.reviews.find_one({"lesson_id": lid, "user_id": user["user_id"]})
+        if not existing:
+            next_at = (datetime.now(timezone.utc) + timedelta(days=1)).isoformat()
+            await db.reviews.insert_one({
+                "review_id": f"rvw_{uuid.uuid4().hex[:12]}",
+                "user_id": user["user_id"],
+                "lesson_id": lid,
+                "interval_days": 1,
+                "step_index": 0,
+                "next_review_at": next_at,
+                "last_reviewed_at": None,
+                "created_at": now_iso(),
+            })
     return await db.lessons.find_one({"lesson_id": lid}, {"_id": 0})
 
 
@@ -580,6 +619,31 @@ async def today_view(user=Depends(get_current_user)):
 
     streak = await db.streaks.find_one({"user_id": user["user_id"]}, {"_id": 0}) or {"current": 0, "longest": 0, "last_day": None}
     subjects = await db.subjects.find({"user_id": user["user_id"]}, {"_id": 0}).to_list(50)
+
+    # Today's timetable entries
+    dow = ((now + timedelta(minutes=tz_off)).weekday())  # 0=Mon
+    timetable = await db.timetable.find(
+        {"user_id": user["user_id"], "day_of_week": dow},
+        {"_id": 0},
+    ).sort("start_time", 1).to_list(50)
+
+    # Reviews due today or earlier
+    end_of_day = (datetime.now(timezone.utc) + timedelta(minutes=tz_off))
+    end_of_day = end_of_day.replace(hour=23, minute=59, second=59, microsecond=0).astimezone(timezone.utc)
+    due = await db.reviews.find(
+        {"user_id": user["user_id"], "next_review_at": {"$lte": end_of_day.isoformat()}},
+        {"_id": 0},
+    ).sort("next_review_at", 1).to_list(50)
+    # attach lesson info
+    if due:
+        ids = [r["lesson_id"] for r in due]
+        lessons = await db.lessons.find({"lesson_id": {"$in": ids}}, {"_id": 0}).to_list(200)
+        lesson_map = {l["lesson_id"]: l for l in lessons}
+        for r in due:
+            l = lesson_map.get(r["lesson_id"])
+            r["lesson_title"] = l["title"] if l else "Lesson"
+            r["subject_id"] = l["subject_id"] if l else None
+
     return {
         "today": today,
         "seconds_today": seconds_today,
@@ -587,6 +651,9 @@ async def today_view(user=Depends(get_current_user)):
         "sessions": today_sessions,
         "streak": streak,
         "subjects_count": len(subjects),
+        "timetable": timetable,
+        "reviews_due": due,
+        "daily_goal_minutes": user.get("daily_goal_minutes") or 60,
     }
 
 
@@ -634,8 +701,26 @@ async def analytics(user=Depends(get_current_user)):
 
 # ---------- Seed demo data ----------
 async def _seed_demo_content(user_id: str):
-    # Only seed if user has zero subjects
-    if await db.subjects.count_documents({"user_id": user_id}):
+    # Ensure timetable exists (idempotent add for pre-existing demo users)
+    have_subjects = await db.subjects.count_documents({"user_id": user_id})
+    if have_subjects and await db.timetable.count_documents({"user_id": user_id}) == 0:
+        subs = await db.subjects.find({"user_id": user_id}, {"_id": 0}).to_list(50)
+        today_dow = datetime.now(timezone.utc).weekday()
+        if len(subs) >= 3:
+            tt = [
+                (today_dow, "09:00", "10:30", subs[0]["subject_id"], "Math class", "class"),
+                (today_dow, "14:00", "15:00", subs[2]["subject_id"], "Biology study block", "study"),
+                ((today_dow + 1) % 7, "11:00", "12:30", subs[1]["subject_id"], "Literature seminar", "class"),
+            ]
+            for dow, s, e, sid, title, kind in tt:
+                await db.timetable.insert_one({
+                    "timetable_id": f"tt_{uuid.uuid4().hex[:12]}", "user_id": user_id,
+                    "title": title, "subject_id": sid, "day_of_week": dow,
+                    "start_time": s, "end_time": e, "location": "", "kind": kind,
+                    "created_at": now_iso(),
+                })
+    # Only seed the rest if user has zero subjects
+    if have_subjects:
         return
     subjects_spec = [
         ("Mathematics", "dusty_blue"),
@@ -746,11 +831,118 @@ async def _seed_demo_content(user_id: str):
         "last_day": datetime.now(timezone.utc).date().isoformat(),
     })
 
+    # Timetable: a small weekly schedule
+    today_dow = datetime.now(timezone.utc).weekday()
+    tt = [
+        (today_dow, "09:00", "10:30", subs[0]["subject_id"], "Math class", "class"),
+        (today_dow, "14:00", "15:00", subs[2]["subject_id"], "Biology study block", "study"),
+        ((today_dow + 1) % 7, "11:00", "12:30", subs[1]["subject_id"], "Literature seminar", "class"),
+    ]
+    for dow, s, e, sid, title, kind in tt:
+        await db.timetable.insert_one({
+            "timetable_id": f"tt_{uuid.uuid4().hex[:12]}", "user_id": user_id,
+            "title": title, "subject_id": sid, "day_of_week": dow,
+            "start_time": s, "end_time": e, "location": "", "kind": kind,
+            "created_at": now_iso(),
+        })
+
 
 @api.post("/seed")
 async def seed_endpoint(user=Depends(get_current_user)):
     await _seed_demo_content(user["user_id"])
     return {"ok": True}
+
+
+# ---------- Timetable ----------
+@api.get("/timetable")
+async def list_timetable(user=Depends(get_current_user)):
+    items = await db.timetable.find({"user_id": user["user_id"]}, {"_id": 0}).sort([("day_of_week", 1), ("start_time", 1)]).to_list(500)
+    return items
+
+
+@api.post("/timetable")
+async def create_timetable(body: TimetableIn, user=Depends(get_current_user)):
+    tid = f"tt_{uuid.uuid4().hex[:12]}"
+    doc = {"timetable_id": tid, "user_id": user["user_id"], **body.model_dump(), "created_at": now_iso()}
+    await db.timetable.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@api.patch("/timetable/{tid}")
+async def patch_timetable(tid: str, body: TimetablePatch, user=Depends(get_current_user)):
+    updates = {k: v for k, v in body.model_dump().items() if v is not None}
+    r = await db.timetable.update_one({"timetable_id": tid, "user_id": user["user_id"]}, {"$set": updates})
+    if r.matched_count == 0:
+        raise HTTPException(404, "Block not found")
+    return await db.timetable.find_one({"timetable_id": tid}, {"_id": 0})
+
+
+@api.delete("/timetable/{tid}")
+async def delete_timetable(tid: str, user=Depends(get_current_user)):
+    await db.timetable.delete_one({"timetable_id": tid, "user_id": user["user_id"]})
+    return {"ok": True}
+
+
+# ---------- Reviews (spaced repetition) ----------
+# Interval ladder in days. `good` advances one step; `again` resets to step 0.
+_REVIEW_STEPS = [1, 3, 7, 14, 30, 60, 120]
+
+
+@api.get("/reviews")
+async def list_reviews(user=Depends(get_current_user), due_only: bool = False):
+    q = {"user_id": user["user_id"]}
+    if due_only:
+        q["next_review_at"] = {"$lte": now_iso()}
+    items = await db.reviews.find(q, {"_id": 0}).sort("next_review_at", 1).to_list(500)
+    if items:
+        ids = [r["lesson_id"] for r in items]
+        lessons = await db.lessons.find({"lesson_id": {"$in": ids}}, {"_id": 0}).to_list(500)
+        lesson_map = {l["lesson_id"]: l for l in lessons}
+        for r in items:
+            l = lesson_map.get(r["lesson_id"])
+            r["lesson_title"] = l["title"] if l else "Lesson"
+            r["subject_id"] = l["subject_id"] if l else None
+    return items
+
+
+@api.post("/reviews/{rid}/mark")
+async def mark_review(rid: str, body: ReviewOutcome, user=Depends(get_current_user)):
+    review = await db.reviews.find_one({"review_id": rid, "user_id": user["user_id"]})
+    if not review:
+        raise HTTPException(404, "Review not found")
+    step = int(review.get("step_index", 0))
+    if body.quality == "again":
+        step = 0
+    else:
+        step = min(step + 1, len(_REVIEW_STEPS) - 1)
+    interval = _REVIEW_STEPS[step]
+    next_at = (datetime.now(timezone.utc) + timedelta(days=interval)).isoformat()
+    await db.reviews.update_one({"review_id": rid}, {"$set": {
+        "step_index": step,
+        "interval_days": interval,
+        "next_review_at": next_at,
+        "last_reviewed_at": now_iso(),
+    }})
+    return await db.reviews.find_one({"review_id": rid}, {"_id": 0})
+
+
+# ---------- Global search ----------
+@api.get("/search")
+async def search(q: str, user=Depends(get_current_user)):
+    q = (q or "").strip()
+    if len(q) < 1:
+        return {"subjects": [], "lessons": [], "notebooks": [], "tasks": []}
+    import re
+    rx = {"$regex": re.escape(q), "$options": "i"}
+    subjects = await db.subjects.find({"user_id": user["user_id"], "name": rx}, {"_id": 0}).limit(8).to_list(8)
+    lessons = await db.lessons.find({"user_id": user["user_id"], "title": rx}, {"_id": 0}).limit(10).to_list(10)
+    notebooks = await db.notebooks.find(
+        {"user_id": user["user_id"], "$or": [{"title": rx}, {"content": rx}]},
+        {"_id": 0, "content": 0},
+    ).limit(10).to_list(10)
+    tasks = await db.tasks.find({"user_id": user["user_id"], "title": rx}, {"_id": 0}).limit(10).to_list(10)
+    return {"subjects": subjects, "lessons": lessons, "notebooks": notebooks, "tasks": tasks}
 
 
 # ---------- Startup ----------
@@ -765,6 +957,8 @@ async def startup():
     await db.notebooks.create_index([("user_id", 1)])
     await db.sessions.create_index([("user_id", 1), ("started_at", -1)])
     await db.streaks.create_index("user_id", unique=True)
+    await db.timetable.create_index([("user_id", 1), ("day_of_week", 1)])
+    await db.reviews.create_index([("user_id", 1), ("next_review_at", 1)])
 
     # Seed demo user
     demo_email = os.environ.get("DEMO_EMAIL", "demo@syllo.app")

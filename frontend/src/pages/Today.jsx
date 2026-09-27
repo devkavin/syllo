@@ -3,7 +3,7 @@ import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Link } from "react-router-dom";
 import { subjectClasses, formatSeconds, greeting } from "@/lib/palette";
-import { Flame, Clock, CheckCircle2, Circle, PlayCircle, BookOpen } from "lucide-react";
+import { Flame, Clock, CheckCircle2, Circle, PlayCircle, BookOpen, Calendar, Sparkles, Target } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 
 export default function Today() {
@@ -38,6 +38,10 @@ export default function Today() {
   const first = user?.name?.split(" ")[0] || "friend";
   const streak = data?.streak?.current || 0;
   const subjectsMap = Object.fromEntries(subjects.map((s) => [s.subject_id, s]));
+  const goalMin = data?.daily_goal_minutes || 60;
+  const doneMin = Math.round((data?.seconds_today || 0) / 60);
+  const goalPct = Math.min(100, Math.round((doneMin / goalMin) * 100));
+  const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
     <div className="space-y-8" data-testid="today-page">
@@ -50,8 +54,62 @@ export default function Today() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <Stat icon={Clock} label="Studied today" value={formatSeconds(data?.seconds_today || 0)} testid="stat-time" />
         <Stat icon={Flame} label="Current streak" value={`${streak} day${streak === 1 ? "" : "s"}`} testid="stat-streak" />
-        <Stat icon={BookOpen} label="Subjects" value={data?.subjects_count || 0} testid="stat-subjects" />
+        <div className="card p-4" data-testid="stat-goal">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-accent grid place-items-center">
+              <Target className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs text-muted-foreground">Daily goal</div>
+              <div className="font-serif text-xl">{doneMin} / {goalMin} min</div>
+            </div>
+          </div>
+          <div className="h-1.5 mt-3 bg-accent rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${goalPct}%` }} />
+          </div>
+        </div>
       </div>
+
+      {/* Timetable + Reviews strip */}
+      {(data?.timetable?.length > 0 || data?.reviews_due?.length > 0) && (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="card p-5" data-testid="today-timetable">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-serif text-lg inline-flex items-center gap-2"><Calendar className="w-4 h-4" /> On the schedule</h2>
+              <Link to="/timetable" className="text-xs text-muted-foreground hover:text-foreground">Open</Link>
+            </div>
+            {data?.timetable?.length ? (
+              <ul className="space-y-2">
+                {data.timetable.map((b) => (
+                  <li key={b.timetable_id} className="flex items-center gap-3 text-sm">
+                    <span className="font-mono text-xs text-muted-foreground w-24">{b.start_time} to {b.end_time}</span>
+                    <span className="flex-1">{b.title}</span>
+                    {b.subject_id && <span className="text-xs text-muted-foreground">{subjectsMap[b.subject_id]?.name}</span>}
+                  </li>
+                ))}
+              </ul>
+            ) : <div className="text-sm text-muted-foreground">Nothing on the calendar.</div>}
+          </div>
+
+          <div className="card p-5" data-testid="today-reviews">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-serif text-lg inline-flex items-center gap-2"><Sparkles className="w-4 h-4" /> Reviews due</h2>
+              <Link to="/reviews" className="text-xs text-muted-foreground hover:text-foreground">Open</Link>
+            </div>
+            {data?.reviews_due?.length ? (
+              <ul className="space-y-2">
+                {data.reviews_due.slice(0, 4).map((r) => (
+                  <li key={r.review_id} className="text-sm flex items-center gap-2">
+                    <span className="subject-dot" style={{ background: subjectsMap[r.subject_id] ? subjectClasses(subjectsMap[r.subject_id].color, isDark).dot : "hsl(var(--muted-foreground))" }} />
+                    <span className="flex-1">{r.lesson_title}</span>
+                    <span className="text-xs text-muted-foreground">{r.interval_days}d</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <div className="text-sm text-muted-foreground">Nothing to review right now.</div>}
+          </div>
+        </section>
+      )}
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 card p-5">

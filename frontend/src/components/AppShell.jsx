@@ -1,23 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import SearchDialog from "@/components/SearchDialog";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, X, GraduationCap,
+  Calendar, Sparkles, Search as SearchIcon,
 } from "lucide-react";
 
 const NAV = [
   { to: "/today", label: "Today", icon: Home, testid: "nav-today" },
   { to: "/subjects", label: "Subjects", icon: BookOpen, testid: "nav-subjects" },
+  { to: "/timetable", label: "Timetable", icon: Calendar, testid: "nav-timetable" },
   { to: "/notebooks", label: "Notebooks", icon: NotebookPen, testid: "nav-notebooks" },
   { to: "/tasks", label: "Tasks", icon: ListTodo, testid: "nav-tasks" },
+  { to: "/reviews", label: "Reviews", icon: Sparkles, testid: "nav-reviews" },
   { to: "/timer", label: "Focus", icon: Timer, testid: "nav-timer" },
   { to: "/analytics", label: "Analytics", icon: BarChart3, testid: "nav-analytics" },
   { to: "/settings", label: "Settings", icon: Settings, testid: "nav-settings" },
 ];
 
-function SidebarBody({ onNavigate }) {
+function SidebarBody({ onNavigate, onOpenSearch }) {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const nav = useNavigate();
@@ -33,6 +37,17 @@ function SidebarBody({ onNavigate }) {
             <div className="text-xs text-muted-foreground mt-0.5">Your study space</div>
           </div>
         </div>
+      </div>
+      <div className="px-3 pb-3">
+        <button
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground bg-accent/40 hover:bg-accent transition-colors"
+          onClick={() => { onOpenSearch?.(); onNavigate?.(); }}
+          data-testid="sidebar-search-btn"
+        >
+          <SearchIcon className="w-4 h-4" />
+          <span>Search</span>
+          <kbd className="ml-auto text-[10px] font-mono border border-border rounded px-1.5 py-0.5">⌘K</kbd>
+        </button>
       </div>
       <nav className="px-3 flex-1 space-y-0.5">
         {NAV.map(({ to, label, icon: Icon, testid }) => (
@@ -87,12 +102,25 @@ function SidebarBody({ onNavigate }) {
 
 export default function AppShell({ children }) {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <div className="min-h-screen flex bg-background text-foreground">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-64 shrink-0 border-r border-border bg-card/50">
         <div className="w-full sticky top-0 h-screen">
-          <SidebarBody />
+          <SidebarBody onOpenSearch={() => setSearchOpen(true)} />
         </div>
       </aside>
 
@@ -104,14 +132,19 @@ export default function AppShell({ children }) {
           </div>
           <div className="font-serif text-base">Syllo</div>
         </div>
-        <button
-          className="btn btn-ghost !p-2"
-          onClick={() => setOpen(true)}
-          data-testid="mobile-nav-open"
-          aria-label="Open menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button className="btn btn-ghost !p-2" onClick={() => setSearchOpen(true)} data-testid="mobile-search-btn" aria-label="Search">
+            <SearchIcon className="w-5 h-5" />
+          </button>
+          <button
+            className="btn btn-ghost !p-2"
+            onClick={() => setOpen(true)}
+            data-testid="mobile-nav-open"
+            aria-label="Open menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -126,7 +159,7 @@ export default function AppShell({ children }) {
             >
               <X className="w-5 h-5" />
             </button>
-            <SidebarBody onNavigate={() => setOpen(false)} />
+            <SidebarBody onNavigate={() => setOpen(false)} onOpenSearch={() => setSearchOpen(true)} />
           </aside>
         </div>
       )}
@@ -136,6 +169,8 @@ export default function AppShell({ children }) {
           {children}
         </div>
       </main>
+
+      <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

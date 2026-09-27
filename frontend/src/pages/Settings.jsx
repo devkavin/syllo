@@ -7,13 +7,14 @@ export default function Settings() {
   const { user, updateMe } = useAuth();
   const { theme, setTheme } = useTheme();
   const [name, setName] = useState(user?.name || "");
+  const [goal, setGoal] = useState(user?.daily_goal_minutes || 60);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
   const save = async () => {
     setMsg(""); setErr("");
     try {
-      await updateMe({ name, theme });
+      await updateMe({ name, theme, daily_goal_minutes: Number(goal) || 60 });
       setMsg("Saved.");
     } catch (e) { setErr(formatError(e)); }
   };
@@ -50,6 +51,21 @@ export default function Settings() {
               className={`btn ${theme === t ? "btn-primary" : "btn-outline"}`}
             >{t === "light" ? "Light" : "Dark"}</button>
           ))}
+        </div>
+      </section>
+
+      <section className="card p-5 space-y-3">
+        <h2 className="font-serif text-xl">Daily goal</h2>
+        <p className="text-sm text-muted-foreground">A time you can meet on most days.</p>
+        <div className="flex items-center gap-3">
+          <input
+            type="range" min={15} max={240} step={15}
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            className="flex-1"
+            data-testid="settings-goal-slider"
+          />
+          <div className="font-mono w-16 text-right">{goal}m</div>
         </div>
       </section>
 
