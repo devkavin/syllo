@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+@layer base {
+    :root {
+        --background: 44 22% 97%;
+        --foreground: 30 12% 13%;
+        --card: 0 0% 100%;
+        --card-foreground: 30 12% 13%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 30 12% 13%;
+        --primary: 108 13% 18%;
+        --primary-foreground: 44 22% 97%;
+        --secondary: 42 22% 92%;
+        --secondary-foreground: 30 10% 21%;
+        --muted: 42 22% 92%;
+        --muted-foreground: 34 8% 45%;
+        --accent: 40 20% 87%;
+        --accent-foreground: 30 12% 13%;
+        --destructive: 0 60% 45%;
+        --destructive-foreground: 44 22% 97%;
+        --border: 40 20% 87%;
+        --input: 40 20% 87%;
+        --ring: 108 13% 60%;
+        --radius: 0.75rem;
+
+        --paper: 42 40% 98%;
+
+        /* subject accents */
+        --sage: 133 28% 40%;
+        --ochre: 30 70% 51%;
+        --terracotta: 0 48% 57%;
+        --dusty-blue: 208 39% 48%;
+        --lavender: 267 26% 51%;
+        --rosewood: 338 39% 47%;
+        --olive: 74 33% 34%;
+        --slate: 210 8% 40%;
+    }
+    .dark {
+        --background: 34 8% 8%;
+        --foreground: 40 15% 92%;
+        --card: 30 8% 11%;
+        --card-foreground: 40 15% 92%;
+        --popover: 30 8% 11%;
+        --popover-foreground: 40 15% 92%;
+        --primary: 108 15% 68%;
+        --primary-foreground: 34 8% 8%;
+        --secondary: 32 8% 15%;
+        --secondary-foreground: 40 12% 82%;
+        --muted: 30 8% 14%;
+        --muted-foreground: 34 6% 58%;
+        --accent: 32 8% 17%;
+        --accent-foreground: 40 15% 92%;
+        --destructive: 0 45% 40%;
+        --destructive-foreground: 40 15% 92%;
+        --border: 33 8% 17%;
+        --input: 33 8% 17%;
+        --ring: 108 12% 40%;
+        --paper: 32 8% 10%;
+    }
+}
+
+@layer base {
+    * {
+        border-color: hsl(var(--border));
+    }
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .font-serif {
+        font-family: "Newsreader", Georgia, serif;
+    }
+    .font-mono {
+        font-family: "JetBrains Mono", monospace;
+    }
+
+    ::selection {
+        background: hsl(var(--ring) / 0.35);
+        color: hsl(var(--foreground));
+    }
+}
+
+@layer components {
+    .card {
+        background-color: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: var(--radius);
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.9rem;
+        border-radius: 0.6rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition:
+            background-color 150ms ease,
+            transform 100ms ease,
+            border-color 150ms ease,
+            color 150ms ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    .btn:active {
+        transform: scale(0.98);
+    }
+    .btn-primary {
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+    }
+    .btn-primary:hover {
+        background-color: hsl(var(--primary) / 0.9);
+    }
+    .btn-ghost {
+        background-color: transparent;
+        color: hsl(var(--foreground));
+    }
+    .btn-ghost:hover {
+        background-color: hsl(var(--accent));
+    }
+    .btn-outline {
+        border-color: hsl(var(--border));
+        background-color: transparent;
+        color: hsl(var(--foreground));
+    }
+    .btn-outline:hover {
+        background-color: hsl(var(--accent));
+    }
+    .input {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.6rem;
+        border: 1px solid hsl(var(--input));
+        background-color: hsl(var(--card));
+        color: hsl(var(--foreground));
+        font-size: 0.9rem;
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+    }
+    .input:focus {
+        outline: none;
+        border-color: hsl(var(--ring));
+        box-shadow: 0 0 0 3px hsl(var(--ring) / 0.18);
+    }
+    .subject-dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 999px;
+        display: inline-block;
+    }
+    .paper {
+        background-color: hsl(var(--paper));
+    }
+    .hairline {
+        border-bottom: 1px solid hsl(var(--border));
+    }
+    .fade-in {
+        animation: fade-in 300ms ease-out both;
+    }
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+}

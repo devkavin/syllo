@@ -1,0 +1,256 @@
+{
+  "brand_name": "Syllo",
+  "archetype": "ORGANIC & SWISS HYBRID (Warm Private-Studio Calm)",
+  "emotional_tone": "Warm, peaceful, focus-oriented, encouraging, human, distraction-free",
+  "banned_elements": {
+    "fonts": ["Inter", "Roboto", "Open Sans", "Space Grotesk"],
+    "punctuation": ["—", "--"],
+    "copy_jargon": ["AI magic", "supercharge", "synergy", "unleash", "game-changer", "revolutionary", "seamlessly", "harness"],
+    "colors": ["#1B93A4", "#7351B7", "pure #000000", "harsh #FFFFFF", "hyper-saturated neon gradients"]
+  },
+  "typography": {
+    "font_family_display": "'Newsreader', 'Fraunces', Georgia, serif",
+    "font_family_heading": "'Plus Jakarta Sans', 'Outfit', sans-serif",
+    "font_family_body": "'Plus Jakarta Sans', sans-serif",
+    "font_family_mono": "'JetBrains Mono', 'Fira Code', monospace",
+    "google_fonts_import": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+    "hierarchy": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight",
+      "h2": "text-2xl sm:text-3xl font-semibold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-medium tracking-tight",
+      "h4": "text-lg sm:text-xl font-medium",
+      "body_large": "text-base sm:text-lg leading-relaxed",
+      "body": "text-sm sm:text-base leading-normal",
+      "caption": "text-xs sm:text-sm text-muted-foreground",
+      "mono_timer": "font-mono tracking-wider tabular-nums font-semibold"
+    }
+  },
+  "colors": {
+    "light_mode": {
+      "background": "#F9F8F5",
+      "background_paper": "#FFFDF9",
+      "foreground": "#24211D",
+      "card": "#FFFFFF",
+      "card_foreground": "#24211D",
+      "popover": "#FFFFFF",
+      "popover_foreground": "#24211D",
+      "primary": "#2D3B2D",
+      "primary_foreground": "#F9F8F5",
+      "secondary": "#F0EDE6",
+      "secondary_foreground": "#3A3632",
+      "muted": "#EFECE6",
+      "muted_foreground": "#787268",
+      "accent": "#E8E2D5",
+      "accent_foreground": "#24211D",
+      "border": "#E6E1D7",
+      "input": "#E6E1D7",
+      "ring": "#A3B19B"
+    },
+    "dark_mode": {
+      "background": "#161513",
+      "background_paper": "#1C1B18",
+      "foreground": "#EDEBE8",
+      "card": "#1E1D1A",
+      "card_foreground": "#EDEBE8",
+      "popover": "#1E1D1A",
+      "popover_foreground": "#EDEBE8",
+      "primary": "#A8BBA2",
+      "primary_foreground": "#161513",
+      "secondary": "#2A2824",
+      "secondary_foreground": "#D6D2CC",
+      "muted": "#252320",
+      "muted_foreground": "#9C958A",
+      "accent": "#322E29",
+      "accent_foreground": "#EDEBE8",
+      "border": "#2E2B26",
+      "input": "#2E2B26",
+      "ring": "#5E6C58"
+    },
+    "subject_color_palette": [
+      {
+        "id": "sage",
+        "name": "Sage Green",
+        "bg_light": "#EAF2E8",
+        "text_light": "#274F29",
+        "border_light": "#C3D9C0",
+        "bg_dark": "#1F2B20",
+        "text_dark": "#B5D9B2",
+        "border_dark": "#2E4230",
+        "dot": "#4A7C59"
+      },
+      {
+        "id": "ochre",
+        "name": "Amber Ochre",
+        "bg_light": "#FDF4E7",
+        "text_light": "#7A4B13",
+        "border_light": "#F5D6B1",
+        "bg_dark": "#2E2316",
+        "text_dark": "#F5C78E",
+        "border_dark": "#473520",
+        "dot": "#D9822B"
+      },
+      {
+        "id": "terracotta",
+        "name": "Terracotta",
+        "bg_light": "#FCEFEF",
+        "text_light": "#7D2D2D",
+        "border_light": "#F5C7C7",
+        "bg_dark": "#2E1B1B",
+        "text_dark": "#F2B0B0",
+        "border_dark": "#4A2828",
+        "dot": "#C85A5A"
+      },
+      {
+        "id": "dusty_blue",
+        "name": "Dusty Blue",
+        "bg_light": "#EFF4F9",
+        "text_light": "#26486B",
+        "border_light": "#C7D8E8",
+        "bg_dark": "#1B2530",
+        "text_dark": "#B3D1EE",
+        "border_dark": "#293B4D",
+        "dot": "#4C7DA7"
+      },
+      {
+        "id": "lavender",
+        "name": "Muted Lavender",
+        "bg_light": "#F4F1F9",
+        "text_light": "#4A3366",
+        "border_light": "#DBCEEC",
+        "bg_dark": "#231B2E",
+        "text_dark": "#D2C2EC",
+        "border_dark": "#392A4B",
+        "dot": "#7E5EA6"
+      },
+      {
+        "id": "rosewood",
+        "name": "Warm Rosewood",
+        "bg_light": "#FAF0F4",
+        "text_light": "#6B2A45",
+        "border_light": "#ECCCD8",
+        "bg_dark": "#2B1A22",
+        "text_dark": "#EEB7CE",
+        "border_dark": "#452635",
+        "dot": "#A84B73"
+      },
+      {
+        "id": "muted_olive",
+        "name": "Muted Olive",
+        "bg_light": "#F3F4EA",
+        "text_light": "#404620",
+        "border_light": "#D2D6BA",
+        "bg_dark": "#222518",
+        "text_dark": "#CCD2A5",
+        "border_dark": "#363A25",
+        "dot": "#6B753B"
+      },
+      {
+        "id": "slate",
+        "name": "Warm Slate",
+        "bg_light": "#EFEFEF",
+        "text_light": "#33373B",
+        "border_light": "#D4D7DB",
+        "bg_dark": "#212325",
+        "text_dark": "#CDD1D5",
+        "border_dark": "#35393D",
+        "dot": "#5F666D"
+      }
+    ]
+  },
+  "layout_and_spacing": {
+    "spacing_philosophy": "Generous Notion-inspired whitespace, whisper 1px borders, subtle soft shadows, warm tactile feel.",
+    "container_max_width": "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8",
+    "reading_max_width": "max-w-3xl mx-auto",
+    "sidebar_width": "w-64 flex-shrink-0",
+    "card_radius": "rounded-xl border border-border shadow-xs",
+    "button_radius": "rounded-lg font-medium shadow-2xs hover:shadow-xs transition-all duration-150"
+  },
+  "page_layouts": {
+    "Today": {
+      "description": "Primary hero screen. Warm greeting based on time of day, current focus session widget, today's schedule/planner timeline, priority tasks, study streak widget, and quick action bar.",
+      "grid": "grid grid-cols-1 lg:grid-cols-12 gap-6",
+      "components": ["GreetingHeader", "FocusTimerWidget", "TodayPlannerTimeline", "TaskListSummary", "StreakCard", "CurriculumProgressCard"]
+    },
+    "Subjects": {
+      "description": "Visual grid of subjects with calm color coding, completed units count, next upcoming lesson, and progress bars.",
+      "grid": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5",
+      "components": ["SubjectCard", "AddSubjectModal", "SubjectColorPicker", "CurriculumOverviewStats"]
+    },
+    "SubjectDetail": {
+      "description": "Hierarchical view of a single subject containing units, accordion of lessons, associated notebooks, and study statistics.",
+      "grid": "grid grid-cols-1 lg:grid-cols-12 gap-6",
+      "components": ["SubjectBannerHeader", "UnitListAccordion", "LessonItemCard", "LinkedNotebooksSection"]
+    },
+    "LessonDetail": {
+      "description": "Dedicated study view for a single lesson. Contains lesson status toggle, key concepts, embedded notebook editor link, exercise list, and launch focus session CTA.",
+      "grid": "max-w-4xl mx-auto space-y-6",
+      "components": ["LessonHeader", "LessonStatusBadge", "ConceptsList", "ExerciseChecklist", "StartStudySessionButton"]
+    },
+    "Notebooks": {
+      "description": "Distraction-free paper-inspired writing canvas with markdown support, rich text formatting bar, autosave indicator, subject filter sidebar, and full-bleed focus toggle.",
+      "grid": "flex flex-col md:flex-row gap-6 min-h-[75vh]",
+      "components": ["NotebookSidebarList", "PaperCanvasEditor", "AutosaveStatusBadge", "FormatToolbar"]
+    },
+    "FocusTimer": {
+      "description": "Client-side study timer (Pomodoro & Stopwatch modes) with subject tagging, ambient background toggle, log session modal, and peaceful distraction-free full-screen mode.",
+      "grid": "max-w-2xl mx-auto text-center py-10 space-y-8",
+      "components": ["TimerCircleDisplay", "ModeSelector", "SubjectSelectorDropdown", "AmbientSoundToggle", "FullscreenTimerOverlay", "SessionSummaryModal"]
+    },
+    "Tasks": {
+      "description": "Planner board & list views for exercises, homework, and exam prep. Filterable by subject, due date, priority, and completed status.",
+      "grid": "space-y-6",
+      "components": ["TaskFilterTabs", "TaskGroupList", "AddTaskDialog", "PriorityBadge", "SubjectTag"]
+    },
+    "Analytics": {
+      "description": "Study time graphs, weekly heatmaps, subject time allocation breakdown, streak history, and review progress stats.",
+      "grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5",
+      "components": ["StudyTimeChart", "SubjectAllocationPie", "StreakCalendarHeatmap", "StatMetricCard"]
+    },
+    "Settings": {
+      "description": "User profile, default timer settings (Pomodoro durations), timezone selector, dark/light theme toggle, notification reminders, and seed data trigger.",
+      "grid": "max-w-3xl mx-auto space-y-8",
+      "components": ["ProfileSection", "TimerPreferencesForm", "ThemeSelector", "DataManagementCard"]
+    },
+    "Auth": {
+      "description": "Clean, warm centered auth card with email/password forms and social login trigger.",
+      "grid": "min-h-screen flex items-center justify-center p-4 bg-background",
+      "components": ["AuthCard", "LoginForm", "RegisterForm", "OAuthButtons"]
+    },
+    "Onboarding": {
+      "description": "Minimal 3-step setup flow: Name & Academic Goals -> Select Subjects & Color Tags -> Daily Target Hours.",
+      "grid": "max-w-xl mx-auto py-12 px-4 space-y-8",
+      "components": ["OnboardingStepper", "GoalSelectionStep", "SubjectSetupStep", "TargetHoursStep"]
+    }
+  },
+  "motion_and_interaction": {
+    "hover": "transition-all duration-200 ease-out hover:-translate-y-0.5",
+    "button_press": "active:scale-[0.98] transition-transform duration-100",
+    "page_transition": "animate-in fade-in-50 duration-300",
+    "modal_animation": "animate-in zoom-in-95 fade-in-0 duration-200"
+  },
+  "testing_attributes": {
+    "requirement": "All interactive buttons, inputs, tags, tabs, cards, and modal controls MUST include a specific data-testid attribute in kebab-case.",
+    "examples": [
+      "data-testid='today-focus-timer-button'",
+      "data-testid='subject-card-sage'",
+      "data-testid='notebook-autosave-indicator'",
+      "data-testid='theme-toggle-button'",
+      "data-testid='task-checkbox-12'"
+    ]
+  },
+  "curated_image_assets": {
+    "study_desk": "https://images.unsplash.com/photo-1768219565623-501f93ae384b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHw0fHxjb3p5JTIwbWluaW1hbGlzdCUyMHN0dWR5JTIwd29ya3NwYWNlJTIwZGVzayUyMG5vdGVib29rfGVufDB8fHx8MTc5MDUxNDA1OHww&ixlib=rb-4.1.0&q=85",
+    "books_window": "https://images.unsplash.com/photo-1632900182533-c8ee9ba229f4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHw0fHxwZWFjZWZ1bCUyMG5hdHVyZSUyMHdhcm0lMjBhY2FkZW1pYyUyMGFlc3RoZXRpYyUyMGJvb2tzJTIwc3R1ZHl8ZW58MHx8fHwxNzkwNTE0MDU4fDA&ixlib=rb-4.1.0&q=85",
+    "quiet_nature_book": "https://images.unsplash.com/photo-1696563757209-aac44f1e8d1f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxwZWFjZWZ1bCUyMG5hdHVyZSUyMHdhcm0lMjBhY2FkZW1pYyUyMGFlc3RoZXRpYyUyMGJvb2tzJTIwc3R1ZHl8ZW58MHx8fHwxNzkwNTE0MDU4fDA&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "Never use Inter, Roboto, or Space Grotesk. Font stack must use Plus Jakarta Sans and Newsreader.",
+    "Do NOT use em dashes (—) or double hyphens (--) anywhere in text copy. Use colons, commas, or parentheses instead.",
+    "Avoid AI hype jargon ('supercharge', 'AI-powered', 'magic'). Keep copy humble, personal, clear, and academic.",
+    "Ensure both Light and Dark themes look rich and warm. Light mode background is warm paper (#F9F8F5), Dark mode background is warm obsidian (#161513).",
+    "Subject colors must follow the calm subject palette defined in subject_color_palette.",
+    "Every interactive element must have a data-testid attribute.",
+    "Ensure the client-side Focus Timer has a tranquil, full-screen distraction-free mode.",
+    "Notebook canvas must feel like writing on high-quality cream paper."
+  ]
+}
