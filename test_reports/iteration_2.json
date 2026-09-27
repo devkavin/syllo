@@ -1,0 +1,33 @@
+{
+  "summary": "Iteration 2 testing. Backend: added 12 new pytest cases in test_syllo_iter2.py covering onboarding fields (register defaults onboarded=false, daily_goal_minutes=60; PATCH /auth/me persists onboarded/daily_goal_minutes/name), timetable CRUD + demo seed (3 blocks: Math class, Biology study block, Literature seminar), lesson->review scheduling (interval_days=1, next_review_at ~tomorrow, lesson_title/subject_id attached), review mark ladder (good: 1->3->7, again: reset to 1), global search (subjects/lessons/notebooks/tasks case-insensitive), /today extras (timetable, reviews_due, daily_goal_minutes), auth protection. All 34 backend tests pass (22 iter1 regression + 12 iter2) - 100%. Frontend: playwright verified onboarding redirect for fresh user + 3-step wizard finishes to /today, demo login shows stat-goal/today-timetable/today-reviews cards, /timetable renders 7 day columns with 3 seeded blocks and new-block modal creates block in correct column, sidebar Search opens dialog with subjects+tasks results for 'biology', Escape closes, Ctrl+K opens, /reviews shows empty state on demo, Settings has daily-goal slider. No console errors beyond expected 401 on /auth/me during logged-out screens.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_syllo_iter2.py",
+    "/app/backend/tests/test_syllo_backend.py",
+    "/app/test_reports/pytest/iter2_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py has grown to ~1000 lines; consider splitting into routers/{auth,subjects,units,lessons,notebooks,tasks,sessions,timetable,reviews,search,analytics}.py.",
+    "GET /api/reviews merges lesson_title/subject_id in Python; for larger datasets a $lookup aggregation would be cleaner and reduce round-trips (currently OK given per-user scale).",
+    "TimetableIn does not validate time format (HH:MM) or that end_time > start_time or day_of_week in 0..6 range; consider Pydantic validators to prevent bad data (e.g. day_of_week=99 accepted).",
+    "PATCH /lessons auto-schedules a review only if none exists for that lesson; if user unmarks and remarks 'done', no new review is scheduled - by design but worth a comment.",
+    "SearchDialog debounces at 220ms; fine, but no minimum-length gate beyond 1 char - single-letter queries can match a lot; consider q.length>=2 to reduce noise.",
+    "Today.jsx conditionally omits the timetable/reviews cards when arrays are empty (observed for a brand-new user after onboarding); this is fine UX but worth documenting so QA doesn't flag it as regression."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_syllo_iter2.py"
+  ],
+  "success_rate": {"backend": "100% (34/34)", "frontend": "100% of tested flows"},
+  "test_credentials": "demo@syllo.app / syllo123 (auto-seeded)",
+  "seed_data_creation": "Backend seeds demo user with 3 timetable blocks; startup adds timetable idempotently for pre-existing demo users if empty. Fresh users get 0 subjects/timetable/reviews until they complete onboarding or POST /seed.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iteration 2 test file at /app/backend/tests/test_syllo_iter2.py, iteration 1 regression at /app/backend/tests/test_syllo_backend.py. Run together with: pytest /app/backend/tests/ -v --junitxml=/app/test_reports/pytest/pytest_results.xml. Review ladder is [1,3,7,14,30,60,120] days. Frontend testids for iter2 features are as documented in review_request: onboarding-name/next-1/subject-{i}/next-2/goal-slider/finish; timetable-page, new-block-btn, new-block-modal + new-block-title/subject/day/start/end/kind-{class,study}/submit, day-column-{0..6}, block-{id}, block-delete-{id}; reviews-page (empty state literal 'Nothing to review yet'), review-{id}, review-good-{id}, review-again-{id}; search-dialog, sidebar-search-btn, search-input, search-{subject,lesson,notebook,task}-{id}, search-close; today-timetable, today-reviews, stat-goal; settings-goal-slider. Note: React-controlled range inputs don't respond to native el.value set + dispatchEvent - to test slider persistence in playwright, dispatch keyboard input or fire a proper React synthetic event via focus + ArrowRight keys.",
+  "rca_of_the_issue": "N/A - no bugs found."
+}

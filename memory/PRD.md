@@ -31,6 +31,14 @@ Build Syllo, a polished personal academic workspace for students. Originally spe
 - Realistic demo user auto-seeded on startup (demo@syllo.app / syllo123)
 - Automated backend + frontend test suite passing 100%
 
+## Implemented (2026-09-27, iteration 2)
+- Onboarding: 3-step wizard (name, subject picker with color coding, daily goal) redirects fresh users automatically
+- Weekly Timetable: 7-day grid, class + study block kinds, per-subject color, /api/timetable CRUD, demo user seeded with 3 blocks
+- Global Search: Cmd/Ctrl+K dialog, sidebar button, debounced /api/search across subjects, lessons, notebooks, tasks
+- Spaced Reviews: lessons marked done auto-queue a review; interval ladder [1,3,7,14,30,60,120] days; Good advances, Again resets
+- Daily goal on Today: progress ring toward daily_goal_minutes; Settings slider persists it
+- 34/34 backend tests pass; all new frontend flows verified
+
 ## Prioritized Backlog
 - P1: Onboarding flow for brand-new users (name, subjects, daily goal)
 - P1: Timetable and planner (recurring class blocks)
