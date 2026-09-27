@@ -4,6 +4,7 @@ import { Plus, FileText, Trash2, Loader2, Check, Sparkles, X } from "lucide-reac
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { useUsage } from "@/lib/usage";
+import ExplainPopover from "@/components/ExplainPopover";
 
 const SAVE_DEBOUNCE = 800;
 
@@ -20,6 +21,8 @@ export default function Notebooks() {
   const isDark = theme === "dark";
   const { setRemaining } = useUsage();
   const saveTimer = useRef(null);
+  const editorRef = useRef(null);
+  const textareaRef = useRef(null);
 
   const load = async () => {
     try {
@@ -126,7 +129,7 @@ export default function Notebooks() {
             </div>
           </div>
         ) : (
-          <div className="paper card p-6 md:p-10 min-h-[70vh] flex flex-col" data-testid="notebook-editor">
+          <div className="paper card p-6 md:p-10 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" ref={editorRef}>
             <div className="flex items-center justify-between mb-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-3">
                 <select
@@ -168,10 +171,16 @@ export default function Notebooks() {
             />
             <textarea
               className="bg-transparent w-full flex-1 resize-none outline-none border-none text-base leading-relaxed placeholder:text-muted-foreground/60 font-serif"
-              placeholder="Begin here. Autosave will keep up."
+              placeholder="Begin here. Autosave will keep up. Select any text to explain it."
               value={notebook.content || ""}
               onChange={onContentChange}
               data-testid="notebook-content-textarea"
+              ref={textareaRef}
+            />
+            <ExplainPopover
+              textareaRef={textareaRef}
+              containerRef={editorRef}
+              subjectName={notebook.subject_id ? subjectMap[notebook.subject_id]?.name : null}
             />
             {summary && (
               <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40" data-testid="notebook-summary">

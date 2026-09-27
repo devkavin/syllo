@@ -222,6 +222,21 @@ export default function AppShell({ children }) {
         </div>
       </main>
 
+      {/* Floating AI action button */}
+      <button
+        onClick={() => setAiOpen(true)}
+        data-testid="floating-ai-btn"
+        aria-label="Open Study Companion"
+        className="fixed z-40 bottom-5 right-5 md:bottom-6 md:right-6 w-12 h-12 rounded-full grid place-items-center shadow-lg transition-all hover:scale-105 active:scale-95"
+        style={{
+          background: "linear-gradient(135deg, hsl(267 30% 55%) 0%, hsl(208 39% 48%) 100%)",
+          color: "white",
+          boxShadow: "0 10px 25px -5px hsl(267 30% 40% / 0.4), 0 6px 12px -6px hsl(208 39% 30% / 0.35)",
+        }}
+      >
+        <Sparkles className="w-5 h-5" />
+      </button>
+
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       <AiCompanion open={aiOpen} onClose={() => setAiOpen(false)} />
     </div>

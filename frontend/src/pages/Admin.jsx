@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { http, formatError } from "@/lib/api";
-import { Users, DollarSign, Sparkles, TrendingUp, Save, Loader2, ShieldCheck } from "lucide-react";
+import { Users, DollarSign, Sparkles, TrendingUp, Save, Loader2, ShieldCheck, X } from "lucide-react";
 
 const PLAN_LABEL = { freshman: "Freshman", scholar: "Scholar", deans_list: "Dean's List" };
 
@@ -275,19 +275,83 @@ function SettingsPanel() {
       </div>
 
       {current?.plans && (
-        <div className="card-elevated p-5">
-          <div className="section-title mb-3">Current plans</div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {current.plans.map((p) => (
-              <div key={p.id} className="border border-border rounded-lg p-3">
-                <div className="text-sm font-medium">{p.name}</div>
-                <div className="text-xs text-muted-foreground">${(p.price_cents/100).toFixed(0)} / mo · {p.credits} helps</div>
-              </div>
-            ))}
-          </div>
-          <div className="text-xs text-muted-foreground mt-3">Plan definitions live in code for now. Ping me if you want to edit them from here.</div>
-        </div>
+        <PlansEditor initialPlans={current.plans} onSaved={async () => {
+          const { data } = await http.get("/admin/settings"); setCurrent(data);
+        }} />
       )}
+    </div>
+  );
+}
+
+function PlansEditor({ initialPlans, onSaved }) {
+  const [plans, setPlans] = useState(initialPlans);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  useEffect(() => { setPlans(initialPlans); }, [initialPlans]);
+
+  const update = (i, patch) => setPlans((ps) => ps.map((p, idx) => idx === i ? { ...p, ...patch } : p));
+  const setFeature = (i, fi, val) => update(i, { features: plans[i].features.map((f, idx) => idx === fi ? val : f) });
+  const addFeature = (i) => update(i, { features: [...(plans[i].features || []), "New benefit"] });
+  const removeFeature = (i, fi) => update(i, { features: plans[i].features.filter((_, idx) => idx !== fi) });
+
+  const save = async () => {
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await http.patch("/admin/settings", { plans });
+      setMsg("Plans updated. New checkouts use these numbers.");
+      onSaved?.();
+    } catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="card-elevated p-5" data-testid="plans-editor">
+      <div className="section-title mb-3">Edit plans</div>
+      <p className="text-sm text-muted-foreground mb-4">Rename plans, change prices, credits, and features. Plan IDs are used in payment records so keep them stable.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {plans.map((p, i) => (
+          <div key={p.id} className="border border-border rounded-lg p-4 space-y-2" data-testid={`plan-editor-${p.id}`}>
+            <label className="text-xs text-muted-foreground">Name</label>
+            <input className="input" value={p.name} onChange={(e) => update(i, { name: e.target.value })} data-testid={`plan-name-${p.id}`} />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-muted-foreground">Price ($/mo)</label>
+                <input type="number" min={0} step="0.01" className="input"
+                  value={(p.price_cents / 100).toString()}
+                  onChange={(e) => update(i, { price_cents: Math.max(0, Math.round(parseFloat(e.target.value || "0") * 100)) })}
+                  data-testid={`plan-price-${p.id}`}
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Credits/mo</label>
+                <input type="number" min={0} className="input"
+                  value={p.credits}
+                  onChange={(e) => update(i, { credits: Math.max(0, parseInt(e.target.value || "0", 10)) })}
+                  data-testid={`plan-credits-${p.id}`}
+                />
+              </div>
+            </div>
+            <label className="text-xs text-muted-foreground pt-1 block">Features</label>
+            <div className="space-y-1.5">
+              {(p.features || []).map((f, fi) => (
+                <div key={fi} className="flex gap-1">
+                  <input className="input !py-1 text-xs" value={f} onChange={(e) => setFeature(i, fi, e.target.value)} data-testid={`plan-feature-${p.id}-${fi}`} />
+                  <button className="btn btn-ghost !p-1" type="button" onClick={() => removeFeature(i, fi)} title="Remove"><X className="w-3.5 h-3.5" /></button>
+                </div>
+              ))}
+              <button className="btn btn-ghost text-xs" type="button" onClick={() => addFeature(i)} data-testid={`plan-feature-add-${p.id}`}>+ Add feature</button>
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-1">id: {p.id}</div>
+          </div>
+        ))}
+      </div>
+      {msg && <div className="text-primary text-sm mt-3">{msg}</div>}
+      {err && <div className="text-destructive text-sm mt-3">{err}</div>}
+      <div className="flex justify-end mt-4">
+        <button className="btn btn-primary" onClick={save} disabled={busy} data-testid="plans-save">
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save plans
+        </button>
+      </div>
     </div>
   );
 }

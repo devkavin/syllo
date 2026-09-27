@@ -976,7 +976,7 @@ FREE_PLAN_CREDITS_START = int(os.environ.get("FREE_PLAN_CREDITS", "30"))
 FREE_PLAN_MAX = int(os.environ.get("FREE_PLAN_MAX", "60"))
 GEMINI_MODEL = "gemini-3.8-flash"
 
-PLANS = [
+DEFAULT_PLANS = [
     {"id": "freshman", "name": "Freshman", "price_cents": 0, "credits": FREE_PLAN_MAX,
      "features": ["60 AI helps per month", "All study tools", "Streak and analytics"]},
     {"id": "scholar", "name": "Scholar", "price_cents": 600, "credits": 600,
@@ -984,6 +984,18 @@ PLANS = [
     {"id": "deans_list", "name": "Dean's List", "price_cents": 1200, "credits": 3000,
      "features": ["3000 AI helps per month", "Everything in Scholar", "Early access to new features"]},
 ]
+
+
+async def get_plans() -> List[Dict[str, Any]]:
+    p = await _get_setting("plans")
+    if not p:
+        return DEFAULT_PLANS
+    return p
+
+
+async def get_plan(pid: str) -> Optional[Dict[str, Any]]:
+    plans = await get_plans()
+    return next((p for p in plans if p["id"] == pid), None)
 
 BONUS_QUESTS = [
     {"id": "onboarded",   "label": "Finish setting up",              "credits": 10},
@@ -1024,7 +1036,8 @@ async def _monthly_refill_if_needed(user):
     if user.get("credit_period") == month:
         return user
     plan_id = user.get("plan") or "freshman"
-    plan = next((p for p in PLANS if p["id"] == plan_id), PLANS[0])
+    plans = await get_plans()
+    plan = next((p for p in plans if p["id"] == plan_id), plans[0])
     new_credits = FREE_PLAN_CREDITS_START if plan_id == "freshman" else plan["credits"]
     await db.users.update_one(
         {"user_id": user["user_id"]},
@@ -1199,14 +1212,15 @@ class CheckoutIn(BaseModel):
 
 @api.get("/billing/plans")
 async def billing_plans(user=Depends(get_current_user)):
-    return {"plans": PLANS}
+    return {"plans": await get_plans()}
 
 
 @api.get("/billing/usage")
 async def billing_usage(user=Depends(get_current_user)):
     user = await _monthly_refill_if_needed(user)
     plan_id = user.get("plan") or "freshman"
-    plan = next((p for p in PLANS if p["id"] == plan_id), PLANS[0])
+    plans = await get_plans()
+    plan = next((p for p in plans if p["id"] == plan_id), plans[0])
     return {
         "plan": plan,
         "credits_remaining": user.get("ai_credits_remaining", 0),
@@ -1220,7 +1234,7 @@ async def billing_usage(user=Depends(get_current_user)):
 
 @api.post("/billing/checkout")
 async def billing_checkout(body: CheckoutIn, request: Request, user=Depends(get_current_user)):
-    plan = next((p for p in PLANS if p["id"] == body.plan_id), None)
+    plan = await get_plan(body.plan_id)
     if not plan or plan["price_cents"] == 0:
         raise HTTPException(400, "Not a paid plan")
     api_key = await _stripe_key()
@@ -1268,17 +1282,26 @@ async def _grant_plan_from_session(session_id: str):
     rec = await db.payment_transactions.find_one({"session_id": session_id})
     if not rec or rec.get("payment_status") == "paid":
         return
-    plan = next((p for p in PLANS if p["id"] == rec.get("plan_id")), None)
+    plan = await get_plan(rec.get("plan_id"))
     if not plan:
         return
+    # Try to pull the Stripe customer id off the session
+    customer_id = None
+    try:
+        import stripe as _stripe
+        _stripe.api_key = await _stripe_key()
+        sess = await _asyncio.to_thread(_stripe.checkout.Session.retrieve, session_id)
+        customer_id = getattr(sess, "customer", None)
+    except Exception:
+        pass
     await db.payment_transactions.update_one(
         {"session_id": session_id, "payment_status": {"$ne": "paid"}},
-        {"$set": {"status": "completed", "payment_status": "paid", "updated_at": now_iso()}},
+        {"$set": {"status": "completed", "payment_status": "paid", "updated_at": now_iso(), "stripe_customer_id": customer_id}},
     )
-    await db.users.update_one(
-        {"user_id": rec["user_id"]},
-        {"$set": {"plan": plan["id"], "ai_credits_remaining": plan["credits"], "credit_period": _month_str()}},
-    )
+    updates = {"plan": plan["id"], "ai_credits_remaining": plan["credits"], "credit_period": _month_str()}
+    if customer_id:
+        updates["stripe_customer_id"] = customer_id
+    await db.users.update_one({"user_id": rec["user_id"]}, {"$set": updates})
 
 
 @app.post("/api/webhook/stripe")
@@ -1346,13 +1369,14 @@ async def require_admin(user=Depends(get_current_user)) -> Dict[str, Any]:
 class SettingsPatch(BaseModel):
     stripe_api_key: Optional[str] = None
     gemini_api_key: Optional[str] = None
+    plans: Optional[List[Dict[str, Any]]] = None
 
 
 @api.get("/admin/overview")
 async def admin_overview(_=Depends(require_admin)):
     total_users = await db.users.count_documents({})
     by_plan = {}
-    for p in PLANS:
+    for p in await get_plans():
         by_plan[p["id"]] = await db.users.count_documents({"plan": p["id"]})
     by_plan.setdefault("freshman", total_users - sum(by_plan.values()))
     txns = await db.payment_transactions.find({"payment_status": "paid"}, {"_id": 0}).to_list(1000)
@@ -1403,7 +1427,7 @@ async def admin_get_settings(_=Depends(require_admin)):
     return {
         "stripe_api_key_set": bool(await _get_setting("stripe_api_key") or os.environ.get("STRIPE_API_KEY")),
         "gemini_api_key_set": bool(await _get_setting("gemini_api_key") or os.environ.get("GEMINI_API_KEY")),
-        "plans": PLANS,
+        "plans": await get_plans(),
     }
 
 
@@ -1413,7 +1437,42 @@ async def admin_patch_settings(body: SettingsPatch, _=Depends(require_admin)):
         await _set_setting("stripe_api_key", body.stripe_api_key)
     if body.gemini_api_key:
         await _set_setting("gemini_api_key", body.gemini_api_key)
+    if body.plans is not None:
+        # Basic validation: require id, name, price_cents (>=0), credits (>0), features list
+        cleaned = []
+        for p in body.plans:
+            pid = str(p.get("id", "")).strip()
+            name = str(p.get("name", "")).strip()
+            if not pid or not name:
+                raise HTTPException(400, "Each plan needs an id and a name")
+            cleaned.append({
+                "id": pid,
+                "name": name,
+                "price_cents": max(0, int(p.get("price_cents", 0))),
+                "credits": max(0, int(p.get("credits", 0))),
+                "features": [str(f).strip() for f in (p.get("features") or []) if str(f).strip()],
+            })
+        await _set_setting("plans", cleaned)
     return {"ok": True}
+
+
+# ---------- Stripe Customer Portal ----------
+class PortalIn(BaseModel):
+    origin_url: str
+
+
+@api.post("/billing/portal")
+async def billing_portal(body: PortalIn, user=Depends(get_current_user)):
+    if not user.get("stripe_customer_id"):
+        raise HTTPException(400, "You don't have an active subscription yet.")
+    import stripe as _stripe
+    _stripe.api_key = await _stripe_key()
+    session = await _asyncio.to_thread(
+        _stripe.billing_portal.Session.create,
+        customer=user["stripe_customer_id"],
+        return_url=body.origin_url.rstrip("/") + "/settings",
+    )
+    return {"url": session.url}
 
 
 # ---------- Startup ----------
