@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses, SUBJECT_COLORS, SUBJECT_COLOR_IDS } from "@/lib/palette";
 import { Plus, X } from "lucide-react";
+import { useSubjectsQuery } from "@/hooks/useAcademicQueries";
 
 export default function Subjects() {
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
+  const { data: subjects = [], isPending: loading, error, refetch } = useSubjectsQuery();
   const [showNew, setShowNew] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
-
-  const load = async () => {
-    try { setSubjects((await http.get("/subjects")).data); }
-    catch (e) { setErr(formatError(e)); }
-    finally { setLoading(false); }
-  };
-  useEffect(() => { load(); }, []);
 
   return (
     <div className="space-y-8" data-testid="subjects-page">
@@ -33,7 +25,7 @@ export default function Subjects() {
         </button>
       </div>
 
-      {err && <div className="text-destructive text-sm">{err}</div>}
+      {error && <div className="text-destructive text-sm">{formatError(error)}</div>}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {[0,1,2,3].map((i) => <div key={i} className="h-32 bg-muted rounded-xl animate-pulse" />)}
@@ -78,7 +70,7 @@ export default function Subjects() {
         </div>
       )}
 
-      {showNew && <NewSubjectModal onClose={() => setShowNew(false)} onCreated={load} />}
+      {showNew && <NewSubjectModal onClose={() => setShowNew(false)} onCreated={refetch} />}
     </div>
   );
 }

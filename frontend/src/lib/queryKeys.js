@@ -1,0 +1,15 @@
+export const queryKeys = {
+  profile: ["profile"],
+  usage: ["billing", "usage"],
+  plans: ["billing", "plans"],
+  today: ["today"],
+  subjects: ["subjects"],
+  subject: (subjectId) => ["subjects", subjectId],
+  units: (subjectId) => ["subjects", subjectId, "units"],
+  lessons: (unitId) => ["units", unitId, "lessons"],
+  tasks: ["tasks"],
+  reviews: ["reviews"],
+  timetable: ["timetable"],
+  notebooks: ["notebooks"],
+  analytics: ["analytics"],
+};

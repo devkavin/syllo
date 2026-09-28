@@ -1,7 +1,10 @@
 import axios from "axios";
 
-const BASE = process.env.REACT_APP_BACKEND_URL;
-export const API = `${BASE}/api`;
+export function resolveApiBase(value) {
+  return value?.replace(/\/$/, "") || "/api";
+}
+
+export const API = resolveApiBase(import.meta.env.VITE_API_BASE_URL);
 
 export const http = axios.create({
   baseURL: API,

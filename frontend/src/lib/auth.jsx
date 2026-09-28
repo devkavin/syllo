@@ -1,49 +1,56 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { http } from "./api";
+import { queryKeys } from "./queryKeys";
 
 const AuthCtx = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(undefined); // undefined = loading, null = logged out, object = logged in
+  const client = useQueryClient();
+  const profile = useQuery({
+    queryKey: queryKeys.profile,
+    queryFn: async () => {
+      try {
+        return (await http.get("/auth/me")).data;
+      } catch {
+        return null;
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60_000,
+  });
+  const user = profile.isPending ? undefined : (profile.data ?? null);
 
-  const checkAuth = useCallback(async () => {
-    try {
-      const { data } = await http.get("/auth/me");
-      setUser(data);
-    } catch {
-      setUser(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  const storeUser = (data) => {
+    client.setQueryData(queryKeys.profile, data);
+    return data;
+  };
 
   const login = async (email, password) => {
     const { data } = await http.post("/auth/login", { email, password });
-    setUser(data);
-    return data;
+    return storeUser(data);
   };
   const register = async (email, password, name, referral_code) => {
     const { data } = await http.post("/auth/register", { email, password, name, referral_code });
-    setUser(data);
-    return data;
+    return storeUser(data);
   };
   const logout = async () => {
     try { await http.post("/auth/logout"); } catch {}
-    setUser(null);
+    client.setQueryData(queryKeys.profile, null);
+    client.removeQueries({ queryKey: queryKeys.usage });
   };
   const refreshMe = async () => {
     try {
-      const { data } = await http.get("/auth/me");
-      setUser(data);
-      return data;
+      return await client.fetchQuery({
+        queryKey: queryKeys.profile,
+        queryFn: async () => (await http.get("/auth/me")).data,
+        staleTime: 0,
+      });
     } catch { return null; }
   };
   const updateMe = async (patch) => {
     const { data } = await http.patch("/auth/me", patch);
-    setUser(data);
-    return data;
+    return storeUser(data);
   };
 
   return (

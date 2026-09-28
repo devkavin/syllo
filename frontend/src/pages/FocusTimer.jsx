@@ -3,6 +3,7 @@ import { http, formatError } from "@/lib/api";
 import { formatTimer, formatSeconds, subjectClasses } from "@/lib/palette";
 import { Play, Pause, RotateCcw, Save, Maximize2, Minimize2 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
+import { useSubjectsQuery } from "@/hooks/useAcademicQueries";
 
 const MODES = {
   pomodoro: { label: "Focus block", default: 25 * 60 },
@@ -21,7 +22,7 @@ function modeSeconds(mode, subject) {
 const STORAGE = "syllo.timer.v1";
 
 export default function FocusTimer() {
-  const [subjects, setSubjects] = useState([]);
+  const { data: subjects = [] } = useSubjectsQuery();
   const [mode, setMode] = useState("pomodoro");
   const [subjectId, setSubjectId] = useState("");
   const [seconds, setSeconds] = useState(MODES.pomodoro.default);
@@ -34,11 +35,8 @@ export default function FocusTimer() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  // load subjects + resume state
+  // Resume local timer state. Subjects come from the shared academic cache.
   useEffect(() => {
-    (async () => {
-      try { setSubjects((await http.get("/subjects")).data); } catch {}
-    })();
     const raw = localStorage.getItem(STORAGE);
     if (raw) {
       try {

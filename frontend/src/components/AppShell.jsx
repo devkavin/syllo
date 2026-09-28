@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { lazy, Suspense, useState, useEffect } from "react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
-import SearchDialog from "@/components/SearchDialog";
-import AiCompanion from "@/components/AiCompanion";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, X, GraduationCap,
   Calendar, Sparkles, Search as SearchIcon, ShieldCheck, Zap,
 } from "lucide-react";
+
+const SearchDialog = lazy(() => import("@/components/SearchDialog"));
+const AiCompanion = lazy(() => import("@/components/AiCompanion"));
 
 const NAV = [
   { to: "/today", label: "Today", icon: Home, testid: "nav-today" },
@@ -237,8 +238,10 @@ export default function AppShell({ children }) {
         <Sparkles className="w-5 h-5" />
       </button>
 
-      <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
-      <AiCompanion open={aiOpen} onClose={() => setAiOpen(false)} />
+      <Suspense fallback={null}>
+        {searchOpen && <SearchDialog open onClose={() => setSearchOpen(false)} />}
+        {aiOpen && <AiCompanion open onClose={() => setAiOpen(false)} />}
+      </Suspense>
     </div>
   );
 }
