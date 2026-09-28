@@ -29,6 +29,9 @@ class Subject(TimestampMixin, Base):
     )
     name: Mapped[str] = mapped_column(String(160), nullable=False)
     color: Mapped[str] = mapped_column(String(32), default="sage", nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    focus_minutes: Mapped[int] = mapped_column(Integer, default=25, nullable=False)
+    break_minutes: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
 
     user = relationship("User", back_populates="subjects")
     units = relationship("Unit", back_populates="subject", cascade="all, delete-orphan")
@@ -46,6 +49,7 @@ class Unit(TimestampMixin, Base):
         ForeignKey("subjects.subject_id", ondelete="CASCADE"), nullable=False
     )
     name: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="", nullable=False)
     position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     subject = relationship("Subject", back_populates="units")
@@ -90,6 +94,9 @@ class Notebook(TimestampMixin, Base):
     user_id: Mapped[str] = mapped_column(
         ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False
     )
+    subject_id: Mapped[str | None] = mapped_column(
+        ForeignKey("subjects.subject_id", ondelete="SET NULL"), index=True
+    )
     lesson_id: Mapped[str | None] = mapped_column(
         ForeignKey("lessons.lesson_id", ondelete="SET NULL"), index=True
     )
@@ -118,6 +125,7 @@ class Task(TimestampMixin, Base):
     due_date: Mapped[date | None] = mapped_column(Date)
     due_time: Mapped[str | None] = mapped_column(String(8))
     priority: Mapped[str] = mapped_column(String(16), default="normal", nullable=False)
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
     reminder_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -146,6 +154,7 @@ class StudySession(TimestampMixin, Base):
     )
     duration_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
     mode: Mapped[str] = mapped_column(String(32), default="pomodoro", nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
@@ -186,13 +195,14 @@ class TimetableEntry(TimestampMixin, Base):
     recurrence: Mapped[str] = mapped_column(
         String(24), default="weekly", nullable=False
     )
+    location: Mapped[str] = mapped_column(String(240), default="", nullable=False)
 
 
 class Review(TimestampMixin, Base):
     __tablename__ = "reviews"
     __table_args__ = (
         Index("ix_reviews_owner_due", "user_id", "next_review_at"),
-        Index("ix_reviews_owner_lesson", "user_id", "lesson_id"),
+        Index("ix_reviews_owner_lesson", "user_id", "lesson_id", unique=True),
     )
 
     review_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)

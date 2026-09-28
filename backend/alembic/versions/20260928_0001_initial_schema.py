@@ -204,6 +204,9 @@ def upgrade() -> None:
         sa.Column("user_id", sa.String(length=36), nullable=False),
         sa.Column("name", sa.String(length=160), nullable=False),
         sa.Column("color", sa.String(length=32), nullable=False),
+        sa.Column("description", sa.Text(), nullable=False),
+        sa.Column("focus_minutes", sa.Integer(), nullable=False),
+        sa.Column("break_minutes", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(["user_id"], ["users.user_id"], ondelete="CASCADE"),
@@ -223,6 +226,7 @@ def upgrade() -> None:
         sa.Column("end_time", sa.String(length=8), nullable=False),
         sa.Column("kind", sa.String(length=24), nullable=False),
         sa.Column("recurrence", sa.String(length=24), nullable=False),
+        sa.Column("location", sa.String(length=240), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(
@@ -243,6 +247,7 @@ def upgrade() -> None:
         sa.Column("user_id", sa.String(length=36), nullable=False),
         sa.Column("subject_id", sa.String(length=36), nullable=False),
         sa.Column("name", sa.String(length=200), nullable=False),
+        sa.Column("description", sa.Text(), nullable=False),
         sa.Column("position", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
@@ -296,6 +301,7 @@ def upgrade() -> None:
         "notebooks",
         sa.Column("notebook_id", sa.String(length=36), nullable=False),
         sa.Column("user_id", sa.String(length=36), nullable=False),
+        sa.Column("subject_id", sa.String(length=36), nullable=True),
         sa.Column("lesson_id", sa.String(length=36), nullable=True),
         sa.Column("title", sa.String(length=240), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
@@ -304,11 +310,17 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ["lesson_id"], ["lessons.lesson_id"], ondelete="SET NULL"
         ),
+        sa.ForeignKeyConstraint(
+            ["subject_id"], ["subjects.subject_id"], ondelete="SET NULL"
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.user_id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("notebook_id"),
     )
     op.create_index(
         op.f("ix_notebooks_lesson_id"), "notebooks", ["lesson_id"], unique=False
+    )
+    op.create_index(
+        op.f("ix_notebooks_subject_id"), "notebooks", ["subject_id"], unique=False
     )
     op.create_index(
         "ix_notebooks_owner_updated",
@@ -337,7 +349,7 @@ def upgrade() -> None:
         "ix_reviews_owner_due", "reviews", ["user_id", "next_review_at"], unique=False
     )
     op.create_index(
-        "ix_reviews_owner_lesson", "reviews", ["user_id", "lesson_id"], unique=False
+        "ix_reviews_owner_lesson", "reviews", ["user_id", "lesson_id"], unique=True
     )
     op.create_table(
         "study_sessions",
@@ -348,6 +360,7 @@ def upgrade() -> None:
         sa.Column("lesson_id", sa.String(length=36), nullable=True),
         sa.Column("duration_seconds", sa.Integer(), nullable=False),
         sa.Column("mode", sa.String(length=32), nullable=False),
+        sa.Column("note", sa.Text(), nullable=False),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
@@ -379,6 +392,7 @@ def upgrade() -> None:
         sa.Column("due_date", sa.Date(), nullable=True),
         sa.Column("due_time", sa.String(length=8), nullable=True),
         sa.Column("priority", sa.String(length=16), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=False),
         sa.Column("reminder_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("completed", sa.Boolean(), nullable=False),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
@@ -460,6 +474,7 @@ def downgrade() -> None:
     op.drop_index("ix_reviews_owner_due", table_name="reviews")
     op.drop_table("reviews")
     op.drop_index("ix_notebooks_owner_updated", table_name="notebooks")
+    op.drop_index(op.f("ix_notebooks_subject_id"), table_name="notebooks")
     op.drop_index(op.f("ix_notebooks_lesson_id"), table_name="notebooks")
     op.drop_table("notebooks")
     op.drop_index("ix_lessons_owner_unit_order", table_name="lessons")
