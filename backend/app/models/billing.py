@@ -47,6 +47,10 @@ class PaymentTransaction(TimestampMixin, Base):
         String(255), unique=True, nullable=False
     )
     stripe_customer_id: Mapped[str | None] = mapped_column(String(255), index=True)
+    stripe_subscription_id: Mapped[str | None] = mapped_column(String(255), index=True)
+    last_stripe_event_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
     amount_cents: Mapped[int] = mapped_column(Integer, nullable=False)
     currency: Mapped[str] = mapped_column(String(8), default="usd", nullable=False)
     status: Mapped[str] = mapped_column(String(64), default="initiated", nullable=False)

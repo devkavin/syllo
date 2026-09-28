@@ -208,70 +208,31 @@ function TransactionsList() {
 }
 
 function SettingsPanel() {
-  const [state, setState] = useState({ stripe_api_key: "", gemini_api_key: "" });
   const [current, setCurrent] = useState(null);
-  const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
-  const [busy, setBusy] = useState(false);
 
   useEffect(() => { http.get("/admin/settings").then((r) => setCurrent(r.data)).catch((e) => setErr(formatError(e))); }, []);
-
-  const save = async () => {
-    setBusy(true); setErr(""); setMsg("");
-    const payload = {};
-    if (state.stripe_api_key.trim()) payload.stripe_api_key = state.stripe_api_key.trim();
-    if (state.gemini_api_key.trim()) payload.gemini_api_key = state.gemini_api_key.trim();
-    try {
-      await http.patch("/admin/settings", payload);
-      setMsg("Saved. Changes take effect on the next request.");
-      setState({ stripe_api_key: "", gemini_api_key: "" });
-      const { data } = await http.get("/admin/settings");
-      setCurrent(data);
-    } catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
-  };
 
   return (
     <div className="space-y-5" data-testid="admin-settings">
       <div className="card-elevated p-5">
         <div className="section-title mb-3">Integrations</div>
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-muted-foreground">Stripe secret key</label>
-            <div className="flex items-center gap-2">
-              <input
-                className="input mt-1"
-                type="password"
-                placeholder={current?.stripe_api_key_set ? "Set. Enter a new key to replace." : "sk_live_..."}
-                value={state.stripe_api_key}
-                onChange={(e) => setState((s) => ({ ...s, stripe_api_key: e.target.value }))}
-                data-testid="admin-stripe-key"
-              />
-              <span className="text-xs text-muted-foreground">{current?.stripe_api_key_set ? "Active" : "Missing"}</span>
+        <p className="text-sm text-muted-foreground mb-4">
+          Secrets are managed through the deployment environment and are never editable in the browser.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            ["Stripe", current?.stripe_configured],
+            ["Google sign-in", current?.google_configured],
+            ["Study companion", current?.gemini_configured],
+          ].map(([label, ready]) => (
+            <div key={label} className="border border-border rounded-lg p-3">
+              <div className="text-sm font-medium">{label}</div>
+              <div className="text-xs text-muted-foreground mt-1">{ready ? "Configured" : "Not configured"}</div>
             </div>
-            <div className="text-xs text-muted-foreground mt-1">Used for billing checkouts and webhooks.</div>
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">Gemini API key</label>
-            <div className="flex items-center gap-2">
-              <input
-                className="input mt-1"
-                type="password"
-                placeholder={current?.gemini_api_key_set ? "Set. Enter a new key to replace." : "AIza..."}
-                value={state.gemini_api_key}
-                onChange={(e) => setState((s) => ({ ...s, gemini_api_key: e.target.value }))}
-                data-testid="admin-gemini-key"
-              />
-              <span className="text-xs text-muted-foreground">{current?.gemini_api_key_set ? "Active" : "Missing"}</span>
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">Free tier from Google AI Studio.</div>
-          </div>
+          ))}
         </div>
-        {msg && <div className="text-primary text-sm mt-3">{msg}</div>}
         {err && <div className="text-destructive text-sm mt-3">{err}</div>}
-        <button className="btn btn-primary mt-4" onClick={save} disabled={busy} data-testid="admin-save-settings">
-          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Save
-        </button>
       </div>
 
       {current?.plans && (

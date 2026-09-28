@@ -145,6 +145,8 @@ def upgrade() -> None:
         sa.Column("plan_id", sa.String(length=64), nullable=True),
         sa.Column("stripe_checkout_session_id", sa.String(length=255), nullable=False),
         sa.Column("stripe_customer_id", sa.String(length=255), nullable=True),
+        sa.Column("stripe_subscription_id", sa.String(length=255), nullable=True),
+        sa.Column("last_stripe_event_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("amount_cents", sa.Integer(), nullable=False),
         sa.Column("currency", sa.String(length=8), nullable=False),
         sa.Column("status", sa.String(length=64), nullable=False),
@@ -160,6 +162,12 @@ def upgrade() -> None:
         op.f("ix_payment_transactions_stripe_customer_id"),
         "payment_transactions",
         ["stripe_customer_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_payment_transactions_stripe_subscription_id"),
+        "payment_transactions",
+        ["stripe_subscription_id"],
         unique=False,
     )
     op.create_index(
@@ -499,6 +507,10 @@ def downgrade() -> None:
     )
     op.drop_index(
         op.f("ix_payment_transactions_stripe_customer_id"),
+        table_name="payment_transactions",
+    )
+    op.drop_index(
+        op.f("ix_payment_transactions_stripe_subscription_id"),
         table_name="payment_transactions",
     )
     op.drop_table("payment_transactions")

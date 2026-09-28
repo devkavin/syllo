@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
+import { createCheckout } from "@/lib/billing";
 import { useUsage } from "@/lib/usage";
 import { Check, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
 
@@ -19,7 +20,7 @@ export default function Upgrade() {
   const upgrade = async (planId) => {
     setBusy(planId); setErr("");
     try {
-      const { data } = await http.post("/billing/checkout", { plan_id: planId, origin_url: window.location.origin });
+      const data = await createCheckout(planId);
       window.location.href = data.url;
     } catch (e) { setErr(formatError(e)); setBusy(null); }
   };

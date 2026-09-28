@@ -9,15 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
 from backend.app.models import Lesson, Plan, Referral, StudySession, User
-from backend.app.services.credits import CreditService
+from backend.app.services.credits import BONUS_QUESTS, CreditService
 
 router = APIRouter(tags=["credits"])
-
-BONUS_QUESTS = (
-    {"id": "onboarded", "label": "Finish setting up", "credits": 10},
-    {"id": "first_session", "label": "Log your first focus session", "credits": 10},
-    {"id": "first_lesson", "label": "Mark your first lesson done", "credits": 10},
-)
 
 
 @router.get("/me/referrals")

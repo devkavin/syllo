@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
 import { http, formatError } from "@/lib/api";
+import { createBillingPortal } from "@/lib/billing";
 import { Loader2, ExternalLink, Gift, Copy, Check } from "lucide-react";
 
 export default function Settings() {
@@ -32,7 +33,7 @@ export default function Settings() {
   const openPortal = async () => {
     setPortalBusy(true); setErr(""); setMsg("");
     try {
-      const { data } = await http.post("/billing/portal", { origin_url: window.location.origin });
+      const data = await createBillingPortal();
       window.location.href = data.url;
     } catch (e) { setErr(formatError(e)); setPortalBusy(false); }
   };

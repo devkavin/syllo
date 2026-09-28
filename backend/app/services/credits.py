@@ -9,6 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.config import Settings
 from backend.app.models import Plan, User
 
+BONUS_QUESTS = (
+    {"id": "onboarded", "label": "Finish setting up", "credits": 10},
+    {"id": "first_session", "label": "Log your first focus session", "credits": 10},
+    {"id": "first_lesson", "label": "Mark your first lesson done", "credits": 10},
+)
+
 
 def current_period() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m")

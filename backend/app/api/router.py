@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.database import get_session
 from backend.app.api.routes.auth import router as auth_router
+from backend.app.api.routes.billing import router as billing_router
 from backend.app.api.routes.academics import router as academics_router
 from backend.app.api.routes.admin import router as admin_router
 from backend.app.api.routes.ai import router as ai_router
@@ -15,9 +16,12 @@ from backend.app.api.routes.referrals import router as referrals_router
 from backend.app.api.routes.search import router as search_router
 from backend.app.api.routes.sessions import router as sessions_router
 from backend.app.api.routes.tasks import router as tasks_router
+from backend.app.api.routes.stripe_webhooks import router as stripe_webhook_router
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
+api_router.include_router(billing_router)
+api_router.include_router(stripe_webhook_router)
 api_router.include_router(google_auth_router)
 api_router.include_router(academics_router)
 api_router.include_router(notebooks_router)
