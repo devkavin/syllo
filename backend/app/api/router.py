@@ -3,8 +3,10 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.database import get_session
+from backend.app.api.routes.auth import router as auth_router
 
 api_router = APIRouter(prefix="/api")
+api_router.include_router(auth_router)
 
 
 @api_router.get("/health/live", tags=["health"])

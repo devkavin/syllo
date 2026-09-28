@@ -11,6 +11,7 @@ from backend.app.database import (
     create_async_engine_from_settings,
     create_session_factory,
 )
+from backend.app.services.admin_bootstrap import ensure_admin
 
 
 def create_app(
@@ -25,6 +26,11 @@ def create_app(
         if app.state.session_factory is None and settings.database_url:
             engine = create_async_engine_from_settings(settings)
             app.state.session_factory = create_session_factory(engine)
+        if settings.admin_bootstrap_enabled:
+            if app.state.session_factory is None:
+                raise RuntimeError("Admin bootstrap requires a configured database")
+            async with app.state.session_factory() as session:
+                await ensure_admin(session, settings)
         try:
             yield
         finally:

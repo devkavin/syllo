@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.models.base import Base, TimestampMixin, new_id
@@ -19,6 +19,10 @@ class User(TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(120), default="Student", nullable=False)
     password_hash: Mapped[str | None] = mapped_column(String(255))
     google_sub: Mapped[str | None] = mapped_column(String(255), unique=True)
+    picture: Mapped[str | None] = mapped_column(String(1024))
+    auth_provider: Mapped[str] = mapped_column(
+        String(32), default="password", nullable=False
+    )
     role: Mapped[str] = mapped_column(String(32), default="user", nullable=False)
     plan_id: Mapped[str] = mapped_column(
         ForeignKey("plans.plan_id"), default="freshman", nullable=False, index=True
@@ -27,12 +31,16 @@ class User(TimestampMixin, Base):
     stripe_subscription_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     subscription_status: Mapped[str | None] = mapped_column(String(64))
     onboarded: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    theme: Mapped[str] = mapped_column(String(16), default="light", nullable=False)
+    timezone_offset_min: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     daily_goal_minutes: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
     ai_credits_remaining: Mapped[int] = mapped_column(
         Integer, default=10, nullable=False
     )
     credit_period: Mapped[str | None] = mapped_column(String(7))
+    credit_bonuses: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     referral_code: Mapped[str | None] = mapped_column(String(24), unique=True)
+    referred_by: Mapped[str | None] = mapped_column(ForeignKey("users.user_id"))
 
     subjects = relationship(
         "Subject", back_populates="user", cascade="all, delete-orphan"

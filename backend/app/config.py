@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     oauth_state_secret: SecretStr | None = None
     cookie_secure: bool = True
     cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    access_token_ttl_minutes: int = 10080
+    refresh_token_ttl_days: int = 30
 
     google_client_id: str | None = None
     google_client_secret: SecretStr | None = None
