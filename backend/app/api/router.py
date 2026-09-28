@@ -7,6 +7,7 @@ from backend.app.api.routes.auth import router as auth_router
 from backend.app.api.routes.academics import router as academics_router
 from backend.app.api.routes.admin import router as admin_router
 from backend.app.api.routes.ai import router as ai_router
+from backend.app.api.routes.google_auth import router as google_auth_router
 from backend.app.api.routes.notebooks import router as notebooks_router
 from backend.app.api.routes.planner import router as planner_router
 from backend.app.api.routes.progress import router as progress_router
@@ -17,6 +18,7 @@ from backend.app.api.routes.tasks import router as tasks_router
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
+api_router.include_router(google_auth_router)
 api_router.include_router(academics_router)
 api_router.include_router(notebooks_router)
 api_router.include_router(tasks_router)

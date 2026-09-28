@@ -7,11 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined); // undefined = loading, null = logged out, object = logged in
 
   const checkAuth = useCallback(async () => {
-    // Skip /me if we're returning from Google OAuth (AuthCallback handles it)
-    if (window.location.hash?.includes("session_id=")) {
-      setUser(null);
-      return;
-    }
     try {
       const { data } = await http.get("/auth/me");
       setUser(data);

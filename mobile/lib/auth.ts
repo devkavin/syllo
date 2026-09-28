@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { api, apiErrorMessage } from "./api";
 import { store, STORAGE_KEYS } from "./storage";
 import type { AuthResponse, User } from "./types";
+import { exchangeGoogleCode } from "./google-auth";
 
 interface AuthState {
   user: User | null;
@@ -10,7 +11,7 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, referralCode?: string) => Promise<void>;
-  googleExchange: (sessionId: string) => Promise<void>;
+  googleExchange: (code: string) => Promise<void>;
   hydrate: () => Promise<void>;
   refreshMe: () => Promise<void>;
   logout: () => Promise<void>;
@@ -63,12 +64,12 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 
-  googleExchange: async (sessionId) => {
+  googleExchange: async (code) => {
     set({ loading: true, error: null });
     try {
-      const res = await api.post<AuthResponse>("/auth/google/callback", { session_id: sessionId });
-      await persistTokens(res.data);
-      set({ user: stripTokens(res.data), loading: false });
+      const result = await exchangeGoogleCode(code);
+      await persistTokens(result);
+      set({ user: stripTokens(result), loading: false });
     } catch (e) {
       set({ loading: false, error: apiErrorMessage(e) });
       throw e;

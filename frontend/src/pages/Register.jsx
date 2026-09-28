@@ -23,12 +23,6 @@ export default function Register() {
       nav("/today");
     } catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
   };
-  const googleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    const redirectUrl = window.location.origin + "/today";
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground grid place-items-center p-4">
       <form onSubmit={submit} className="card p-8 w-full max-w-sm space-y-4 fade-in" data-testid="register-form">
@@ -47,7 +41,7 @@ export default function Register() {
         </div>
         <div>
           <label className="text-xs text-muted-foreground">Password</label>
-          <input className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required data-testid="register-password" />
+          <input className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={8} required data-testid="register-password" />
         </div>
         <div>
           <label className="text-xs text-muted-foreground inline-flex items-center gap-1"><Gift className="w-3 h-3" /> Friend code (optional)</label>
@@ -69,9 +63,9 @@ export default function Register() {
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
           <div className="relative flex justify-center"><span className="bg-card px-2 text-xs text-muted-foreground">or</span></div>
         </div>
-        <button type="button" className="btn btn-outline w-full" onClick={googleLogin} data-testid="register-google">
+        <a href="/api/auth/google/start?client=web&return_to=%2Ftoday" className="btn btn-outline w-full" data-testid="register-google">
           Continue with Google
-        </button>
+        </a>
         <div className="text-center text-sm text-muted-foreground">
           Already have an account? <Link to="/login" className="text-foreground underline" data-testid="link-login">Sign in</Link>
         </div>

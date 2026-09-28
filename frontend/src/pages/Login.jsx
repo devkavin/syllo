@@ -7,8 +7,8 @@ import { GraduationCap } from "lucide-react";
 export default function Login() {
   const nav = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState("demo@syllo.app");
-  const [password, setPassword] = useState("syllo123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
@@ -17,12 +17,6 @@ export default function Login() {
     setBusy(true); setErr("");
     try { await login(email, password); nav("/today"); }
     catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
-  };
-
-  const googleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    const redirectUrl = window.location.origin + "/today";
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   return (
@@ -49,9 +43,9 @@ export default function Login() {
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
           <div className="relative flex justify-center"><span className="bg-card px-2 text-xs text-muted-foreground">or</span></div>
         </div>
-        <button type="button" className="btn btn-outline w-full" onClick={googleLogin} data-testid="login-google">
+        <a href="/api/auth/google/start?client=web&return_to=%2Ftoday" className="btn btn-outline w-full" data-testid="login-google">
           Continue with Google
-        </button>
+        </a>
         <div className="text-center text-sm text-muted-foreground">
           New here? <Link to="/register" className="text-foreground underline" data-testid="link-register">Create an account</Link>
         </div>

@@ -14,7 +14,6 @@ import Analytics from "@/pages/Analytics";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import AuthCallback from "@/pages/AuthCallback";
 import Onboarding from "@/pages/Onboarding";
 import Timetable from "@/pages/Timetable";
 import Reviews from "@/pages/Reviews";
@@ -53,10 +52,6 @@ function AdminRoute({ children }) {
 }
 
 function Router() {
-  const location = useLocation();
-  if (location.hash?.includes("session_id=")) {
-    return <AuthCallback />;
-  }
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/today" replace />} />

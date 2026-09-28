@@ -5,13 +5,8 @@ import { Screen } from "@/components/Screen";
 import { useAuth } from "@/lib/auth";
 import { colors } from "@/constants/colors";
 
-/**
- * Deep link handler for the Emergent Google flow.
- * Emergent redirects to `syllo://google-callback#session_id=xxx`. Expo Router
- * surfaces the fragment via useLocalSearchParams as `session_id`.
- */
 export default function GoogleCallbackScreen() {
-  const params = useLocalSearchParams<{ session_id?: string }>();
+  const params = useLocalSearchParams<{ code?: string }>();
   const router = useRouter();
   const scheme = useColorScheme() ?? "light";
   const c = scheme === "dark" ? colors.dark : colors.light;
@@ -21,21 +16,21 @@ export default function GoogleCallbackScreen() {
 
   useEffect(() => {
     if (exchanged.current) return;
-    const sid = params.session_id;
-    if (!sid) {
-      setErrorMsg("No Google session was returned. Please try again.");
+    const code = params.code;
+    if (!code) {
+      setErrorMsg("No Google login code was returned. Please try again.");
       return;
     }
     exchanged.current = true;
     (async () => {
       try {
-        await googleExchange(sid);
+        await googleExchange(code);
         router.replace("/today");
       } catch (e: unknown) {
         setErrorMsg("Google sign-in failed. Please try again.");
       }
     })();
-  }, [params.session_id, googleExchange, router]);
+  }, [params.code, googleExchange, router]);
 
   return (
     <Screen scroll={false}>

@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { Text, View, useColorScheme, Alert } from "react-native";
-import * as WebBrowser from "expo-web-browser";
-import * as Linking from "expo-linking";
 import { Screen } from "@/components/Screen";
 import { HeroTitle } from "@/components/HeroTitle";
 import { TextField } from "@/components/TextField";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/lib/auth";
 import { colors } from "@/constants/colors";
+import { openGoogleSignIn } from "@/lib/google-auth";
 
-const GOOGLE_AUTH_URL =
-  process.env.EXPO_PUBLIC_GOOGLE_AUTH_URL ?? "https://auth.emergentagent.com/";
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE ?? "";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -52,12 +50,7 @@ export default function LoginScreen() {
   const onGoogle = async () => {
     setGoogleLoading(true);
     try {
-      const redirect = Linking.createURL("/google-callback");
-      const url = `${GOOGLE_AUTH_URL}?redirect=${encodeURIComponent(redirect)}`;
-      // openAuthSessionAsync handles the deep link return for us on both OSes.
-      await WebBrowser.openAuthSessionAsync(url, redirect);
-      // The google-callback screen (opened via deep link) will parse the session_id
-      // and finish the exchange. No further work here.
+      await openGoogleSignIn(API_BASE);
     } catch (e) {
       Alert.alert("Google sign-in failed", "Try again in a moment.");
     } finally {
