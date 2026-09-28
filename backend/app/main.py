@@ -19,6 +19,7 @@ def create_app(
     session_factory: Any = None,
     google_service: Any = None,
     stripe_service: Any = None,
+    gemini_service: Any = None,
 ) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -42,6 +43,7 @@ def create_app(
     app.state.session_factory = session_factory
     app.state.google_service = google_service
     app.state.stripe_service = stripe_service
+    app.state.gemini_service = gemini_service
     app.include_router(api_router)
     return app
 

@@ -23,6 +23,7 @@ class Plan(TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     price_cents: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     credits: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    features: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     stripe_price_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 

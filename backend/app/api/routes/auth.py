@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
-from backend.app.models import User
+from backend.app.models import Plan, Referral, User
 from backend.app.schemas.auth import LoginRequest, ProfilePatch, RegisterRequest
 from backend.app.security import (
     TokenService,
@@ -69,6 +69,13 @@ async def register(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    referrer = None
+    referral_code = (body.referral_code or "").strip().lower()
+    if referral_code:
+        referrer = await session.scalar(
+            select(User).where(User.referral_code == referral_code).with_for_update()
+        )
+
     user = User(
         email=normalized_email,
         normalized_email=normalized_email,
@@ -76,10 +83,35 @@ async def register(
         password_hash=hash_password(body.password),
         auth_provider="password",
         referral_code=secrets.token_hex(4),
+        referred_by=referrer.user_id if referrer else None,
+        ai_credits_remaining=(
+            request.app.state.settings.free_plan_start_credits
+            + (request.app.state.settings.referral_bonus_credits if referrer else 0)
+        ),
         credit_period=datetime.now(timezone.utc).strftime("%Y-%m"),
     )
     session.add(user)
     try:
+        await session.flush()
+        if referrer:
+            plan = await session.get(Plan, referrer.plan_id)
+            cap = (
+                request.app.state.settings.free_plan_max_credits
+                if referrer.plan_id == "freshman"
+                else plan.credits
+            )
+            referrer.ai_credits_remaining = min(
+                cap,
+                referrer.ai_credits_remaining
+                + request.app.state.settings.referral_bonus_credits,
+            )
+            session.add(
+                Referral(
+                    referrer_id=referrer.user_id,
+                    referred_user_id=user.user_id,
+                    credits_awarded=request.app.state.settings.referral_bonus_credits,
+                )
+            )
         await session.commit()
     except IntegrityError as exc:
         await session.rollback()

@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     admin_password: SecretStr | None = None
 
     gemini_api_key: SecretStr | None = None
+    gemini_model: str = "gemini-2.5-flash"
+    free_plan_start_credits: int = 10
+    free_plan_max_credits: int = 60
+    referral_bonus_credits: int = 15
 
     db_pool_size: int = 5
     db_max_overflow: int = 5
