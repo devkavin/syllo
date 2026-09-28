@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI
 
 from backend.app.api import api_router
 from backend.app.config import Settings, get_settings
+from backend.app.database import (
+    create_async_engine_from_settings,
+    create_session_factory,
+)
 
 
 def create_app(
@@ -14,7 +19,19 @@ def create_app(
     google_service: Any = None,
     stripe_service: Any = None,
 ) -> FastAPI:
-    app = FastAPI(title="Syllo API")
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        engine = None
+        if app.state.session_factory is None and settings.database_url:
+            engine = create_async_engine_from_settings(settings)
+            app.state.session_factory = create_session_factory(engine)
+        try:
+            yield
+        finally:
+            if engine is not None:
+                await engine.dispose()
+
+    app = FastAPI(title="Syllo API", lifespan=lifespan)
     app.state.settings = settings
     app.state.session_factory = session_factory
     app.state.google_service = google_service

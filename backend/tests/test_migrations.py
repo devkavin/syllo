@@ -1,0 +1,42 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import create_engine, inspect
+
+
+def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
+    database_path = tmp_path / "syllo.db"
+    config = Config(str(Path("backend/alembic.ini").resolve()))
+    config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path.as_posix()}")
+
+    command.upgrade(config, "head")
+    engine = create_engine(f"sqlite:///{database_path.as_posix()}")
+    tables = set(inspect(engine).get_table_names())
+    assert {
+        "users",
+        "subjects",
+        "units",
+        "lessons",
+        "study_sessions",
+        "plans",
+        "stripe_events",
+        "oauth_login_codes",
+    }.issubset(tables)
+    assert (
+        engine.connect().exec_driver_sql("SELECT COUNT(*) FROM users").scalar_one() == 0
+    )
+    assert (
+        engine.connect().exec_driver_sql("SELECT COUNT(*) FROM plans").scalar_one() == 3
+    )
+    command.check(config)
+
+    command.downgrade(config, "base")
+    assert inspect(engine).get_table_names() == ["alembic_version"]
+
+    command.upgrade(config, "head")
+    assert "users" in inspect(engine).get_table_names()
+    engine.dispose()

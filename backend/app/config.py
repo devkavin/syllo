@@ -71,7 +71,9 @@ class Settings(BaseSettings):
                 }
             )
 
-        missing = [name for name, value in required.items() if value is None or value == ""]
+        missing = [
+            name for name, value in required.items() if value is None or value == ""
+        ]
         if missing:
             raise ValueError(
                 "Missing required production settings: " + ", ".join(missing)
