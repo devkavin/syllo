@@ -1,25 +1,33 @@
-# Syllo Auth Testing Playbook
+# Syllo authentication testing
 
-## Test Credentials
-- Demo user (seeded on startup):
-  - Email: demo@syllo.app
-  - Password: syllo123
-- All test API calls use httpOnly cookies (access_token, refresh_token) set by /api/auth/login.
+Syllo does not ship demo credentials or seed student accounts. For local API tests,
+register a unique throwaway account against a non-production database.
 
-## Endpoints
-- POST /api/auth/register  { email, password, name }
-- POST /api/auth/login     { email, password }
-- POST /api/auth/logout
-- GET  /api/auth/me
-- GET  /api/auth/google/start (redirect helper)
-- POST /api/auth/google/callback { session_id }  -> mints same JWT cookies
+## Email and password
 
-## Curl smoke test
-API_URL=$(grep REACT_APP_BACKEND_URL /app/frontend/.env | cut -d = -f2)
-curl -c /tmp/c.txt -X POST "$API_URL/api/auth/login" -H "Content-Type: application/json" -d '{"email":"demo@syllo.app","password":"syllo123"}'
-curl -b /tmp/c.txt "$API_URL/api/auth/me"
+```powershell
+$api = "http://localhost:8000/api"
+$email = "auth-test-$([guid]::NewGuid().ToString('N'))@example.test"
+$body = @{ email = $email; password = "Local-test-only-ChangeMe1!"; name = "Auth Test" } | ConvertTo-Json
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+Invoke-RestMethod -Method Post -Uri "$api/auth/register" -ContentType "application/json" -Body $body -WebSession $session
+Invoke-RestMethod -Uri "$api/auth/me" -WebSession $session
+Invoke-RestMethod -Method Post -Uri "$api/auth/logout" -WebSession $session
+```
 
-## Notes
-- Both email/password and Google auth set the same access_token / refresh_token cookies.
-- Users collection field is user_id (UUID). MongoDB _id is never returned.
-- All protected endpoints depend on get_current_user which reads cookie first, then Bearer header.
+Web authentication uses secure HTTP-only access and refresh cookies. Mobile clients
+store returned bearer tokens in the platform secure store. Protected endpoints
+accept a bearer token before falling back to cookies.
+
+## Google OAuth
+
+- Browser start: `GET /api/auth/google/start`
+- Browser callback registered with Google: `GET /api/auth/google/callback`
+- Mobile exchange: `POST /api/auth/google/mobile/exchange` with the short-lived,
+  single-use code returned through the `syllo://google-callback` deep link
+
+Use a dedicated Google OAuth client for each environment and register its exact
+redirect URI. Never place `GOOGLE_CLIENT_SECRET` in the web or mobile application.
+
+Automated authentication tests use isolated database fixtures and mocked provider
+responses; they do not require real Google credentials.

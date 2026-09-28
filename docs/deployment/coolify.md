@@ -113,10 +113,11 @@ powershell -ExecutionPolicy Bypass -File scripts/verify_docker_context.ps1
 
 The default stack is deliberately small: one Uvicorn worker, a static Nginx web
 container, no local database, and a MySQL pool of 5 connections with up to 5 brief
-overflow connections. A practical starting allocation is 1 shared vCPU and 1 GB RAM
-for both containers; 512 MB may work for light use but leaves little deployment and
-migration headroom. Nginx generally uses tens of MB, while the API is the main memory
-consumer.
+overflow connections. The minimum practical runtime allocation is 1 shared vCPU and
+1 GB RAM. For production, start with 2 vCPU and 2 GB RAM. Use 2 vCPU and 4 GB RAM
+when Coolify image builds run on the same small host so build spikes do not compete
+with the live containers. Nginx generally uses tens of MB, while the API and image
+builds are the main memory consumers.
 
 Scale after observing CPU, memory, API latency, and MySQL connection use. Each API
 replica can open up to `DB_POOL_SIZE + DB_MAX_OVERFLOW` connections, so coordinate

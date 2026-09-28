@@ -1,9 +1,9 @@
 # Syllo Mobile — Build Plan and Handoff
 
-Status: not yet scaffolded. This document is the single source of truth. Any developer or AI editor can start from step 1 and reach a working iOS + Android build with the same result.
+Status: scaffolded and under active development. This document records the mobile architecture, setup, and remaining implementation sequence.
 
 ## 0. Product summary
-Syllo Mobile is a calm study companion for iOS and Android. It reuses the Syllo backend at `REACT_APP_BACKEND_URL` and mirrors the web app's design language (warm neutrals, Bricolage Grotesque headings, Manrope body, sage / ochre / dusty blue subject accents).
+Syllo Mobile is a calm study companion for iOS and Android. It uses the Syllo API at `EXPO_PUBLIC_API_BASE` and mirrors the web app's design language (warm neutrals, Bricolage Grotesque headings, Manrope body, sage / ochre / dusty blue subject accents).
 
 MVP scope (locked with the user):
 1. Auth (email/password + Google)
@@ -18,11 +18,11 @@ Deferred to v1.1: Timetable, Reviews, Analytics, Upgrade page, Referrals card, A
 Deferred to v2: Push notifications for daily reminders.
 
 ## 1. Tech stack (locked)
-- Expo SDK 51 (or latest stable) with `expo-router` v3
-- React Native 0.74 + TypeScript 5
+- Expo SDK 57 with `expo-router`
+- React Native 0.86 + TypeScript 6
 - NativeWind v4 for Tailwind classes on native
 - `expo-secure-store` for token storage
-- `expo-auth-session` + `expo-web-browser` for Google OAuth via Emergent
+- `expo-auth-session` + `expo-web-browser` for Google OAuth through the Syllo API
 - `expo-notifications` for local timer notifications (no server push in v1)
 - `expo-keep-awake` while focus timer is running in foreground
 - `expo-linking` for deep links (payment success/cancel return, referral `?ref=` URLs)
@@ -36,7 +36,8 @@ No Redux, no React Query in v1. Keep it small.
 
 ## 2. Backend prerequisites (already done in this repo)
 The FastAPI backend already supports mobile:
-- `POST /api/auth/login`, `POST /api/auth/register`, `POST /api/auth/google/callback` all return `access_token` and `refresh_token` in the JSON body (in addition to setting cookies for web).
+- `POST /api/auth/login` and `POST /api/auth/register` return `access_token` and `refresh_token` in the JSON body (in addition to setting cookies for web).
+- `POST /api/auth/google/mobile/exchange` exchanges a short-lived, single-use Google callback code for the same token pair.
 - `get_current_user` reads `Authorization: Bearer <token>` before falling back to cookies.
 - CORS allows the preview origin. For a real mobile build no CORS is needed since we call the origin directly.
 
@@ -46,9 +47,8 @@ Nothing else to change on the backend.
 Create `/app/mobile/.env` with:
 ```
 EXPO_PUBLIC_API_BASE=https://<your-syllo-backend-host>/api
-EXPO_PUBLIC_GOOGLE_AUTH_URL=https://auth.emergentagent.com/
 ```
-The API base must match whatever the web app uses (see `frontend/.env`'s `REACT_APP_BACKEND_URL`). Do not hardcode.
+The API base must point to the deployed Syllo API. The web application normally uses same-origin `/api`; neither client should hardcode a provider or deployment URL.
 
 ## 4. Full folder structure
 ```
@@ -60,7 +60,7 @@ mobile/
       _layout.tsx                   stack
       login.tsx
       register.tsx
-      google-callback.tsx           parses ?session_id and exchanges via /auth/google/callback
+      google-callback.tsx           parses ?code and exchanges via /auth/google/mobile/exchange
       onboarding.tsx                3-step wizard (name / subjects / goal)
     (tabs)/
       _layout.tsx                   bottom tab bar (Today, Subjects, Notebooks, Tasks, Focus)
@@ -126,7 +126,7 @@ mobile/
 
 ## 5. Setup steps (fresh checkout)
 
-Run these from `/app`:
+Run these from the repository root for a fresh recreation. For the existing checked-in workspace, run `npm install` inside `mobile/` instead:
 ```
 npx create-expo-app@latest mobile --template blank-typescript
 cd mobile
@@ -224,11 +224,11 @@ api.interceptors.request.use(async (config) => {
 Auth store (`lib/auth.ts`) — Zustand:
 - `login(email, password)` → POST `/auth/login` → save `access_token`, `refresh_token`, set `user`
 - `register(...)` similar
-- `googleSignIn()` → open `https://auth.emergentagent.com/?redirect=<deep-link>` via WebBrowser, capture the `session_id` fragment on return, POST to `/auth/google/callback`
+- `googleSignIn()` → open `${EXPO_PUBLIC_API_BASE}/auth/google/start?client=mobile` via WebBrowser, capture the `code` query value on return, then POST it to `/auth/google/mobile/exchange`
 - `logout()` → clear tokens + user
 - `hydrate()` → on app boot, read token, GET `/auth/me`
 
-Deep link scheme: `syllo://google-callback#session_id=xxxx` handled by the `google-callback.tsx` route.
+Deep link scheme: `syllo://google-callback?code=xxxx` handled by the `google-callback.tsx` route. The code is short-lived and single-use; provider tokens and the Google client secret never enter the app.
 
 ## 8. Screens (contract by screen)
 
@@ -276,7 +276,7 @@ Presented as a modal. Same chat surface as web: history array, POST `/ai/chat`, 
 - Persist active timer in `SecureStore` so a cold start restores it.
 
 ## 10. Stripe payments on mobile
-For v1 avoid the native SDK: open `https://checkout.stripe.com/...` in `WebBrowser.openAuthSessionAsync` with `redirect_uri = syllo://payment/success`. Poll `/billing/status/{session_id}` on return. Simple, works today.
+For v1 avoid the native SDK. POST `/billing/checkout` with `{ "plan_id": "..." }`, then open the returned Stripe Checkout URL with `WebBrowser.openAuthSessionAsync`. On return, query the authenticated, owner-scoped `/billing/status/{session_id}` endpoint. Only verified Stripe webhooks grant or revoke entitlements; a client redirect never does.
 
 Later, swap for `@stripe/stripe-react-native` PaymentSheet if you want in-app checkout.
 
@@ -330,7 +330,7 @@ Everything needed to resume from zero:
 
 1. Confirm backend is up and `EXPO_PUBLIC_API_BASE` is reachable from your phone.
 2. Run the exact `npx create-expo-app` command in section 5.
-3. Copy the folder tree from section 4 as empty files first (so imports resolve).
+3. Review the checked-in folder tree from section 4 and add any routes still missing from the current MVP.
 4. Implement in this order (each block is roughly one working session):
    - Session A: fonts, tailwind, Screen wrapper, HeroTitle, StatCard, colors
    - Session B: `lib/storage`, `lib/api`, `lib/auth`, `(auth)/login`, `(auth)/register`, `(auth)/google-callback`, root `_layout` with hydration
@@ -361,5 +361,5 @@ Everything needed to resume from zero:
 If you're picking this up in a new editor:
 - This file is the plan of record. Update it as you build.
 - The web codebase in `/app/frontend` is the design reference. Reuse strings and structure verbatim where sensible.
-- `/app/memory/PRD.md` has the full product state. `/app/memory/test_credentials.md` has demo credentials for testing the backend against your mobile client.
-- Backend tokens are already returned in `access_token` for login/register/google-callback. See `/app/backend/server.py`.
+- `../memory/PRD.md` is historical product context; current API behavior is defined by the backend routes and tests.
+- Backend tokens are returned for login/register and the Google mobile exchange. See `../backend/app/api/routes/auth.py`.

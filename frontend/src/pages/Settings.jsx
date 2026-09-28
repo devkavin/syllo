@@ -24,12 +24,6 @@ export default function Settings() {
     } catch (e) { setErr(formatError(e)); }
   };
 
-  const seed = async () => {
-    setMsg(""); setErr("");
-    try { await http.post("/seed"); setMsg("Sample data added if your workspace was empty."); }
-    catch (e) { setErr(formatError(e)); }
-  };
-
   const openPortal = async () => {
     setPortalBusy(true); setErr(""); setMsg("");
     try {
@@ -106,12 +100,6 @@ export default function Settings() {
       </section>
 
       <InviteCard />
-
-      <section className="card p-5 space-y-3">
-        <h2 className="font-serif text-xl">Data</h2>
-        <p className="text-sm text-muted-foreground">Add a small set of sample subjects and tasks to your workspace if it's empty.</p>
-        <button className="btn btn-outline" onClick={seed} data-testid="settings-seed">Add sample data</button>
-      </section>
 
       {msg && <div className="text-primary text-sm" data-testid="settings-msg">{msg}</div>}
       {err && <div className="text-destructive text-sm">{err}</div>}
