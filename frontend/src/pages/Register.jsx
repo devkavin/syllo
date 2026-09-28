@@ -56,6 +56,9 @@ export default function Register() {
           {referral && <div className="text-xs text-muted-foreground mt-1">You and your friend will both get a small welcome bonus.</div>}
         </div>
         {err && <div className="text-destructive text-sm">{err}</div>}
+        <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
+          By creating an account or continuing with Google, you agree to the <Link to="/terms" className="text-foreground underline">Terms of Service</Link> and <Link to="/privacy" className="text-foreground underline">Privacy Policy</Link>. If you are under 16, you confirm that you have permission from a parent or legal guardian.
+        </p>
         <button className="btn btn-primary w-full" disabled={busy} data-testid="register-submit">
           {busy ? "Creating" : "Create account"}
         </button>

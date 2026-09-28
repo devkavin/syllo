@@ -5,6 +5,7 @@ import { useUsage } from "@/lib/usage";
 import { http, formatError } from "@/lib/api";
 import { createBillingPortal } from "@/lib/billing";
 import { Loader2, ExternalLink, Gift, Copy, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Settings() {
   const { user, updateMe } = useAuth();
@@ -100,6 +101,15 @@ export default function Settings() {
       </section>
 
       <InviteCard />
+
+      <section className="card p-5 space-y-3" data-testid="settings-legal">
+        <h2 className="font-serif text-xl">Legal and privacy</h2>
+        <p className="text-sm text-muted-foreground">Read how Syllo handles your information and the rules that apply to the service.</p>
+        <div className="flex gap-4 text-sm">
+          <Link to="/privacy" className="text-foreground underline">Privacy Policy</Link>
+          <Link to="/terms" className="text-foreground underline">Terms of Service</Link>
+        </div>
+      </section>
 
       {msg && <div className="text-primary text-sm" data-testid="settings-msg">{msg}</div>}
       {err && <div className="text-destructive text-sm">{err}</div>}

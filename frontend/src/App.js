@@ -23,6 +23,8 @@ const Upgrade = lazy(() => import("@/pages/Upgrade"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const PaymentSuccess = lazy(() => import("@/pages/Payment").then((module) => ({ default: module.PaymentSuccess })));
 const PaymentCancel = lazy(() => import("@/pages/Payment").then((module) => ({ default: module.PaymentCancel })));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const Terms = lazy(() => import("@/pages/Terms"));
 
 function RouteLoading() {
   return (
@@ -68,6 +70,8 @@ export function AppRoutes() {
         <Route path="/" element={<Navigate to="/today" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/onboarding" element={<OnboardingRoute />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/cancel" element={<PaymentCancel />} />

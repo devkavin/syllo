@@ -119,6 +119,10 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
         </Link>
       </div>
       <div className="p-3 border-t border-border space-y-2">
+        <div className="flex items-center gap-3 px-2 text-[11px] text-muted-foreground">
+          <Link to="/privacy" className="hover:text-foreground" onClick={onNavigate}>Privacy</Link>
+          <Link to="/terms" className="hover:text-foreground" onClick={onNavigate}>Terms</Link>
+        </div>
         <button
           className="btn btn-ghost w-full justify-start"
           onClick={toggle}
