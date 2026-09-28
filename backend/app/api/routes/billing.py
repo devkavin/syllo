@@ -37,8 +37,8 @@ def service(request: Request) -> StripeBillingService:
     return configured
 
 
-def plan_dict(plan: Plan) -> dict:
-    return {
+def plan_dict(plan: Plan, settings=None, *, intro_offer_available: bool = False) -> dict:
+    result = {
         "id": plan.plan_id,
         "name": plan.name,
         "price_cents": plan.price_cents,
@@ -46,10 +46,21 @@ def plan_dict(plan: Plan) -> dict:
         "features": plan.features,
         "active": plan.active,
     }
+    if (
+        settings is not None
+        and plan.plan_id == "deans_list"
+        and intro_offer_available
+    ):
+        result["intro_offer"] = {
+            "price_cents": plan.price_cents - 300,
+            "months": settings.deans_intro_months,
+        }
+    return result
 
 
 @router.get("/plans")
 async def plans(
+    request: Request,
     _: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
@@ -58,7 +69,21 @@ async def plans(
             select(Plan).where(Plan.active.is_(True)).order_by(Plan.price_cents)
         )
     ).all()
-    return {"plans": [plan_dict(plan) for plan in rows]}
+    intro_offer_available = False
+    if request.app.state.settings.stripe_deans_intro_coupon:
+        intro_offer_available = await service(
+            request
+        ).deans_intro_offer_available()
+    return {
+        "plans": [
+            plan_dict(
+                plan,
+                request.app.state.settings,
+                intro_offer_available=intro_offer_available,
+            )
+            for plan in rows
+        ]
+    }
 
 
 @router.get("/usage")
@@ -78,6 +103,7 @@ async def usage(
         "bonuses_claimed": user.credit_bonuses,
         "quests": BONUS_QUESTS,
         "free_start": request.app.state.settings.free_plan_start_credits,
+        "free_milestone_max": request.app.state.settings.free_plan_milestone_max_credits,
         "free_max": request.app.state.settings.free_plan_max_credits,
     }
 

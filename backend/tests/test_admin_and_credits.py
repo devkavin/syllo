@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy import select
 
 from backend.app.models import Referral, User
-from backend.app.services.credits import CreditService
+from backend.app.services.credits import BONUS_QUESTS, CreditService
 from backend.tests.test_academic_crud import register
 
 
@@ -45,6 +45,7 @@ async def test_monthly_refill_is_idempotent(sql_app) -> None:
         user = await session.scalar(select(User))
         user.ai_credits_remaining = 0
         user.credit_period = "2020-01"
+        user.credit_bonuses = {"onboarded": True}
         await session.commit()
         service = CreditService(session, app.state.settings)
         first = await service.refill_if_needed(user.user_id)
@@ -52,6 +53,7 @@ async def test_monthly_refill_is_idempotent(sql_app) -> None:
         await session.commit()
         second = await service.refill_if_needed(user.user_id)
         assert second.ai_credits_remaining == first.ai_credits_remaining
+        assert second.credit_bonuses == {"onboarded": True}
 
 
 @pytest.mark.asyncio
@@ -83,6 +85,44 @@ async def test_referral_award_is_applied_once(sql_app) -> None:
             select(User).where(User.normalized_email == "referrer@example.com")
         )
         assert referrer_user.ai_credits_remaining == 25
+
+
+def test_freshman_milestones_can_unlock_fifty_extra_helps() -> None:
+    assert len(BONUS_QUESTS) == 5
+    assert sum(quest["credits"] for quest in BONUS_QUESTS) == 50
+
+
+@pytest.mark.asyncio
+async def test_freshman_refunds_preserve_referral_capacity_to_one_hundred(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+    async with factory() as session:
+        user = await session.scalar(select(User))
+        user.ai_credits_remaining = 99
+        await session.commit()
+        remaining = await CreditService(session, app.state.settings).refund(user.user_id)
+    assert remaining == 100
+
+
+@pytest.mark.asyncio
+async def test_milestone_claim_never_erases_referral_helps(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        async with factory() as session:
+            user = await session.scalar(select(User))
+            user.onboarded = True
+            user.ai_credits_remaining = 90
+            await session.commit()
+        response = await client.post("/api/bonuses/claim/onboarded")
+
+    assert response.status_code == 200
+    assert response.json()["credits_remaining"] == 90
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -12,6 +13,7 @@ from backend.app.database import (
     create_session_factory,
 )
 from backend.app.services.admin_bootstrap import ensure_admin
+from backend.app.services.gemini import build_gemini_service
 
 
 def create_app(
@@ -43,7 +45,12 @@ def create_app(
     app.state.session_factory = session_factory
     app.state.google_service = google_service
     app.state.stripe_service = stripe_service
-    app.state.gemini_service = gemini_service
+    app.state.gemini_service = (
+        gemini_service
+        if gemini_service is not None
+        else build_gemini_service(settings)
+    )
+    app.state.gemini_reservation_lock = asyncio.Lock()
     app.include_router(api_router)
     return app
 

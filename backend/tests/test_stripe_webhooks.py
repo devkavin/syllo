@@ -60,6 +60,7 @@ def checkout_event(
                 "customer": "cus_student",
                 "subscription": "sub_student",
                 "payment_status": "paid",
+                "amount_total": 599,
                 "status": "complete",
                 "metadata": {"user_id": user_id, "plan_id": "scholar"},
             }
@@ -118,6 +119,7 @@ async def test_paid_checkout_is_atomic_and_duplicate_event_is_idempotent(
         assert stored_user.ai_credits_remaining == 500
         assert stored_user.stripe_subscription_id == "sub_student"
         assert transaction.payment_status == "paid"
+        assert transaction.amount_cents == 599
         assert event_count == 1
 
 
@@ -256,4 +258,49 @@ async def test_subscription_updates_failure_and_cancellation_update_access(
     async with factory() as session:
         stored_user = await session.get(User, user.user_id)
         assert stored_user.plan_id == "freshman"
+        assert stored_user.ai_credits_remaining == 10
         assert stored_user.subscription_status == "canceled"
+
+
+@pytest.mark.asyncio
+async def test_repeated_active_subscription_update_does_not_refill_credits(sql_app) -> None:
+    app, factory = sql_app
+    user = await seed_checkout(factory)
+    app.state.stripe_service = FakeWebhookStripe(
+        checkout_event(user.user_id, created=20)
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await client.post(
+            "/api/webhook/stripe",
+            content=b"signed",
+            headers={"Stripe-Signature": "valid"},
+        )
+        async with factory() as session:
+            stored = await session.get(User, user.user_id)
+            stored.ai_credits_remaining = 123
+            await session.commit()
+        app.state.stripe_service.event = {
+            "id": "evt_active_again",
+            "type": "customer.subscription.updated",
+            "created": 21,
+            "data": {
+                "object": {
+                    "id": "sub_student",
+                    "customer": "cus_student",
+                    "status": "active",
+                    "metadata": {"user_id": user.user_id, "plan_id": "scholar"},
+                }
+            },
+        }
+        response = await client.post(
+            "/api/webhook/stripe",
+            content=b"signed",
+            headers={"Stripe-Signature": "valid"},
+        )
+
+    assert response.status_code == 200
+    async with factory() as session:
+        stored = await session.get(User, user.user_id)
+        assert stored.ai_credits_remaining == 123

@@ -33,9 +33,14 @@ class CaptureResource:
     def __init__(self, result: dict) -> None:
         self.result = result
         self.calls: list[dict] = []
+        self.retrieve_calls: list[str] = []
 
     def create(self, params: dict) -> dict:
         self.calls.append(params)
+        return self.result
+
+    def retrieve(self, identifier: str) -> dict:
+        self.retrieve_calls.append(identifier)
         return self.result
 
 
@@ -45,12 +50,23 @@ class CaptureClient:
             {"id": "cs_official", "url": "https://checkout.stripe.com/official"}
         )
         self.portal = CaptureResource({"url": "https://billing.stripe.com/official"})
+        self.coupons = CaptureResource(
+            {
+                "id": "coupon_deans_launch",
+                "valid": True,
+                "amount_off": 300,
+                "currency": "usd",
+                "duration": "repeating",
+                "duration_in_months": 3,
+            }
+        )
         self.v1 = type(
             "V1",
             (),
             {
                 "checkout": type("Checkout", (), {"sessions": self.checkout})(),
                 "billing_portal": type("Portal", (), {"sessions": self.portal})(),
+                "coupons": self.coupons,
             },
         )()
 
@@ -114,6 +130,66 @@ async def test_official_adapter_owns_price_urls_mode_and_customer_mapping() -> N
 
 
 @pytest.mark.asyncio
+async def test_deans_checkout_applies_server_owned_three_month_coupon() -> None:
+    settings = Settings(
+        environment="test",
+        app_url="https://syllo.kavinhq.com",
+        stripe_secret_key="sk_test_server",
+        stripe_price_deans_list="price_deans_server",
+        stripe_deans_intro_coupon="coupon_deans_launch",
+        _env_file=None,
+    )
+    stripe_service = StripeBillingService(settings)
+    stripe_service.client = CaptureClient()
+    user = User(
+        user_id="user-1",
+        email="student@example.com",
+        normalized_email="student@example.com",
+        name="Student",
+    )
+    plan = Plan(plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500)
+
+    await stripe_service.create_checkout(user, plan)
+
+    checkout = stripe_service.client.checkout.calls[0]
+    assert checkout["discounts"] == [{"coupon": "coupon_deans_launch"}]
+    assert stripe_service.client.coupons.retrieve_calls == ["coupon_deans_launch"]
+
+
+@pytest.mark.asyncio
+async def test_deans_checkout_fails_closed_for_misconfigured_coupon() -> None:
+    settings = Settings(
+        environment="test",
+        app_url="https://syllo.kavinhq.com",
+        stripe_secret_key="sk_test_server",
+        stripe_price_deans_list="price_deans_server",
+        stripe_deans_intro_coupon="coupon_wrong",
+        _env_file=None,
+    )
+    stripe_service = StripeBillingService(settings)
+    stripe_service.client = CaptureClient()
+    stripe_service.client.coupons.result = {
+        "valid": True,
+        "amount_off": 100,
+        "currency": "usd",
+        "duration": "forever",
+    }
+    user = User(
+        user_id="user-1",
+        email="student@example.com",
+        normalized_email="student@example.com",
+        name="Student",
+    )
+    plan = Plan(plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500)
+
+    with pytest.raises(Exception) as caught:
+        await stripe_service.create_checkout(user, plan)
+
+    assert getattr(caught.value, "status_code", None) == 503
+    assert stripe_service.client.checkout.calls == []
+
+
+@pytest.mark.asyncio
 async def test_checkout_uses_owned_plan_and_rejects_client_billing_fields(
     sql_app,
 ) -> None:
@@ -152,7 +228,7 @@ async def test_checkout_uses_owned_plan_and_rejects_client_billing_fields(
         transaction = await session.scalar(select(PaymentTransaction))
         assert transaction.user_id == user.user_id
         assert transaction.plan_id == "scholar"
-        assert transaction.amount_cents == 799
+        assert transaction.amount_cents == 599
 
 
 @pytest.mark.asyncio

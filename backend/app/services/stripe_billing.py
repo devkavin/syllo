@@ -35,6 +35,7 @@ class StripeBillingService:
             raise RuntimeError("Stripe is not configured")
         self.settings = settings
         self.client = stripe.StripeClient(settings.stripe_secret_key.get_secret_value())
+        self._intro_coupon_valid: bool | None = None
 
     def price_for(self, plan: Plan) -> str:
         configured = {
@@ -45,6 +46,28 @@ class StripeBillingService:
         if not price_id:
             raise HTTPException(status_code=503, detail="Plan price is not configured")
         return price_id
+
+    async def deans_intro_offer_available(self) -> bool:
+        coupon_id = self.settings.stripe_deans_intro_coupon
+        if not coupon_id:
+            return False
+        if self._intro_coupon_valid is not None:
+            return self._intro_coupon_valid
+        try:
+            coupon = as_dict(
+                await asyncio.to_thread(self.client.v1.coupons.retrieve, coupon_id)
+            )
+        except Exception:
+            self._intro_coupon_valid = False
+            return False
+        self._intro_coupon_valid = bool(
+            coupon.get("valid", True)
+            and coupon.get("amount_off") == 300
+            and coupon.get("currency") == "usd"
+            and coupon.get("duration") == "repeating"
+            and coupon.get("duration_in_months") == self.settings.deans_intro_months
+        )
+        return self._intro_coupon_valid
 
     async def create_checkout(self, user: User, plan: Plan) -> dict:
         app_url = str(self.settings.app_url).rstrip("/")
@@ -64,6 +87,18 @@ class StripeBillingService:
             params["customer"] = user.stripe_customer_id
         else:
             params["customer_email"] = user.email
+        if (
+            plan.plan_id == "deans_list"
+            and self.settings.stripe_deans_intro_coupon
+        ):
+            if not await self.deans_intro_offer_available():
+                raise HTTPException(
+                    status_code=503,
+                    detail="Dean's List launch offer is not configured correctly",
+                )
+            params["discounts"] = [
+                {"coupon": self.settings.stripe_deans_intro_coupon}
+            ]
         result = await asyncio.to_thread(
             self.client.v1.checkout.sessions.create, params
         )
@@ -134,6 +169,8 @@ class StripeBillingService:
             raise ValueError("Checkout owner or plan is unavailable")
         transaction.status = "completed"
         transaction.payment_status = "paid"
+        if obj.get("amount_total") is not None:
+            transaction.amount_cents = int(obj["amount_total"])
         transaction.stripe_customer_id = obj.get("customer")
         transaction.stripe_subscription_id = obj.get("subscription")
         transaction.last_stripe_event_at = occurred_at
@@ -196,10 +233,16 @@ class StripeBillingService:
             plan = await session.get(Plan, plan_id)
             if plan is None or not plan.active or transaction.plan_id != plan_id:
                 raise ValueError("Subscription plan does not match")
-            user.plan_id = plan.plan_id
-            user.ai_credits_remaining = plan.credits
+            if user.plan_id != plan.plan_id:
+                user.plan_id = plan.plan_id
+                user.ai_credits_remaining = plan.credits
+                user.credit_period = datetime.now(timezone.utc).strftime("%Y-%m")
         elif status in {"canceled", "unpaid", "incomplete_expired"}:
+            freshman = await session.get(Plan, "freshman")
             user.plan_id = "freshman"
+            user.ai_credits_remaining = freshman.credits if freshman else 10
+            user.credit_period = datetime.now(timezone.utc).strftime("%Y-%m")
+            user.credit_bonuses = {}
 
     @staticmethod
     async def _apply_invoice_failure(session: AsyncSession, obj: dict) -> None:

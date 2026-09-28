@@ -3,6 +3,7 @@ import { http, formatError } from "@/lib/api";
 import { useUsage } from "@/lib/usage";
 import { Sparkles, X, Send, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import AiPrivacyNote from "@/components/AiPrivacyNote";
 
 export default function AiCompanion({ open, onClose, contextLabel }) {
   const [messages, setMessages] = useState([]);
@@ -21,7 +22,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
   }, [open, contextLabel, messages.length]);
 
   useEffect(() => {
-    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
+    scroller.current?.scrollTo?.({ top: scroller.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -35,7 +36,10 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
     const text = input.trim();
     if (!text || busy) return;
     setInput(""); setErr("");
-    const history = messages.filter((m) => m.text).map((m) => ({ role: m.role, text: m.text }));
+    const history = messages
+      .filter((m) => m.text)
+      .slice(-12)
+      .map((m) => ({ role: m.role, text: m.text.slice(0, 2000) }));
     setMessages((m) => [...m, { role: "user", text }, { role: "model", text: "", pending: true }]);
     setBusy(true);
     try {
@@ -96,6 +100,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
         </div>
 
         {err && <div className="px-4 pb-2 text-destructive text-xs">{err}</div>}
+        <AiPrivacyNote className="px-4 py-2 border-t border-border" />
         {outOfCredits ? (
           <div className="p-4 border-t border-border text-center text-sm">
             <div className="mb-2 text-muted-foreground">You've used your helps for the month.</div>

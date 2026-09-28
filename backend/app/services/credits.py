@@ -11,8 +11,10 @@ from backend.app.models import Plan, User
 
 BONUS_QUESTS = (
     {"id": "onboarded", "label": "Finish setting up", "credits": 10},
+    {"id": "first_subject", "label": "Add your first subject", "credits": 10},
     {"id": "first_session", "label": "Log your first focus session", "credits": 10},
     {"id": "first_lesson", "label": "Mark your first lesson done", "credits": 10},
+    {"id": "first_review", "label": "Complete your first review", "credits": 10},
 )
 
 
@@ -40,8 +42,6 @@ class CreditService:
         plan = await self.session.get(Plan, user.plan_id)
         user.ai_credits_remaining = plan.credits if plan else 0
         user.credit_period = period
-        if user.plan_id == "freshman":
-            user.credit_bonuses = {}
 
     async def refill_if_needed(self, user_id: str) -> User:
         user = await self._locked_user(user_id)
@@ -49,7 +49,9 @@ class CreditService:
         await self.session.commit()
         return user
 
-    async def consume(self, user_id: str, amount: int = 1) -> int:
+    async def consume(
+        self, user_id: str, amount: int = 1, *, commit: bool = True
+    ) -> int:
         if amount < 1:
             raise ValueError("Credit amount must be positive")
         user = await self._locked_user(user_id)
@@ -62,7 +64,10 @@ class CreditService:
             )
         user.ai_credits_remaining -= amount
         remaining = user.ai_credits_remaining
-        await self.session.commit()
+        if commit:
+            await self.session.commit()
+        else:
+            await self.session.flush()
         return remaining
 
     async def refund(self, user_id: str, amount: int = 1) -> int:

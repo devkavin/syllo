@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import AnyHttpUrl, EmailStr, SecretStr, model_validator
+from pydantic import AnyHttpUrl, EmailStr, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -35,16 +35,24 @@ class Settings(BaseSettings):
     stripe_webhook_secret: SecretStr | None = None
     stripe_price_scholar: str | None = None
     stripe_price_deans_list: str | None = None
+    stripe_deans_intro_coupon: str | None = None
 
     admin_bootstrap_enabled: bool = False
     admin_email: EmailStr | None = None
     admin_password: SecretStr | None = None
 
     gemini_api_key: SecretStr | None = None
-    gemini_model: str = "gemini-2.5-flash"
-    free_plan_start_credits: int = 10
-    free_plan_max_credits: int = 60
-    referral_bonus_credits: int = 15
+    gemini_freshman_model: str = "gemini-3.1-flash-lite"
+    gemini_tutor_model: str = "gemini-3.8-flash"
+    gemini_utility_model: str = "gemini-3.5-flash-lite"
+    gemini_timeout_seconds: float = Field(default=30.0, ge=1, le=120)
+    gemini_user_requests_per_minute: int = Field(default=10, ge=1, le=60)
+    gemini_monthly_budget_cents: int = Field(default=2500, ge=0)
+    free_plan_start_credits: int = Field(default=10, ge=0)
+    free_plan_milestone_max_credits: int = Field(default=60, ge=0)
+    free_plan_max_credits: int = Field(default=100, ge=0)
+    referral_bonus_credits: int = Field(default=15, ge=0)
+    deans_intro_months: int = Field(default=3, ge=1, le=12)
 
     db_pool_size: int = 5
     db_max_overflow: int = 5
@@ -68,6 +76,7 @@ class Settings(BaseSettings):
             "STRIPE_WEBHOOK_SECRET": self.stripe_webhook_secret,
             "STRIPE_PRICE_SCHOLAR": self.stripe_price_scholar,
             "STRIPE_PRICE_DEANS_LIST": self.stripe_price_deans_list,
+            "GEMINI_API_KEY": self.gemini_api_key,
         }
         if self.admin_bootstrap_enabled:
             required.update(

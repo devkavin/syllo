@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { useUsage } from "@/lib/usage";
 import ExplainPopover from "@/components/ExplainPopover";
+import AiPrivacyNote from "@/components/AiPrivacyNote";
 
 const SAVE_DEBOUNCE = 800;
 
@@ -162,6 +163,7 @@ export default function Notebooks() {
                 </button>
               </div>
             </div>
+            <AiPrivacyNote className="mb-3 text-right" />
             <input
               className="bg-transparent w-full font-serif text-3xl outline-none border-none placeholder:text-muted-foreground/60 mb-4"
               placeholder="A quiet title"
@@ -189,6 +191,7 @@ export default function Notebooks() {
                   <button className="btn btn-ghost !p-1" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
                 </div>
                 <div className="text-sm whitespace-pre-wrap">{summary}</div>
+                <AiPrivacyNote className="mt-3" />
               </div>
             )}
           </div>

@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
-from backend.app.models import Lesson, Plan, Referral, StudySession, User
+from backend.app.models import Lesson, Plan, Referral, Review, StudySession, Subject, User
 from backend.app.services.credits import BONUS_QUESTS, CreditService
 
 router = APIRouter(tags=["credits"])
@@ -61,6 +61,14 @@ async def claim_bonus(
 
     if quest_id == "onboarded":
         eligible = user.onboarded
+    elif quest_id == "first_subject":
+        eligible = bool(
+            await session.scalar(
+                select(func.count())
+                .select_from(Subject)
+                .where(Subject.user_id == user.user_id)
+            )
+        )
     elif quest_id == "first_session":
         eligible = bool(
             await session.scalar(
@@ -69,7 +77,7 @@ async def claim_bonus(
                 .where(StudySession.user_id == user.user_id)
             )
         )
-    else:
+    elif quest_id == "first_lesson":
         eligible = bool(
             await session.scalar(
                 select(func.count())
@@ -80,17 +88,31 @@ async def claim_bonus(
                 )
             )
         )
+    else:
+        eligible = bool(
+            await session.scalar(
+                select(func.count())
+                .select_from(Review)
+                .where(
+                    Review.user_id == user.user_id,
+                    Review.completed_at.is_not(None),
+                )
+            )
+        )
     if not eligible:
         raise HTTPException(status_code=400, detail="Quest not completed yet")
 
     plan = await session.get(Plan, user.plan_id)
     cap = (
-        request.app.state.settings.free_plan_max_credits
+        request.app.state.settings.free_plan_milestone_max_credits
         if user.plan_id == "freshman"
         else plan.credits
     )
     bonuses[quest_id] = True
     user.credit_bonuses = bonuses
-    user.ai_credits_remaining = min(cap, user.ai_credits_remaining + quest["credits"])
+    user.ai_credits_remaining = max(
+        user.ai_credits_remaining,
+        min(cap, user.ai_credits_remaining + quest["credits"]),
+    )
     await session.commit()
     return {"ok": True, "credits_remaining": user.ai_credits_remaining}

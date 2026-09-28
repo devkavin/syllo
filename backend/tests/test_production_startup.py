@@ -25,6 +25,7 @@ def production_values() -> dict[str, object]:
         "stripe_webhook_secret": "whsec_example",
         "stripe_price_scholar": "price_scholar",
         "stripe_price_deans_list": "price_deans",
+        "gemini_api_key": "gemini-secret",
     }
 
 

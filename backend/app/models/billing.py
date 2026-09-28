@@ -95,15 +95,26 @@ class Referral(TimestampMixin, Base):
 
 class AIUsageLog(Base):
     __tablename__ = "ai_usage_logs"
-    __table_args__ = (Index("ix_ai_usage_owner_at", "user_id", "created_at"),)
+    __table_args__ = (
+        Index("ix_ai_usage_owner_at", "user_id", "created_at"),
+        Index("ix_ai_usage_created_at", "created_at"),
+    )
 
     usage_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
     user_id: Mapped[str | None] = mapped_column(
         ForeignKey("users.user_id", ondelete="SET NULL")
     )
     feature: Mapped[str] = mapped_column(String(64), nullable=False)
+    model: Mapped[str | None] = mapped_column(String(120))
     ok: Mapped[bool] = mapped_column(Boolean, nullable=False)
     credits: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    estimated_cost_microusd: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error_code: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
     )

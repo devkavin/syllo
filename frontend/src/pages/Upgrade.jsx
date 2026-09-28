@@ -42,6 +42,7 @@ export default function Upgrade() {
         {plans.map((p) => {
           const active = currentPlan === p.id;
           const isFree = p.price_cents === 0;
+          const shownPrice = p.intro_offer?.price_cents ?? p.price_cents;
           return (
             <div
               key={p.id}
@@ -55,10 +56,16 @@ export default function Upgrade() {
               )}
               <div className="section-title mb-2">{p.name}</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-serif text-4xl">${(p.price_cents / 100).toFixed(0)}</span>
+                <span className="font-serif text-4xl">${(shownPrice / 100).toFixed(2)}</span>
                 {!isFree && <span className="text-sm text-muted-foreground">/ month</span>}
               </div>
-              <div className="mt-2 text-sm text-muted-foreground">{p.credits} AI helps per month</div>
+              {p.intro_offer && (
+                <div className="mt-1 text-sm">
+                  <div className="text-foreground">for your first {p.intro_offer.months} months</div>
+                  <div className="text-muted-foreground">Then ${(p.price_cents / 100).toFixed(2)} / month</div>
+                </div>
+              )}
+              <div className="mt-2 text-sm text-muted-foreground">{p.credits} study helps per month</div>
               <ul className="mt-5 space-y-2 flex-1">
                 {p.features.map((f, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">

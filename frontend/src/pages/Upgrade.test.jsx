@@ -1,0 +1,42 @@
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const plans = [
+  { id: "freshman", name: "Freshman", price_cents: 0, credits: 10, features: [] },
+  { id: "scholar", name: "Scholar", price_cents: 599, credits: 500, features: [] },
+  {
+    id: "deans_list",
+    name: "Dean's List",
+    price_cents: 1299,
+    credits: 1500,
+    features: [],
+    intro_offer: { price_cents: 999, months: 3 },
+  },
+];
+
+vi.mock("@/lib/api", () => ({
+  http: { get: vi.fn(() => Promise.resolve({ data: { plans } })) },
+  formatError: (error) => String(error),
+}));
+vi.mock("@/lib/billing", () => ({ createCheckout: vi.fn() }));
+vi.mock("@/lib/usage", () => ({
+  useUsage: () => ({ usage: { plan: { id: "freshman" } }, refresh: vi.fn() }),
+}));
+
+import Upgrade from "./Upgrade";
+
+describe("upgrade pricing", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("shows exact prices and the real Dean's List launch discount", async () => {
+    render(<MemoryRouter><Upgrade /></MemoryRouter>);
+
+    expect(await screen.findByText("$5.99")).toBeInTheDocument();
+    expect(screen.getByText("$9.99")).toBeInTheDocument();
+    expect(screen.getByText("for your first 3 months")).toBeInTheDocument();
+    expect(screen.getByText("Then $12.99 / month")).toBeInTheDocument();
+    expect(screen.getByText("1500 study helps per month")).toBeInTheDocument();
+  });
+});

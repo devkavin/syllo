@@ -9,6 +9,7 @@ import {
   Sparkles, Target, Sun, Moon, Coffee, Trophy, ArrowUpRight, Gift, Loader2
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
+import AiPrivacyNote from "@/components/AiPrivacyNote";
 
 export default function Today() {
   const { user } = useAuth();
@@ -440,6 +441,7 @@ function WeeklyReflection() {
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Reflect on my week
           </button>
+          <AiPrivacyNote className="mt-3" />
         </>
       ) : (
         <div className="text-sm font-serif italic leading-relaxed" data-testid="reflection-text">{text}</div>

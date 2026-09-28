@@ -42,6 +42,8 @@ Required variables:
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_PRICE_SCHOLAR`
 - `STRIPE_PRICE_DEANS_LIST`
+- `STRIPE_DEANS_INTRO_COUPON` (required while the Dean's List launch offer is advertised)
+- `GEMINI_API_KEY` (required to enable Study Companion)
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
 
@@ -54,6 +56,12 @@ Recommended values:
 - `DB_MAX_OVERFLOW=5`
 - `DB_POOL_RECYCLE=1800`
 - `LOG_LEVEL=INFO`
+- `GEMINI_FRESHMAN_MODEL=gemini-3.1-flash-lite`
+- `GEMINI_TUTOR_MODEL=gemini-3.8-flash`
+- `GEMINI_UTILITY_MODEL=gemini-3.5-flash-lite`
+- `GEMINI_TIMEOUT_SECONDS=30`
+- `GEMINI_USER_REQUESTS_PER_MINUTE=10`
+- `GEMINI_MONTHLY_BUDGET_CENTS=2500`
 
 Admin bootstrap is create-only. On the first healthy startup it creates one admin
 from `ADMIN_EMAIL` and `ADMIN_PASSWORD`; it creates no student, curriculum, task,
@@ -90,6 +98,21 @@ Subscribe to:
 Put Stripe Price IDs—not display prices—in `STRIPE_PRICE_SCHOLAR` and
 `STRIPE_PRICE_DEANS_LIST`. Checkout amounts, success/cancel URLs, portal return URLs,
 and entitlement changes are server-owned.
+
+Create the recurring prices as Scholar `$5.99/month` and Dean's List
+`$12.99/month`. For the launch offer, create a server-owned Stripe coupon for
+`$3.00` off, repeating for three months, and put its ID in
+`STRIPE_DEANS_INTRO_COUPON`. Syllo only displays `$9.99 for the first 3 months`
+when Stripe confirms that coupon is valid, USD `$3.00` off, and repeats for exactly
+three months. An invalid coupon is neither advertised nor accepted at checkout.
+
+Create a Gemini API key in Google AI Studio and set `GEMINI_API_KEY`. Freshman
+requests use `gemini-3.1-flash-lite`; Scholar and Dean's List use
+`gemini-3.8-flash` for chat/explanations and `gemini-3.5-flash-lite` for summaries
+and reflections. All inference runs on Google's API. The Syllo container only
+sends bounded requests, enforces credits/rate/budget limits, and stores metering
+metadata; it does not host an AI model. Set Google Cloud billing alerts as a second
+guardrail in addition to `GEMINI_MONTHLY_BUDGET_CENTS`.
 
 ## 4. Mobile workspace isolation
 

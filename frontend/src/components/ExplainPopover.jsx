@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useUsage } from "@/lib/usage";
 import { Sparkles, Loader2, X } from "lucide-react";
+import AiPrivacyNote from "@/components/AiPrivacyNote";
 
 /**
  * ExplainPopover: given a ref to a textarea, shows a floating "Explain" button
@@ -95,6 +96,7 @@ export default function ExplainPopover({ textareaRef, containerRef, subjectName,
             {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             Explain this
           </button>
+          <AiPrivacyNote className="mt-2 w-64 rounded-md bg-card p-2 shadow" />
         </div>
       )}
       {result && (
@@ -102,6 +104,7 @@ export default function ExplainPopover({ textareaRef, containerRef, subjectName,
           <button className="btn btn-ghost !p-1 absolute right-2 top-2" onClick={() => setResult(null)}><X className="w-3.5 h-3.5" /></button>
           <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-2"><Sparkles className="w-3.5 h-3.5" /> Explaining "{result.source.slice(0, 40)}{result.source.length > 40 ? "..." : ""}"</div>
           <div className="text-sm whitespace-pre-wrap">{result.text}</div>
+          <AiPrivacyNote className="mt-3" />
         </div>
       )}
       {err && <div className="text-destructive text-xs mt-2">{err}</div>}

@@ -23,6 +23,7 @@ def test_production_settings_reject_missing_required_values() -> None:
         "STRIPE_WEBHOOK_SECRET",
         "STRIPE_PRICE_SCHOLAR",
         "STRIPE_PRICE_DEANS_LIST",
+        "GEMINI_API_KEY",
     ):
         assert variable in message
 
@@ -42,6 +43,7 @@ def test_admin_bootstrap_requires_admin_credentials(
         "stripe_webhook_secret": "webhook-secret",
         "stripe_price_scholar": "price_scholar",
         "stripe_price_deans_list": "price_deans",
+        "gemini_api_key": "gemini-secret",
         "admin_bootstrap_enabled": True,
     }
 

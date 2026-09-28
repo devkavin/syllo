@@ -11,6 +11,7 @@ focus sessions, reviews, planning, and study progress.
 - Database: externally hosted MySQL
 - Authentication: email/password and Google OAuth
 - Billing: server-created Stripe Checkout sessions and verified Stripe webhooks
+- Study Companion: server-metered calls to Google Gemini; no AI model runs locally
 
 Production traffic enters through the web container. Nginx serves the application
 and proxies `/api/` to the private API container, so browsers use one origin.
