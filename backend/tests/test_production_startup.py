@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import httpx
 import pytest
+from alembic.script import ScriptDirectory
 from pydantic import ValidationError
 from sqlalchemy import func, select
 
 from backend.app.config import Settings
 from backend.app.main import create_app
 from backend.app.models import User
-from backend.app.startup import run_migrations
+from backend.app.startup import migration_config, run_migrations
 
 
 def production_values() -> dict[str, object]:
@@ -47,6 +48,12 @@ def test_migration_failure_prevents_startup(monkeypatch) -> None:
     monkeypatch.setattr("backend.app.startup.command.upgrade", fail)
     with pytest.raises(RuntimeError, match="database unavailable"):
         run_migrations(settings)
+
+
+def test_production_migration_config_finds_packaged_scripts() -> None:
+    settings = Settings(**production_values(), _env_file=None)
+    scripts = ScriptDirectory.from_config(migration_config(settings))
+    assert scripts.get_current_head() is not None
 
 
 @pytest.mark.asyncio

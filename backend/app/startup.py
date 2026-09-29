@@ -11,7 +11,7 @@ from backend.app.config import Settings, get_settings
 def migration_config(settings: Settings) -> Config:
     if not settings.database_url:
         raise RuntimeError("DATABASE_URL is required before migrations can run")
-    backend_dir = Path(__file__).resolve().parents[2]
+    backend_dir = Path(__file__).resolve().parents[1]
     config = Config(str(backend_dir / "alembic.ini"))
     config.set_main_option("script_location", str(backend_dir / "alembic"))
     config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
