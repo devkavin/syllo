@@ -33,6 +33,17 @@ app's migrations and API both require the installed async driver.
 URL-encode reserved characters in the username or password. Do not paste an
 `ssl-mode` parameter from Coolify's MySQL URL into this SQLAlchemy URL; the
 `ssl_ca` parameter enables TLS with CA and hostname verification for `asyncmy`.
+This Compose deployment also sets `DB_TLS_ALLOW_LEGACY_CERT=true` for Coolify
+certificates that lack an Authority Key Identifier. Python 3.13 otherwise
+rejects those certificates with `Missing Authority Key Identifier` during the
+TLS handshake. This compatibility setting disables only Python's strict X.509
+extension check for MySQL; it does **not** disable CA validation, hostname
+validation, or TLS. Outside this Coolify deployment the setting defaults to
+`false`. A correctly generated certificate is preferable: after replacing or
+regenerating the database certificate with a compliant one, set
+`DB_TLS_ALLOW_LEGACY_CERT=false` and redeploy. Do not regenerate the server CA
+casually: doing so can invalidate certificates used by other databases.
+
 The API entrypoint runs `alembic upgrade head` before Uvicorn, so a failed
 connection or migration prevents the service from accepting traffic. Once the
 private connection works, MySQL's public access can be disabled if no external
@@ -69,6 +80,7 @@ Recommended values:
 - `DB_POOL_SIZE=5`
 - `DB_MAX_OVERFLOW=5`
 - `DB_POOL_RECYCLE=1800`
+- `DB_TLS_ALLOW_LEGACY_CERT=true` (Coolify certificate compatibility; see above)
 - `LOG_LEVEL=INFO`
 - `GEMINI_FRESHMAN_MODEL=gemini-3.1-flash-lite`
 - `GEMINI_TUTOR_MODEL=gemini-3.8-flash`

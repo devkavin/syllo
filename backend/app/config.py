@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     db_pool_size: int = 5
     db_max_overflow: int = 5
     db_pool_recycle: int = 1800
+    db_tls_allow_legacy_cert: bool = False
     log_level: str = "INFO"
 
     @model_validator(mode="after")

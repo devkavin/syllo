@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import ssl
+from unittest.mock import patch
+
 import httpx
 import pytest
 from alembic.script import ScriptDirectory
@@ -54,6 +57,43 @@ def test_production_migration_config_finds_packaged_scripts() -> None:
     settings = Settings(**production_values(), _env_file=None)
     scripts = ScriptDirectory.from_config(migration_config(settings))
     assert scripts.get_current_head() is not None
+
+
+def test_migrations_receive_the_same_verified_legacy_tls_context(monkeypatch) -> None:
+    from sqlalchemy.ext import asyncio as sqlalchemy_asyncio
+
+    database_url = (
+        "mysql+asyncmy://user:pass@database:3306/syllo"
+        "?ssl_ca=/etc/ssl/certs/coolify-ca.crt"
+    )
+    settings = Settings(
+        **{**production_values(), "database_url": database_url},
+        db_tls_allow_legacy_cert=True,
+        _env_file=None,
+    )
+    monkeypatch.setenv("DATABASE_URL", database_url)
+    monkeypatch.setenv("DB_TLS_ALLOW_LEGACY_CERT", "true")
+    captured = {}
+
+    def fake_default_context(*, cafile):
+        assert cafile == "/etc/ssl/certs/coolify-ca.crt"
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.verify_flags |= ssl.VERIFY_X509_STRICT
+        return context
+
+    def stop_before_connection(*args, **kwargs):
+        captured.update(kwargs)
+        raise RuntimeError("connection intercepted for TLS test")
+
+    monkeypatch.setattr(sqlalchemy_asyncio, "async_engine_from_config", stop_before_connection)
+    with patch("ssl.create_default_context", fake_default_context):
+        with pytest.raises(RuntimeError, match="connection intercepted for TLS test"):
+            run_migrations(settings)
+
+    ssl_context = captured["connect_args"]["ssl"]
+    assert ssl_context.verify_mode == ssl.CERT_REQUIRED
+    assert ssl_context.check_hostname is True
+    assert not (ssl_context.verify_flags & ssl.VERIFY_X509_STRICT)
 
 
 @pytest.mark.asyncio

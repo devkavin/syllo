@@ -15,6 +15,7 @@ def migration_config(settings: Settings) -> Config:
     config = Config(str(backend_dir / "alembic.ini"))
     config.set_main_option("script_location", str(backend_dir / "alembic"))
     config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
+    config.attributes["db_tls_allow_legacy_cert"] = settings.db_tls_allow_legacy_cert
     return config
 
 
