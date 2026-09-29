@@ -13,6 +13,10 @@ STATE_ALGORITHM = "HS256"
 SAFE_PROVIDER_ERRORS = frozenset(
     {"invalid_client", "invalid_grant", "invalid_request", "unauthorized_client"}
 )
+GOOGLE_SCOPE_ALIASES = {
+    "https://www.googleapis.com/auth/userinfo.email": "email",
+    "https://www.googleapis.com/auth/userinfo.profile": "profile",
+}
 
 
 class GoogleOAuthError(Exception):
@@ -126,7 +130,6 @@ class GoogleOAuthService:
         url, _ = flow.authorization_url(
             state=state,
             access_type="online",
-            include_granted_scopes="true",
             prompt="select_account",
         )
         if not flow.code_verifier:
@@ -143,6 +146,17 @@ class GoogleOAuthService:
         flow.code_verifier = code_verifier
         try:
             await asyncio.to_thread(flow.fetch_token, code=code)
+        except Warning as exc:
+            token = getattr(exc, "token", None)
+            returned_scopes = getattr(exc, "new_scope", None)
+            if not isinstance(token, dict) or not isinstance(returned_scopes, list):
+                raise GoogleOAuthError("token_exchange", "provider_error_Warning") from exc
+            granted_scopes = {
+                GOOGLE_SCOPE_ALIASES.get(scope, scope) for scope in returned_scopes
+            }
+            if not set(self.scopes).issubset(granted_scopes):
+                raise GoogleOAuthError("token_exchange", "insufficient_scopes") from exc
+            flow.oauth2session.token = token
         except Exception as exc:
             provider_code = getattr(exc, "error", None)
             safe_code = (

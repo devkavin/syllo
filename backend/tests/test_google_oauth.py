@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlparse
@@ -69,6 +70,78 @@ def test_google_authorization_exposes_matching_s256_verifier(test_settings_value
     assert 43 <= len(verifier) <= 128
     assert params["code_challenge_method"] == ["S256"]
     assert params["code_challenge"] == [expected_challenge]
+    assert "include_granted_scopes" not in params
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("granted_scopes", "expected_error"),
+    [
+        (
+            "openid https://www.googleapis.com/auth/userinfo.email "
+            "https://www.googleapis.com/auth/userinfo.profile",
+            None,
+        ),
+        ("openid https://www.googleapis.com/auth/userinfo.email", "insufficient_scopes"),
+    ],
+)
+async def test_google_token_exchange_handles_canonical_google_scopes(
+    monkeypatch, test_settings_values, granted_scopes, expected_error
+) -> None:
+    from google.oauth2 import id_token
+    from requests_oauthlib import OAuth2Session
+
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+
+    def token_response(_session, method, url, **_kwargs):
+        assert method == "POST"
+        assert url == "https://oauth2.googleapis.com/token"
+        return SimpleNamespace(
+            status_code=200,
+            headers={},
+            text=json.dumps(
+                {
+                    "access_token": "fixture-access-token",
+                    "token_type": "Bearer",
+                    "expires_in": 3600,
+                    "id_token": "fixture-id-token",
+                    "scope": granted_scopes,
+                }
+            ),
+            request=SimpleNamespace(url=url, headers={}, body=""),
+        )
+
+    monkeypatch.setattr(OAuth2Session, "request", token_response)
+    monkeypatch.setattr(
+        id_token,
+        "verify_oauth2_token",
+        lambda *_args: {
+            "aud": "client-id",
+            "email_verified": True,
+            "sub": "google-sub-1",
+            "email": "student@example.com",
+            "name": "Student",
+        },
+    )
+
+    if expected_error:
+        with pytest.raises(google_oauth.GoogleOAuthError) as caught:
+            await service.exchange_code("fixture-code", "v" * 43)
+        assert (caught.value.stage, caught.value.code) == (
+            "token_exchange",
+            expected_error,
+        )
+    else:
+        identity = await service.exchange_code("fixture-code", "v" * 43)
+        assert identity.subject == "google-sub-1"
+        assert identity.email == "student@example.com"
 
 
 @pytest.mark.asyncio
