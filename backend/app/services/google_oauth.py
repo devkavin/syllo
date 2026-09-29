@@ -121,22 +121,26 @@ class GoogleOAuthService:
         flow.redirect_uri = self.redirect_uri
         return flow
 
-    def authorization_url(self, state: str) -> str:
-        url, _ = self._flow().authorization_url(
+    def authorization_url(self, state: str) -> tuple[str, str]:
+        flow = self._flow()
+        url, _ = flow.authorization_url(
             state=state,
             access_type="online",
             include_granted_scopes="true",
             prompt="select_account",
         )
-        return url
+        if not flow.code_verifier:
+            raise RuntimeError("Google OAuth did not generate a PKCE verifier")
+        return url, flow.code_verifier
 
-    async def exchange_code(self, code: str) -> GoogleIdentity:
+    async def exchange_code(self, code: str, code_verifier: str) -> GoogleIdentity:
         import asyncio
 
         from google.auth.transport.requests import Request as GoogleRequest
         from google.oauth2 import id_token
 
         flow = self._flow()
+        flow.code_verifier = code_verifier
         try:
             await asyncio.to_thread(flow.fetch_token, code=code)
         except Exception as exc:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -24,6 +25,8 @@ from backend.app.services.google_oauth import (
 
 router = APIRouter(prefix="/auth/google", tags=["auth"])
 STATE_COOKIE = "oauth_state_nonce"
+PKCE_COOKIE = "oauth_pkce_verifier"
+PKCE_VERIFIER_PATTERN = re.compile(r"[A-Za-z0-9._~-]{43,128}\Z")
 
 
 class MobileCodeRequest(BaseModel):
@@ -99,12 +102,22 @@ async def google_start(
     state, nonce = OAuthStateService(request.app.state.settings).issue(
         client, return_to
     )
+    authorization_url, code_verifier = google_service(request).authorization_url(state)
     response = RedirectResponse(
-        google_service(request).authorization_url(state), status_code=307
+        authorization_url, status_code=307
     )
     response.set_cookie(
         STATE_COOKIE,
         nonce,
+        max_age=600,
+        httponly=True,
+        secure=request.app.state.settings.cookie_secure,
+        samesite="lax",
+        path="/api/auth/google",
+    )
+    response.set_cookie(
+        PKCE_COOKIE,
+        code_verifier,
         max_age=600,
         httponly=True,
         secure=request.app.state.settings.cookie_secure,
@@ -132,8 +145,13 @@ async def google_callback(
         raise HTTPException(
             status_code=400, detail="OAuth state is not bound to this browser"
         )
+    code_verifier = request.cookies.get(PKCE_COOKIE)
+    if not code_verifier or not PKCE_VERIFIER_PATTERN.fullmatch(code_verifier):
+        raise HTTPException(
+            status_code=400, detail="Google sign-in session expired. Please try again."
+        )
     try:
-        identity = await google_service(request).exchange_code(code)
+        identity = await google_service(request).exchange_code(code, code_verifier)
     except GoogleOAuthError as exc:
         raise HTTPException(
             status_code=401,
@@ -165,6 +183,7 @@ async def google_callback(
 
     response = RedirectResponse(location, status_code=307)
     response.delete_cookie(STATE_COOKIE, path="/api/auth/google")
+    response.delete_cookie(PKCE_COOKIE, path="/api/auth/google")
     if payload["client"] == "web":
         authenticated_response(user, response, request)
     return response

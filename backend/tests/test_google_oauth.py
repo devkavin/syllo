@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
@@ -29,12 +30,17 @@ class FakeGoogleOAuth:
         )
         self.failure = failure
         self.states: list[str] = []
+        self.verifiers: list[str] = []
+        self.exchanged_verifiers: list[str] = []
 
-    def authorization_url(self, state: str) -> str:
+    def authorization_url(self, state: str) -> tuple[str, str]:
         self.states.append(state)
-        return f"https://accounts.google.com/o/oauth2/v2/auth?state={state}&response_type=code&scope=openid+email+profile"
+        verifier = "v" * 43
+        self.verifiers.append(verifier)
+        return f"https://accounts.google.com/o/oauth2/v2/auth?state={state}&response_type=code&scope=openid+email+profile", verifier
 
-    async def exchange_code(self, code: str) -> GoogleIdentity:
+    async def exchange_code(self, code: str, code_verifier: str) -> GoogleIdentity:
+        self.exchanged_verifiers.append(code_verifier)
         if self.failure is not None:
             raise self.failure
         if code == "denied":
@@ -44,6 +50,76 @@ class FakeGoogleOAuth:
 
 def state_from(location: str) -> str:
     return parse_qs(urlparse(location).query)["state"][0]
+
+
+def test_google_authorization_exposes_matching_s256_verifier(test_settings_values) -> None:
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    url, verifier = google_oauth.GoogleOAuthService(settings).authorization_url("state")
+    params = parse_qs(urlparse(url).query)
+    expected_challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(verifier.encode("ascii")).digest()
+    ).rstrip(b"=").decode("ascii")
+
+    assert 43 <= len(verifier) <= 128
+    assert params["code_challenge_method"] == ["S256"]
+    assert params["code_challenge"] == [expected_challenge]
+
+
+@pytest.mark.asyncio
+async def test_google_callback_requires_pkce_verifier_and_uses_original_value(sql_app) -> None:
+    app, _ = sql_app
+    fake = FakeGoogleOAuth()
+    app.state.google_service = fake
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://testserver",
+        follow_redirects=False,
+    ) as client:
+        start = await client.get("/api/auth/google/start")
+        state = state_from(start.headers["location"])
+        assert client.cookies.get("oauth_pkce_verifier") == fake.verifiers[0]
+        client.cookies.delete("oauth_pkce_verifier")
+        missing = await client.get(
+            "/api/auth/google/callback", params={"code": "google-code", "state": state}
+        )
+        assert missing.status_code == 400
+        assert not fake.exchanged_verifiers
+
+        start = await client.get("/api/auth/google/start")
+        callback = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "google-code", "state": state_from(start.headers["location"])},
+        )
+        assert callback.status_code == 307
+        assert fake.exchanged_verifiers == [fake.verifiers[-1]]
+        assert client.cookies.get("oauth_pkce_verifier") is None
+
+
+@pytest.mark.asyncio
+async def test_google_callback_rejects_malformed_pkce_verifier_before_exchange(sql_app) -> None:
+    app, _ = sql_app
+    fake = FakeGoogleOAuth()
+    app.state.google_service = fake
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://testserver",
+        follow_redirects=False,
+    ) as client:
+        start = await client.get("/api/auth/google/start")
+        client.cookies.set("oauth_pkce_verifier", "invalid!", path="/api/auth/google")
+        response = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "google-code", "state": state_from(start.headers["location"])},
+        )
+
+    assert response.status_code == 400
+    assert not fake.exchanged_verifiers
 
 
 @pytest.mark.asyncio
@@ -61,11 +137,12 @@ async def test_google_token_exchange_reports_safe_provider_error_code(
 
     class RejectingFlow:
         def fetch_token(self, *, code):
+            assert self.code_verifier == "v" * 43
             raise InvalidClientError(description="private-client-secret")
 
     monkeypatch.setattr(service, "_flow", lambda: RejectingFlow())
     with pytest.raises(Exception) as caught:
-        await service.exchange_code("private-authorization-code")
+        await service.exchange_code("private-authorization-code", "v" * 43)
 
     assert isinstance(caught.value, google_oauth.GoogleOAuthError)
     assert caught.value.stage == "token_exchange"
@@ -92,7 +169,7 @@ async def test_google_unknown_provider_failure_reports_type_not_secret(
 
     monkeypatch.setattr(service, "_flow", lambda: RejectingFlow())
     with pytest.raises(google_oauth.GoogleOAuthError) as caught:
-        await service.exchange_code("private-code")
+        await service.exchange_code("private-code", "v" * 43)
 
     assert (caught.value.stage, caught.value.code) == (
         "token_exchange",
@@ -120,7 +197,7 @@ async def test_google_missing_id_token_has_specific_safe_code(
     monkeypatch.setattr(service, "_flow", lambda: flow)
 
     with pytest.raises(google_oauth.GoogleOAuthError) as caught:
-        await service.exchange_code("private-authorization-code")
+        await service.exchange_code("private-authorization-code", "v" * 43)
 
     assert (caught.value.stage, caught.value.code) == ("id_token", "missing")
 
@@ -150,7 +227,7 @@ async def test_google_id_token_verification_failure_has_specific_safe_code(
 
     monkeypatch.setattr(id_token, "verify_oauth2_token", reject_token)
     with pytest.raises(google_oauth.GoogleOAuthError) as caught:
-        await service.exchange_code("private-authorization-code")
+        await service.exchange_code("private-authorization-code", "v" * 43)
 
     assert (caught.value.stage, caught.value.code) == (
         "id_token",
@@ -189,7 +266,7 @@ async def test_google_identity_claim_failure_reports_the_failed_check(
         },
     )
     with pytest.raises(google_oauth.GoogleOAuthError) as caught:
-        await service.exchange_code("private-authorization-code")
+        await service.exchange_code("private-authorization-code", "v" * 43)
 
     assert (caught.value.stage, caught.value.code) == (
         "identity_claims",
