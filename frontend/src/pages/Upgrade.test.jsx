@@ -30,13 +30,15 @@ import Upgrade from "./Upgrade";
 describe("upgrade pricing", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("shows exact prices and the real Dean's List launch discount", async () => {
+  it("shows planned intro and regular prices while checkout is unavailable", async () => {
     render(<MemoryRouter><Upgrade /></MemoryRouter>);
 
     expect(await screen.findByText("$5.99")).toBeInTheDocument();
     expect(screen.getByText("$9.99")).toBeInTheDocument();
-    expect(screen.getByText("for your first 3 months")).toBeInTheDocument();
+    expect(screen.getAllByText("for your first 3 months")).toHaveLength(2);
+    expect(screen.getByText("Then $6.99 / month")).toBeInTheDocument();
     expect(screen.getByText("Then $12.99 / month")).toBeInTheDocument();
+    expect(screen.getByText(/planned pricing/i)).toBeInTheDocument();
     expect(screen.getByText("1500 study helps per month")).toBeInTheDocument();
   });
 

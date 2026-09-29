@@ -96,14 +96,14 @@ export function AppRoutes() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <UsageProvider>
           <BrowserRouter>
             <AppRoutes />
           </BrowserRouter>
         </UsageProvider>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

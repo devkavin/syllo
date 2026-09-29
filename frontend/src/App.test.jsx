@@ -9,7 +9,10 @@ vi.mock("@/lib/auth", () => ({
   useAuth: () => auth,
   AuthProvider: ({ children }) => children,
 }));
-vi.mock("@/lib/theme", () => ({ ThemeProvider: ({ children }) => children }));
+vi.mock("@/lib/theme", () => ({
+  ThemeProvider: ({ children }) => children,
+  useTheme: () => ({ theme: "light", setTheme: vi.fn() }),
+}));
 vi.mock("@/lib/usage", () => ({
   UsageProvider: ({ children }) => children,
   useUsage: () => ({ usage: null, refresh: vi.fn() }),

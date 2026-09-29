@@ -20,7 +20,7 @@ export default function Settings() {
   const save = async () => {
     setMsg(""); setErr("");
     try {
-      await updateMe({ name, theme, daily_goal_minutes: Number(goal) || 60 });
+      await updateMe({ name, daily_goal_minutes: Number(goal) || 60 });
       setMsg("Saved.");
     } catch (e) { setErr(formatError(e)); }
   };
@@ -54,6 +54,7 @@ export default function Settings() {
 
       <section className="card p-5 space-y-3">
         <h2 className="font-serif text-xl">Appearance</h2>
+        <p className="text-sm text-muted-foreground">Saved automatically and synced across devices.</p>
         <div className="flex gap-2">
           {["light", "dark"].map((t) => (
             <button

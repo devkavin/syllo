@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { formatError } from "@/lib/api";
 import { GraduationCap } from "lucide-react";
+import AppearancePicker from "@/components/AppearancePicker";
 
 export default function Login() {
   const nav = useNavigate();
@@ -22,6 +23,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background text-foreground grid place-items-center p-4">
       <form onSubmit={submit} className="card p-8 w-full max-w-sm space-y-4 fade-in" data-testid="login-form">
+        <AppearancePicker />
         <div className="text-center mb-2">
           <div className="w-10 h-10 mx-auto rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-5 h-5" /></div>
           <h1 className="font-serif text-2xl mt-3">Welcome back</h1>

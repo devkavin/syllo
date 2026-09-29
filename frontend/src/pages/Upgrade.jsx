@@ -5,6 +5,11 @@ import { createCheckout } from "@/lib/billing";
 import { useUsage } from "@/lib/usage";
 import { Check, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
 
+const PLANNED_PRICING = {
+  scholar: { price_cents: 699, intro_offer: { price_cents: 599, months: 3 } },
+  deans_list: { price_cents: 1299, intro_offer: { price_cents: 999, months: 3 } },
+};
+
 export default function Upgrade() {
   const [plans, setPlans] = useState([]);
   const [checkoutAvailable, setCheckoutAvailable] = useState(false);
@@ -50,7 +55,8 @@ export default function Upgrade() {
         {plans.map((p) => {
           const active = currentPlan === p.id;
           const isFree = p.price_cents === 0;
-          const shownPrice = p.intro_offer?.price_cents ?? p.price_cents;
+          const pricing = !checkoutAvailable && PLANNED_PRICING[p.id] ? PLANNED_PRICING[p.id] : p;
+          const shownPrice = pricing.intro_offer?.price_cents ?? pricing.price_cents;
           return (
             <div
               key={p.id}
@@ -67,10 +73,10 @@ export default function Upgrade() {
                 <span className="font-serif text-4xl">${(shownPrice / 100).toFixed(2)}</span>
                 {!isFree && <span className="text-sm text-muted-foreground">/ month</span>}
               </div>
-              {p.intro_offer && (
+              {pricing.intro_offer && (
                 <div className="mt-1 text-sm">
-                  <div className="text-foreground">for your first {p.intro_offer.months} months</div>
-                  <div className="text-muted-foreground">Then ${(p.price_cents / 100).toFixed(2)} / month</div>
+                  <div className="text-foreground">for your first {pricing.intro_offer.months} months</div>
+                  <div className="text-muted-foreground">Then ${(pricing.price_cents / 100).toFixed(2)} / month</div>
                 </div>
               )}
               <div className="mt-2 text-sm text-muted-foreground">{p.credits} study helps per month</div>
@@ -121,6 +127,7 @@ export default function Upgrade() {
           Secure recurring checkout. You can cancel anytime from your account.
         </div>
       )}
+      {!checkoutAvailable && <div className="text-xs text-muted-foreground text-center">Planned pricing preview. Subscriptions are not available yet.</div>}
     </div>
   );
 }
