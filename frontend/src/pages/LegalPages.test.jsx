@@ -20,9 +20,11 @@ describe("public legal pages", () => {
     render(<MemoryRouter initialEntries={["/privacy"]}><AppRoutes /></MemoryRouter>);
 
     expect(await screen.findByRole("heading", { name: "Privacy Policy" })).toBeInTheDocument();
-    expect(screen.getAllByText(/Kavin HQ, trading as Syllo/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Kavindra Senanayake, an individual trading as Syllo/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Google Gemini/i)).toBeInTheDocument();
     expect(screen.getAllByText(/privacy@syllo\.kavinhq\.com/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Stripe/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Pricing" })).toHaveAttribute("href", "/pricing");
   });
 
   it("shows the Terms without requiring an account", async () => {
@@ -31,6 +33,8 @@ describe("public legal pages", () => {
     expect(await screen.findByRole("heading", { name: "Terms of Service" })).toBeInTheDocument();
     expect(screen.getByText(/permission from a parent or legal guardian/i)).toBeInTheDocument();
     expect(screen.getByText(/laws of Sri Lanka/i)).toBeInTheDocument();
+    expect(screen.getByText(/Paid plans are not currently available/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Stripe/i)).not.toBeInTheDocument();
   });
 
   it("links registration to both legal documents", async () => {

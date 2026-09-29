@@ -19,11 +19,59 @@ def test_production_settings_reject_missing_required_values() -> None:
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
         "GOOGLE_REDIRECT_URI",
+        "GEMINI_API_KEY",
+    ):
+        assert variable in message
+
+
+def test_production_launch_mode_does_not_require_payment_credentials(
+    test_settings_values: dict[str, object],
+) -> None:
+    values = {
+        **test_settings_values,
+        "environment": "production",
+        "app_url": "https://syllo.kavinhq.com",
+        "database_url": "mysql+asyncmy://user:password@db.example/syllo",
+        "google_client_id": "client-id",
+        "google_client_secret": "google-secret",
+        "google_redirect_uri": "https://syllo.kavinhq.com/api/auth/google/callback",
+        "gemini_api_key": "gemini-secret",
+        "billing_enabled": False,
+    }
+    settings = Settings(
+        **values,
+        _env_file=None,
+    )
+
+    assert settings.billing_enabled is False
+
+
+def test_production_requires_payment_credentials_when_billing_is_enabled(
+    test_settings_values: dict[str, object],
+) -> None:
+    values = {
+        **test_settings_values,
+        "environment": "production",
+        "app_url": "https://syllo.kavinhq.com",
+        "database_url": "mysql+asyncmy://user:password@db.example/syllo",
+        "google_client_id": "client-id",
+        "google_client_secret": "google-secret",
+        "google_redirect_uri": "https://syllo.kavinhq.com/api/auth/google/callback",
+        "gemini_api_key": "gemini-secret",
+        "billing_enabled": True,
+    }
+    with pytest.raises(ValidationError) as caught:
+        Settings(
+            **values,
+            _env_file=None,
+        )
+
+    message = str(caught.value)
+    for variable in (
         "STRIPE_SECRET_KEY",
         "STRIPE_WEBHOOK_SECRET",
         "STRIPE_PRICE_SCHOLAR",
         "STRIPE_PRICE_DEANS_LIST",
-        "GEMINI_API_KEY",
     ):
         assert variable in message
 

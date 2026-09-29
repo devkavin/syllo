@@ -3,6 +3,7 @@ import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
+import HelpUsage from "@/components/HelpUsage";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, X, GraduationCap,
@@ -32,8 +33,6 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
   const isAdmin = user?.role === "admin";
   const planName = usage?.plan?.name || "Freshman";
   const credits = usage?.credits_remaining ?? 0;
-  const maxCredits = usage?.plan?.credits || 60;
-  const pct = Math.max(0, Math.min(100, Math.round((credits / Math.max(1, maxCredits)) * 100)));
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 pt-6 pb-4">
@@ -110,12 +109,8 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
             <span className="text-xs uppercase tracking-wider text-muted-foreground">Plan · {planName}</span>
             <Zap className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
-          <div className="text-sm">
-            <span className="font-mono">{credits}</span> <span className="text-muted-foreground">of {maxCredits} helps</span>
-          </div>
-          <div className="h-1.5 mt-2 bg-accent rounded-full overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: pct > 20 ? "hsl(var(--primary))" : "hsl(0 60% 55%)" }} />
-          </div>
+          <div className="text-sm"><span className="font-mono">{credits}</span> <span className="text-muted-foreground">helps available</span></div>
+          <HelpUsage usage={usage} className="mt-2" compact />
         </Link>
       </div>
       <div className="p-3 border-t border-border space-y-2">

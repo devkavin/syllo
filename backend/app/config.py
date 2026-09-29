@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     google_redirect_uri: AnyHttpUrl | None = None
     mobile_oauth_redirect_uri: str = "syllo://google-callback"
 
+    billing_enabled: bool = False
     stripe_secret_key: SecretStr | None = None
     stripe_webhook_secret: SecretStr | None = None
     stripe_price_scholar: str | None = None
@@ -47,11 +48,12 @@ class Settings(BaseSettings):
     gemini_utility_model: str = "gemini-3.5-flash-lite"
     gemini_timeout_seconds: float = Field(default=30.0, ge=1, le=120)
     gemini_user_requests_per_minute: int = Field(default=10, ge=1, le=60)
+    gemini_project_requests_per_minute: int = Field(default=10, ge=1, le=600)
     gemini_monthly_budget_cents: int = Field(default=2500, ge=0)
     free_plan_start_credits: int = Field(default=10, ge=0)
     free_plan_milestone_max_credits: int = Field(default=60, ge=0)
-    free_plan_max_credits: int = Field(default=100, ge=0)
-    referral_bonus_credits: int = Field(default=15, ge=0)
+    free_plan_max_credits: int = Field(default=110, ge=0)
+    referral_bonus_credits: int = Field(default=10, ge=0)
     deans_intro_months: int = Field(default=3, ge=1, le=12)
 
     db_pool_size: int = 5
@@ -64,7 +66,7 @@ class Settings(BaseSettings):
         if self.environment != "production":
             return self
 
-        required = {
+        required: dict[str, object | None] = {
             "APP_URL": self.app_url,
             "DATABASE_URL": self.database_url,
             "JWT_SECRET": self.jwt_secret,
@@ -72,12 +74,17 @@ class Settings(BaseSettings):
             "GOOGLE_CLIENT_ID": self.google_client_id,
             "GOOGLE_CLIENT_SECRET": self.google_client_secret,
             "GOOGLE_REDIRECT_URI": self.google_redirect_uri,
-            "STRIPE_SECRET_KEY": self.stripe_secret_key,
-            "STRIPE_WEBHOOK_SECRET": self.stripe_webhook_secret,
-            "STRIPE_PRICE_SCHOLAR": self.stripe_price_scholar,
-            "STRIPE_PRICE_DEANS_LIST": self.stripe_price_deans_list,
             "GEMINI_API_KEY": self.gemini_api_key,
         }
+        if self.billing_enabled:
+            required.update(
+                {
+                    "STRIPE_SECRET_KEY": self.stripe_secret_key,
+                    "STRIPE_WEBHOOK_SECRET": self.stripe_webhook_secret,
+                    "STRIPE_PRICE_SCHOLAR": self.stripe_price_scholar,
+                    "STRIPE_PRICE_DEANS_LIST": self.stripe_price_deans_list,
+                }
+            )
         if self.admin_bootstrap_enabled:
             required.update(
                 {

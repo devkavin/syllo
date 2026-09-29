@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+from calendar import monthrange
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
-from backend.app.models import PaymentTransaction, Plan, User
+from backend.app.models import AIUsageLog, PaymentTransaction, Plan, User
 from backend.app.services.credits import BONUS_QUESTS, CreditService
 from backend.app.services.stripe_billing import StripeBillingService
 
@@ -37,7 +40,9 @@ def service(request: Request) -> StripeBillingService:
     return configured
 
 
-def plan_dict(plan: Plan, settings=None, *, intro_offer_available: bool = False) -> dict:
+def plan_dict(
+    plan: Plan, settings=None, *, intro_offer_available: bool = False
+) -> dict:
     result = {
         "id": plan.plan_id,
         "name": plan.name,
@@ -46,11 +51,7 @@ def plan_dict(plan: Plan, settings=None, *, intro_offer_available: bool = False)
         "features": plan.features,
         "active": plan.active,
     }
-    if (
-        settings is not None
-        and plan.plan_id == "deans_list"
-        and intro_offer_available
-    ):
+    if settings is not None and plan.plan_id == "deans_list" and intro_offer_available:
         result["intro_offer"] = {
             "price_cents": plan.price_cents - 300,
             "months": settings.deans_intro_months,
@@ -61,7 +62,6 @@ def plan_dict(plan: Plan, settings=None, *, intro_offer_available: bool = False)
 @router.get("/plans")
 async def plans(
     request: Request,
-    _: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     rows = (
@@ -70,11 +70,13 @@ async def plans(
         )
     ).all()
     intro_offer_available = False
-    if request.app.state.settings.stripe_deans_intro_coupon:
-        intro_offer_available = await service(
-            request
-        ).deans_intro_offer_available()
+    if (
+        request.app.state.settings.billing_enabled
+        and request.app.state.settings.stripe_deans_intro_coupon
+    ):
+        intro_offer_available = await service(request).deans_intro_offer_available()
     return {
+        "checkout_available": request.app.state.settings.billing_enabled,
         "plans": [
             plan_dict(
                 plan,
@@ -82,7 +84,7 @@ async def plans(
                 intro_offer_available=intro_offer_available,
             )
             for plan in rows
-        ]
+        ],
     }
 
 
@@ -96,15 +98,45 @@ async def usage(
         user.user_id
     )
     plan = await session.get(Plan, user.plan_id)
+    now = datetime.now(timezone.utc)
+    month_start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+    next_month = (month_start + timedelta(days=32)).replace(day=1)
+    local_now = now + timedelta(minutes=user.timezone_offset_min)
+    local_day = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
+    local_week = local_day - timedelta(days=local_day.weekday())
+    day_start = local_day - timedelta(minutes=user.timezone_offset_min)
+    week_start = local_week - timedelta(minutes=user.timezone_offset_min)
+    cycle_used, used_today, used_this_week = (
+        await session.execute(
+            select(
+                func.coalesce(func.sum(case((AIUsageLog.created_at >= month_start, AIUsageLog.credits), else_=0)), 0),
+                func.coalesce(func.sum(case((AIUsageLog.created_at >= day_start, AIUsageLog.credits), else_=0)), 0),
+                func.coalesce(func.sum(case((AIUsageLog.created_at >= week_start, AIUsageLog.credits), else_=0)), 0),
+            ).where(
+                AIUsageLog.user_id == user.user_id,
+                AIUsageLog.ok.is_(True),
+                AIUsageLog.created_at >= min(month_start, week_start),
+            )
+        )
+    ).one()
+    cycle_used = int(cycle_used)
     return {
         "plan": plan_dict(plan),
         "credits_remaining": user.ai_credits_remaining,
         "credit_period": user.credit_period,
+        "cycle_used": cycle_used,
+        "cycle_allowance": user.ai_credits_remaining + cycle_used,
+        "used_today": int(used_today),
+        "used_this_week": int(used_this_week),
+        "weekly_pace": round(plan.credits * 7 / monthrange(now.year, now.month)[1], 1),
+        "next_refill_at": next_month.isoformat(),
+        "bonus_credits_remaining": user.bonus_credits_remaining,
         "bonuses_claimed": user.credit_bonuses,
         "quests": BONUS_QUESTS,
         "free_start": request.app.state.settings.free_plan_start_credits,
         "free_milestone_max": request.app.state.settings.free_plan_milestone_max_credits,
         "free_max": request.app.state.settings.free_plan_max_credits,
+        "billing_enabled": request.app.state.settings.billing_enabled,
     }
 
 
@@ -115,6 +147,8 @@ async def checkout(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    if not request.app.state.settings.billing_enabled:
+        raise HTTPException(status_code=503, detail="Paid plans are coming soon")
     plan = await session.get(Plan, body.plan_id)
     if plan is None:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -170,6 +204,8 @@ async def portal(
     request: Request,
     user: User = Depends(get_current_user),
 ) -> dict:
+    if not request.app.state.settings.billing_enabled:
+        raise HTTPException(status_code=503, detail="Paid plans are coming soon")
     if not user.stripe_customer_id:
         raise HTTPException(status_code=400, detail="No billing account exists")
     result = await service(request).create_portal(user)

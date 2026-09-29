@@ -4,6 +4,8 @@ import { useUsage } from "@/lib/usage";
 import { Sparkles, X, Send, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
+import { recentChatContext } from "@/lib/chatContext";
+import HelpUsage from "@/components/HelpUsage";
 
 export default function AiCompanion({ open, onClose, contextLabel }) {
   const [messages, setMessages] = useState([]);
@@ -15,7 +17,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
 
   useEffect(() => {
     if (open && messages.length === 0) {
-      setMessages([{ role: "model", text: contextLabel
+      setMessages([{ role: "model", isGreeting: true, text: contextLabel
         ? `Hi. I can help you with ${contextLabel}. Ask me anything.`
         : "Hi. Ask me to explain a topic, give you a practice question, or plan a short study session." }]);
     }
@@ -36,10 +38,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
     const text = input.trim();
     if (!text || busy) return;
     setInput(""); setErr("");
-    const history = messages
-      .filter((m) => m.text)
-      .slice(-12)
-      .map((m) => ({ role: m.role, text: m.text.slice(0, 2000) }));
+    const history = recentChatContext(messages);
     setMessages((m) => [...m, { role: "user", text }, { role: "model", text: "", pending: true }]);
     setBusy(true);
     try {
@@ -53,7 +52,8 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
     } catch (e) {
       const msg = formatError(e);
       setErr(msg);
-      setMessages((m) => m.slice(0, -1));
+      setMessages((m) => m.slice(0, -2));
+      setInput(text);
       refresh();
     } finally { setBusy(false); }
   };
@@ -100,19 +100,19 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
         </div>
 
         {err && <div className="px-4 pb-2 text-destructive text-xs">{err}</div>}
+        <HelpUsage usage={usage} className="px-4 py-3 border-t border-border" />
         <AiPrivacyNote className="px-4 py-2 border-t border-border" />
         {outOfCredits ? (
           <div className="p-4 border-t border-border text-center text-sm">
-            <div className="mb-2 text-muted-foreground">You've used your helps for the month.</div>
-            <Link to="/upgrade" className="btn btn-primary w-full" onClick={onClose} data-testid="ai-upgrade-cta">
-              See plans
-            </Link>
+            <div className="mb-2 text-muted-foreground">Your Study Companion helps are used for now. Your notes, tasks and focus timer are still available.</div>
+            {usage?.billing_enabled && <Link to="/upgrade" className="btn btn-primary w-full" onClick={onClose} data-testid="ai-upgrade-cta">See plans</Link>}
           </div>
         ) : (
           <div className="p-3 border-t border-border flex items-end gap-2">
             <textarea
               className="input resize-none min-h-[44px] max-h-32"
               rows={1}
+              maxLength={3000}
               placeholder="Ask something calm..."
               value={input}
               onChange={(e) => setInput(e.target.value)}

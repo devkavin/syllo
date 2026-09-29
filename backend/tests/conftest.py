@@ -19,6 +19,7 @@ def test_settings_values() -> dict[str, object]:
         "jwt_secret": "test-jwt-secret-with-at-least-32-characters",
         "oauth_state_secret": "test-oauth-secret-with-at-least-32-characters",
         "cookie_secure": False,
+        "billing_enabled": True,
     }
 
 

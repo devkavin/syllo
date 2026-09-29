@@ -50,10 +50,11 @@ async def claim_bonus(
     if quest is None:
         raise HTTPException(status_code=404, detail="Unknown quest")
     user = await CreditService(session, request.app.state.settings).refill_if_needed(
-        user.user_id
+        user.user_id, commit=False
     )
     bonuses = dict(user.credit_bonuses or {})
     if bonuses.get(quest_id):
+        await session.commit()
         return {
             "already_claimed": True,
             "credits_remaining": user.ai_credits_remaining,
@@ -110,9 +111,8 @@ async def claim_bonus(
     )
     bonuses[quest_id] = True
     user.credit_bonuses = bonuses
-    user.ai_credits_remaining = max(
-        user.ai_credits_remaining,
-        min(cap, user.ai_credits_remaining + quest["credits"]),
+    await CreditService(session, request.app.state.settings).grant_bonus(
+        user.user_id, quest["credits"], cap, commit=False
     )
     await session.commit()
     return {"ok": True, "credits_remaining": user.ai_credits_remaining}

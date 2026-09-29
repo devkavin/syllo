@@ -381,7 +381,9 @@ function BonusQuests() {
         </div>
         <span className="section-title">Earn more helps</span>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">Small steps unlock more free AI helps. Each one gives you 10 more.</p>
+      <p className="text-sm text-muted-foreground mb-4">
+        Start with {usage.free_start} helps. Complete study milestones and invite friends to earn more, up to {usage.free_max} in your balance.
+      </p>
       <ul className="space-y-2">
         {quests.map((q) => {
           const done = !!already[q.id];

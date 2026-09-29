@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import select
 
 from backend.app.models import AIUsageLog, User
+from backend.app.services.credits import CreditService
 from backend.app.services.gemini import GenerationResult, GoogleGeminiProvider
 from backend.tests.test_academic_crud import register
 
@@ -110,6 +111,41 @@ async def test_successful_ai_call_consumes_one_credit(sql_app) -> None:
 
 
 @pytest.mark.asyncio
+async def test_chat_uses_recent_bounded_history_and_keeps_current_question(sql_app) -> None:
+    app, _ = sql_app
+    provider = SuccessfulGemini()
+    app.state.gemini_service = provider
+    current_question = "current-question-" + ("q" * 2800)
+    history = [
+        {"role": "model", "text": "Hi. Ask me to explain a topic."},
+        {"role": "user", "text": "old-question"},
+        {"role": "model", "text": "old-answer"},
+        {"role": "user", "text": "middle-question-" + ("a" * 1450)},
+        {"role": "model", "text": "middle-answer-" + ("b" * 1450)},
+        {"role": "user", "text": "recent-question-" + ("c" * 1450)},
+        {"role": "model", "text": "recent-answer-" + ("d" * 1450)},
+    ]
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        response = await client.post(
+            "/api/ai/chat", json={"message": current_question, "history": history}
+        )
+
+    assert response.status_code == 200
+    prompt = provider.calls[0]["prompt"]
+    history_prompt, latest_prompt = prompt.rsplit("\nuser: ", 1)
+    assert latest_prompt == current_question
+    assert len(history_prompt) <= 4000
+    assert "recent-question-" in history_prompt
+    assert "recent-answer-" in history_prompt
+    assert "old-question" not in history_prompt
+    assert "middle-question-" not in history_prompt
+    assert "Hi. Ask me" not in history_prompt
+
+
+@pytest.mark.asyncio
 async def test_paid_features_use_tutor_and_utility_models(sql_app) -> None:
     app, factory = sql_app
     provider = SuccessfulGemini()
@@ -148,6 +184,28 @@ async def test_empty_provider_response_refunds_help(sql_app) -> None:
     assert user.ai_credits_remaining == before
     assert log.ok is False
     assert log.error_code == "empty_response"
+
+
+@pytest.mark.asyncio
+async def test_failed_request_restores_earned_help(sql_app) -> None:
+    app, factory = sql_app
+    app.state.gemini_service = FailingGemini()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        async with factory() as session:
+            user = await session.scalar(select(User))
+            service = CreditService(session, app.state.settings)
+            await service.grant_bonus(user.user_id, 5, 60)
+            for _ in range(10):
+                await service.consume(user.user_id)
+        response = await client.post("/api/ai/explain", json={"concept": "limits"})
+    assert response.status_code == 502
+    async with factory() as session:
+        user = await session.scalar(select(User))
+        assert user.ai_credits_remaining == 5
+        assert user.bonus_credits_remaining == 5
 
 
 @pytest.mark.asyncio
@@ -208,6 +266,44 @@ async def test_rate_limit_does_not_consume_a_help(sql_app) -> None:
     async with factory() as session:
         user = await session.scalar(select(User))
         assert user.ai_credits_remaining == before
+
+
+@pytest.mark.asyncio
+async def test_project_rate_limit_applies_across_students(sql_app) -> None:
+    app, factory = sql_app
+    provider = SuccessfulGemini()
+    app.state.gemini_service = provider
+    app.state.settings.gemini_project_requests_per_minute = 1
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as first:
+        await register(first, "first@example.com")
+        assert (await first.post("/api/ai/explain", json={"concept": "limits"})).status_code == 200
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as second:
+        await register(second, "second@example.com")
+        response = await second.post("/api/ai/explain", json={"concept": "gravity"})
+    assert response.status_code == 429
+    assert len(provider.calls) == 1
+    async with factory() as session:
+        second_user = await session.scalar(select(User).where(User.email == "second@example.com"))
+        assert second_user.ai_credits_remaining == app.state.settings.free_plan_start_credits
+
+
+@pytest.mark.asyncio
+async def test_usage_reports_weekly_pace_without_weekly_reset(sql_app) -> None:
+    app, _ = sql_app
+    app.state.gemini_service = SuccessfulGemini()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        assert (await client.post("/api/ai/explain", json={"concept": "limits"})).status_code == 200
+        usage = (await client.get("/api/billing/usage")).json()
+    assert usage["credits_remaining"] == 9
+    assert usage["cycle_used"] == 1
+    assert usage["used_today"] == 1
+    assert usage["used_this_week"] == 1
+    assert usage["weekly_pace"] > 0
+    assert usage["next_refill_at"].endswith("T00:00:00+00:00")
 
 
 @pytest.mark.asyncio

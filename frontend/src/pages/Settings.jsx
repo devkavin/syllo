@@ -85,13 +85,15 @@ export default function Settings() {
         <h2 className="font-serif text-xl">Billing</h2>
         <p className="text-sm text-muted-foreground">
           You're on <span className="text-foreground font-medium">{currentPlan?.name || "Freshman"}</span>.
-          {isPaid ? " Manage payment, invoices, or cancel anytime through the Stripe portal." : " Upgrade for more AI helps."}
+          {isPaid
+            ? (usage?.billing_enabled ? " Manage payments, invoices, or cancellation from your billing portal." : " Your current plan remains active.")
+            : (usage?.billing_enabled ? " Upgrade for more AI helps." : " Paid plans are coming soon.")}
         </p>
         <div className="flex gap-2 flex-wrap">
           <a href="/upgrade" className="btn btn-outline" data-testid="settings-upgrade-link">
             {isPaid ? "Change plan" : "See plans"}
           </a>
-          {isPaid && (
+          {isPaid && usage?.billing_enabled && (
             <button className="btn btn-outline" onClick={openPortal} disabled={portalBusy} data-testid="settings-cancel-plan">
               {portalBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
               Manage or cancel plan

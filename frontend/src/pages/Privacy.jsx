@@ -9,7 +9,7 @@ export default function Privacy() {
     >
       <LegalSection title="Who operates Syllo">
         <p>
-          Syllo is operated by <strong>Kavindra Senanayake, an individual trading as Syllo</strong>, based in Colombo, Sri Lanka. In this policy, “Syllo”, “we”, and “us” refer to that operator.
+          Syllo is operated by <strong>Kavindra Senanayake, an individual trading as Syllo (Kavin HQ)</strong>, based in Colombo, Sri Lanka. In this policy, “Syllo”, “we”, and “us” refer to that operator.
         </p>
       </LegalSection>
 
@@ -18,7 +18,7 @@ export default function Privacy() {
           <li><strong>Account information:</strong> name, email address, password hash, profile details, authentication provider, and—when you use Google sign-in—your Google account identifier and available profile information.</li>
           <li><strong>Study information:</strong> subjects, units, lessons, notes, notebooks, tasks, schedules, reviews, focus sessions, progress, goals, and other content you choose to add.</li>
           <li><strong>Study Companion information:</strong> prompts, selected notebook or study content sent for an explanation or summary, generated responses, model name, token counts, latency, and help usage.</li>
-          <li><strong>Billing information:</strong> plan, subscription status, transaction references, and Stripe customer or subscription identifiers. Syllo does not store full payment-card details.</li>
+          <li><strong>Billing information:</strong> paid plans are not currently available. When billing launches, we may store plan, subscription status, and transaction references, but Syllo will not store full payment-card details.</li>
           <li><strong>Referral and usage information:</strong> referral codes and rewards, feature activity, timestamps, device or browser information made available in normal web requests, and security logs.</li>
         </ul>
       </LegalSection>
@@ -33,7 +33,6 @@ export default function Privacy() {
         <ul>
           <li><strong>Google</strong> for optional Google sign-in.</li>
           <li><strong>Google Gemini</strong> to process Study Companion requests. Do not include sensitive personal information in prompts or notes submitted to this feature.</li>
-          <li><strong>Stripe</strong> for checkout, subscriptions, invoices, and payment-account management.</li>
           <li><strong>Hosting and database providers</strong> to run the application and store Syllo account and study data in a hosted MySQL database.</li>
         </ul>
         <p>These providers may process information outside Sri Lanka under their own security and privacy programs. We do not sell personal information or use it for third-party advertising.</p>
@@ -58,7 +57,7 @@ export default function Privacy() {
 
       <LegalSection title="Changes and contact">
         <p>We may update this policy as Syllo changes or legal requirements develop. Material changes will be shown in the application or on this page with a revised effective date.</p>
-        <p>Privacy questions: <a href="mailto:privacy@syllo.kavinhq.com">privacy@syllo.kavinhq.com</a><br />General support: <a href="mailto:support@syllo.kavinhq.com">support@syllo.kavinhq.com</a><br />Kavin HQ, trading as Syllo — Colombo, Sri Lanka</p>
+        <p>Privacy questions: <a href="mailto:privacy@syllo.kavinhq.com">privacy@syllo.kavinhq.com</a><br />General support: <a href="mailto:support@syllo.kavinhq.com">support@syllo.kavinhq.com</a><br />Kavindra Senanayake, an individual trading as Syllo (Kavin HQ) — Colombo, Sri Lanka</p>
       </LegalSection>
     </LegalLayout>
   );

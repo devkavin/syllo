@@ -19,6 +19,7 @@ from backend.app.security import (
     set_auth_cookies,
     verify_password,
 )
+from backend.app.services.credits import CreditService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -88,6 +89,9 @@ async def register(
             request.app.state.settings.free_plan_start_credits
             + (request.app.state.settings.referral_bonus_credits if referrer else 0)
         ),
+        bonus_credits_remaining=(
+            request.app.state.settings.referral_bonus_credits if referrer else 0
+        ),
         credit_period=datetime.now(timezone.utc).strftime("%Y-%m"),
     )
     session.add(user)
@@ -100,16 +104,19 @@ async def register(
                 if referrer.plan_id == "freshman"
                 else plan.credits
             )
-            referrer.ai_credits_remaining = min(
+            credits_awarded = await CreditService(
+                session, request.app.state.settings
+            ).grant_bonus(
+                referrer.user_id,
+                request.app.state.settings.referral_bonus_credits,
                 cap,
-                referrer.ai_credits_remaining
-                + request.app.state.settings.referral_bonus_credits,
+                commit=False,
             )
             session.add(
                 Referral(
                     referrer_id=referrer.user_id,
                     referred_user_id=user.user_id,
-                    credits_awarded=request.app.state.settings.referral_bonus_credits,
+                    credits_awarded=credits_awarded,
                 )
             )
         await session.commit()

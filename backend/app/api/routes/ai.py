@@ -71,6 +71,17 @@ async def enforce_usage_guards(
             detail="Please wait a moment before asking for another help.",
         )
 
+    project_recent = await session.scalar(
+        select(func.count()).select_from(AIUsageLog).where(
+            AIUsageLog.created_at >= one_minute_ago
+        )
+    )
+    if int(project_recent or 0) >= settings.gemini_project_requests_per_minute:
+        raise HTTPException(
+            status_code=429,
+            detail="Study companion is busy. Please try again shortly.",
+        )
+
     if settings.gemini_monthly_budget_cents > 0:
         now = datetime.now(timezone.utc)
         month_start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
@@ -125,15 +136,15 @@ async def reserve_help(
     request: Request,
     user: User,
     session: AsyncSession,
-) -> tuple[str, int]:
+) -> tuple[str, int, int]:
     reserved_cost = reserve_cost_microusd(
         model=model, prompt=prompt, system=system, max_tokens=max_tokens
     )
     async with reservation_lock(request, session):
         await enforce_usage_guards(session, request, user, reserved_cost)
-        remaining = await CreditService(
+        remaining, bonus_used = await CreditService(
             session, request.app.state.settings
-        ).consume(user.user_id, commit=False)
+        ).consume_with_source(user.user_id, commit=False)
         usage = AIUsageLog(
             user_id=user.user_id,
             feature=feature,
@@ -145,7 +156,7 @@ async def reserve_help(
         )
         session.add(usage)
         await session.commit()
-        return usage.usage_id, remaining
+        return usage.usage_id, remaining, bonus_used
 
 
 async def run_feature(
@@ -164,7 +175,7 @@ async def run_feature(
         user.plan_id, feature, request.app.state.settings
     )
     credits = CreditService(session, request.app.state.settings)
-    usage_id, remaining = await reserve_help(
+    usage_id, remaining, bonus_used = await reserve_help(
         feature=feature,
         model=model,
         prompt=prompt,
@@ -188,7 +199,7 @@ async def run_feature(
         if not result.text.strip():
             raise EmptyGenerationError("Provider returned no usable content")
     except Exception as exc:
-        await credits.refund(user.user_id)
+        await credits.refund(user.user_id, bonus_amount=bonus_used)
         usage = await session.get(AIUsageLog, usage_id)
         usage.latency_ms = int((perf_counter() - started) * 1000)
         usage.error_code = (
@@ -213,7 +224,7 @@ async def run_feature(
         await session.commit()
     except Exception as exc:
         await session.rollback()
-        await credits.refund(user.user_id)
+        await credits.refund(user.user_id, bonus_amount=bonus_used)
         try:
             usage = await session.get(AIUsageLog, usage_id)
             usage.ok = False
@@ -235,11 +246,18 @@ async def chat(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    history_lines = [
-        f"{item.role}: {item.text}"
-        for item in body.history
-    ]
-    history = "\n".join(history_lines)[-10_000:]
+    history_lines = []
+    for item in reversed(body.history[-6:]):
+        if not item.text.strip():
+            continue
+        line = f"{item.role}: {item.text}"
+        length = len("\n".join([line, *history_lines]))
+        if length > 4_000:
+            break
+        history_lines.insert(0, line)
+    while history_lines and history_lines[0].startswith("model: "):
+        history_lines.pop(0)
+    history = "\n".join(history_lines)
     return await run_feature(
         feature="chat",
         prompt=f"{history}\nuser: {body.message}".strip(),

@@ -47,6 +47,9 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "latency_ms",
         "error_code",
     }.issubset(usage_columns)
+    assert "bonus_credits_remaining" in {
+        column["name"] for column in inspect(engine).get_columns("users")
+    }
     command.check(config)
 
     command.downgrade(config, "base")

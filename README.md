@@ -10,7 +10,7 @@ focus sessions, reviews, planning, and study progress.
 - `mobile/`: Expo application, versioned here but excluded from production Docker contexts
 - Database: externally hosted MySQL
 - Authentication: email/password and Google OAuth
-- Billing: server-created Stripe Checkout sessions and verified Stripe webhooks
+- Billing: launch-safe feature flag with paid plans visible as coming soon; checkout remains disabled until Paddle is integrated
 - Study Companion: server-metered calls to Google Gemini; no AI model runs locally
 
 Production traffic enters through the web container. Nginx serves the application
@@ -70,7 +70,7 @@ powershell -ExecutionPolicy Bypass -File scripts\verify_docker_context.ps1
 Deployment uses `compose.yaml` with two deliberately small containers. MySQL stays
 external, secrets are supplied by Coolify at runtime, and database migrations run
 before the API starts. See [the Coolify deployment guide](docs/deployment/coolify.md)
-for environment variables, Google and Stripe setup, capacity guidance, health
+for environment variables, Google and Gemini setup, capacity guidance, health
 checks, and the mobile-source isolation model.
 
 Production never seeds student or sample data. The optional create-only admin

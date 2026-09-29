@@ -17,7 +17,7 @@ const plans = [
 ];
 
 vi.mock("@/lib/api", () => ({
-  http: { get: vi.fn(() => Promise.resolve({ data: { plans } })) },
+  http: { get: vi.fn(() => Promise.resolve({ data: { plans, checkout_available: false } })) },
   formatError: (error) => String(error),
 }));
 vi.mock("@/lib/billing", () => ({ createCheckout: vi.fn() }));
@@ -38,5 +38,15 @@ describe("upgrade pricing", () => {
     expect(screen.getByText("for your first 3 months")).toBeInTheDocument();
     expect(screen.getByText("Then $12.99 / month")).toBeInTheDocument();
     expect(screen.getByText("1500 study helps per month")).toBeInTheDocument();
+  });
+
+  it("shows paid plans as coming soon without offering checkout", async () => {
+    render(<MemoryRouter><Upgrade /></MemoryRouter>);
+
+    expect(await screen.findByTestId("plan-upgrade-scholar")).toBeDisabled();
+    expect(screen.getByTestId("plan-upgrade-scholar")).toHaveTextContent("Coming soon");
+    expect(screen.getByTestId("plan-upgrade-deans_list")).toBeDisabled();
+    expect(screen.getByText(/Freshman is available now/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Payments processed by Stripe/i)).not.toBeInTheDocument();
   });
 });

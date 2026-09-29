@@ -14,6 +14,7 @@ export default function LegalLayout({ title, summary, children }) {
             <span className="font-serif text-lg">Syllo</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground" aria-label="Legal pages">
+            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
             <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground">Terms</Link>
           </nav>
@@ -34,7 +35,7 @@ export default function LegalLayout({ title, summary, children }) {
 
       <footer className="border-t border-border">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 text-xs text-muted-foreground flex flex-wrap gap-x-4 gap-y-2">
-          <span>© 2026 Kavin HQ, trading as Syllo</span>
+          <span>© 2026 Kavindra Senanayake, trading as Syllo (Kavin HQ)</span>
           <a href="mailto:support@syllo.kavinhq.com" className="hover:text-foreground">support@syllo.kavinhq.com</a>
         </div>
       </footer>

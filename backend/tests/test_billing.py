@@ -147,7 +147,9 @@ async def test_deans_checkout_applies_server_owned_three_month_coupon() -> None:
         normalized_email="student@example.com",
         name="Student",
     )
-    plan = Plan(plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500)
+    plan = Plan(
+        plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500
+    )
 
     await stripe_service.create_checkout(user, plan)
 
@@ -180,7 +182,9 @@ async def test_deans_checkout_fails_closed_for_misconfigured_coupon() -> None:
         normalized_email="student@example.com",
         name="Student",
     )
-    plan = Plan(plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500)
+    plan = Plan(
+        plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500
+    )
 
     with pytest.raises(Exception) as caught:
         await stripe_service.create_checkout(user, plan)
@@ -252,6 +256,45 @@ async def test_checkout_rejects_free_unknown_and_inactive_plans(sql_app) -> None
             )
             statuses.append(response.status_code)
     assert statuses == [400, 404, 400]
+
+
+@pytest.mark.asyncio
+async def test_launch_mode_lists_plans_but_blocks_checkout_and_portal(sql_app) -> None:
+    app, factory = sql_app
+    app.state.settings.billing_enabled = False
+    fake = FakeStripeBilling()
+    app.state.stripe_service = fake
+    user = await create_user(factory)
+    async with factory() as session:
+        stored = await session.get(User, user.user_id)
+        stored.stripe_customer_id = "cus_existing"
+        await session.commit()
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        listed = await client.get("/api/billing/plans")
+        checkout = await client.post(
+            "/api/billing/checkout",
+            headers=auth_headers(app, user),
+            json={"plan_id": "scholar"},
+        )
+        portal = await client.post(
+            "/api/billing/portal", headers=auth_headers(app, user), json={}
+        )
+
+    assert listed.status_code == 200
+    assert listed.json()["checkout_available"] is False
+    assert {plan["id"] for plan in listed.json()["plans"]} == {
+        "freshman",
+        "scholar",
+        "deans_list",
+    }
+    assert checkout.status_code == 503
+    assert checkout.json() == {"detail": "Paid plans are coming soon"}
+    assert portal.status_code == 503
+    assert fake.checkout_calls == []
+    assert fake.portal_calls == []
 
 
 @pytest.mark.asyncio

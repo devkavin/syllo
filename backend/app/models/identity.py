@@ -37,6 +37,9 @@ class User(TimestampMixin, Base):
     ai_credits_remaining: Mapped[int] = mapped_column(
         Integer, default=10, nullable=False
     )
+    bonus_credits_remaining: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
     credit_period: Mapped[str | None] = mapped_column(String(7))
     credit_bonuses: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     referral_code: Mapped[str | None] = mapped_column(String(24), unique=True)

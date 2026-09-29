@@ -38,11 +38,6 @@ Required variables:
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_REDIRECT_URI=https://syllo.kavinhq.com/api/auth/google/callback`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_PRICE_SCHOLAR`
-- `STRIPE_PRICE_DEANS_LIST`
-- `STRIPE_DEANS_INTRO_COUPON` (required while the Dean's List launch offer is advertised)
 - `GEMINI_API_KEY` (required to enable Study Companion)
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
@@ -52,6 +47,7 @@ Recommended values:
 - `ADMIN_BOOTSTRAP_ENABLED=true`
 - `COOKIE_SECURE=true`
 - `COOKIE_SAMESITE=lax`
+- `BILLING_ENABLED=false` (launch mode: paid plans are visible but cannot be purchased)
 - `DB_POOL_SIZE=5`
 - `DB_MAX_OVERFLOW=5`
 - `DB_POOL_RECYCLE=1800`
@@ -61,7 +57,12 @@ Recommended values:
 - `GEMINI_UTILITY_MODEL=gemini-3.5-flash-lite`
 - `GEMINI_TIMEOUT_SECONDS=30`
 - `GEMINI_USER_REQUESTS_PER_MINUTE=10`
+- `GEMINI_PROJECT_REQUESTS_PER_MINUTE=10` (shared across all students; lower this to fit the active Google API tier)
 - `GEMINI_MONTHLY_BUDGET_CENTS=2500`
+- `FREE_PLAN_START_CREDITS=10`
+- `FREE_PLAN_MILESTONE_MAX_CREDITS=60`
+- `REFERRAL_BONUS_CREDITS=10` (awarded to both students for a successful referral)
+- `FREE_PLAN_MAX_CREDITS=110` (maximum Freshman balance)
 
 Admin bootstrap is create-only. On the first healthy startup it creates one admin
 from `ADMIN_EMAIL` and `ADMIN_PASSWORD`; it creates no student, curriculum, task,
@@ -69,7 +70,12 @@ or study data. Later changes to these variables do not overwrite or promote an
 existing account. After the first deploy, you may set
 `ADMIN_BOOTSTRAP_ENABLED=false` and redeploy.
 
-## 3. Configure Google and Stripe
+Do not add placeholder Stripe credentials. With `BILLING_ENABLED=false`, the API
+rejects checkout and billing-portal requests server-side, while the plan page shows
+Scholar and Dean's List as coming soon. Payment-provider credentials will be added
+when Paddle billing is implemented.
+
+## 3. Configure Google and Gemini
 
 In Google Cloud Console, add the exact authorized redirect URI:
 
@@ -81,31 +87,6 @@ The browser begins sign-in at `/api/auth/google/start`; Google secrets remain in
 API container. Mobile uses the same callback and receives a short-lived single-use
 code through `syllo://google-callback`.
 
-Create a Stripe webhook endpoint at:
-
-```text
-https://syllo.kavinhq.com/api/webhook/stripe
-```
-
-Subscribe to:
-
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.payment_failed`
-
-Put Stripe Price IDs—not display prices—in `STRIPE_PRICE_SCHOLAR` and
-`STRIPE_PRICE_DEANS_LIST`. Checkout amounts, success/cancel URLs, portal return URLs,
-and entitlement changes are server-owned.
-
-Create the recurring prices as Scholar `$5.99/month` and Dean's List
-`$12.99/month`. For the launch offer, create a server-owned Stripe coupon for
-`$3.00` off, repeating for three months, and put its ID in
-`STRIPE_DEANS_INTRO_COUPON`. Syllo only displays `$9.99 for the first 3 months`
-when Stripe confirms that coupon is valid, USD `$3.00` off, and repeats for exactly
-three months. An invalid coupon is neither advertised nor accepted at checkout.
-
 Create a Gemini API key in Google AI Studio and set `GEMINI_API_KEY`. Freshman
 requests use `gemini-3.1-flash-lite`; Scholar and Dean's List use
 `gemini-3.8-flash` for chat/explanations and `gemini-3.5-flash-lite` for summaries
@@ -113,6 +94,22 @@ and reflections. All inference runs on Google's API. The Syllo container only
 sends bounded requests, enforces credits/rate/budget limits, and stores metering
 metadata; it does not host an AI model. Set Google Cloud billing alerts as a second
 guardrail in addition to `GEMINI_MONTHLY_BUDGET_CENTS`.
+
+Study Companion only charges a help after a successful response. Chat sends at
+most six recent completed messages (up to 4,000 characters of prior context),
+while keeping the student's current question intact. The app displays an
+informational weekly usage pace, not a weekly reset or weekly spending limit;
+allowances still refill at the start of each UTC month. Earned Freshman helps
+are tracked separately so unspent earned helps can carry into the next month,
+subject to the configured Freshman balance cap. The `20260929_0003` migration
+adds that balance field automatically at startup.
+
+Use Gemini's Paid tier with Standard inference for the public production launch.
+The Free tier is suitable for private testing, but has lower rate limits and may
+use submitted content to improve Google's products; the Paid tier provides higher
+production limits and states that submitted content is not used for that purpose.
+Keep the application budget at `$25` initially, add Google Cloud budget alerts at
+`$10`, `$20`, and `$25`, and raise the cap only after reviewing real per-user cost.
 
 ## 4. Mobile workspace isolation
 
@@ -157,6 +154,6 @@ small container.
 - Rollback: restore the prior application image first; apply an Alembic downgrade
   only after reviewing whether the target revision drops data.
 
-Rotate JWT/OAuth/Google/Stripe/admin secrets through Coolify and redeploy. Rotating
-`JWT_SECRET` signs all users out. Update the corresponding Google or Stripe console
-configuration before or at the same time as rotating provider credentials.
+Rotate JWT/OAuth/Google/Gemini/admin secrets through Coolify and redeploy. Rotating
+`JWT_SECRET` signs all users out. Update the corresponding Google configuration
+before or at the same time as rotating provider credentials.

@@ -7,13 +7,17 @@ import { Check, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
 
 export default function Upgrade() {
   const [plans, setPlans] = useState([]);
+  const [checkoutAvailable, setCheckoutAvailable] = useState(false);
   const [busy, setBusy] = useState(null);
   const [err, setErr] = useState("");
   const { usage, refresh } = useUsage();
   const nav = useNavigate();
 
   useEffect(() => {
-    http.get("/billing/plans").then((r) => setPlans(r.data.plans)).catch((e) => setErr(formatError(e)));
+    http.get("/billing/plans").then((r) => {
+      setPlans(r.data.plans);
+      setCheckoutAvailable(Boolean(r.data.checkout_available));
+    }).catch((e) => setErr(formatError(e)));
     refresh();
   }, [refresh]);
 
@@ -33,7 +37,11 @@ export default function Upgrade() {
         <button onClick={() => nav(-1)} className="btn btn-ghost !px-2 !py-1 -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
         <div className="section-title mb-2">Your plan</div>
         <h1 className="font-serif text-4xl tracking-tight">Pick your rhythm</h1>
-        <p className="text-muted-foreground mt-2 max-w-lg">Start free. Upgrade when you want more study helps. Cancel anytime.</p>
+        <p className="text-muted-foreground mt-2 max-w-lg">
+          {checkoutAvailable
+            ? "Start free. Upgrade when you want more study helps. Cancel anytime."
+            : "Freshman is available now. Paid plans are coming soon."}
+        </p>
       </div>
 
       {err && <div className="text-destructive text-sm">{err}</div>}
@@ -66,6 +74,11 @@ export default function Upgrade() {
                 </div>
               )}
               <div className="mt-2 text-sm text-muted-foreground">{p.credits} study helps per month</div>
+              {isFree && usage?.free_max && (
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Earn milestone and referral bonuses up to {usage.free_max} helps in your balance.
+                </div>
+              )}
               <ul className="mt-5 space-y-2 flex-1">
                 {p.features.map((f, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
@@ -79,6 +92,14 @@ export default function Upgrade() {
                   <button className="btn btn-outline w-full" disabled data-testid={`plan-current-${p.id}`}>Your current plan</button>
                 ) : isFree ? (
                   <button className="btn btn-outline w-full" disabled>Free forever</button>
+                ) : !checkoutAvailable ? (
+                  <button
+                    className="btn btn-outline w-full"
+                    disabled
+                    data-testid={`plan-upgrade-${p.id}`}
+                  >
+                    Coming soon
+                  </button>
                 ) : (
                   <button
                     className={`btn w-full ${p.id === "scholar" ? "btn-primary" : "btn-outline"}`}
@@ -95,9 +116,11 @@ export default function Upgrade() {
         })}
       </div>
 
-      <div className="text-xs text-muted-foreground text-center">
-        Payments processed by Stripe. You can cancel anytime from your account.
-      </div>
+      {checkoutAvailable && (
+        <div className="text-xs text-muted-foreground text-center">
+          Secure recurring checkout. You can cancel anytime from your account.
+        </div>
+      )}
     </div>
   );
 }

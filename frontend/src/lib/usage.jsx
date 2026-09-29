@@ -26,6 +26,7 @@ export function UsageProvider({ children }) {
     client.setQueryData(queryKeys.usage, (current) => (
       current ? { ...current, credits_remaining: n } : current
     ));
+    client.invalidateQueries({ queryKey: queryKeys.usage });
   };
 
   return <UsageCtx.Provider value={{ usage, refresh, setRemaining }}>{children}</UsageCtx.Provider>;

@@ -53,7 +53,7 @@ export function PaymentSuccess() {
           <>
             <Loader2 className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
             <h1 className="font-serif text-2xl mb-2">Still processing</h1>
-            <p className="text-sm text-muted-foreground mb-4">Payment is being finalised by Stripe. Refresh in a minute or reach out if it takes too long.</p>
+            <p className="text-sm text-muted-foreground mb-4">Payment is still being finalised. Refresh in a minute or reach out if it takes too long.</p>
             <Link to="/upgrade" className="btn btn-outline w-full">Back to plans</Link>
           </>
         )}

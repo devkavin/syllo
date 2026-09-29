@@ -8,7 +8,7 @@ export default function Terms() {
       summary="These terms describe the rules for using Syllo, including accounts, Study Companion helps, subscriptions, student content, and responsible academic use."
     >
       <LegalSection title="Agreement and operator">
-        <p>These Terms form an agreement between you and <strong>Kavin HQ, trading as Syllo</strong>, Colombo, Sri Lanka. By creating an account, using Google sign-in, purchasing a plan, or otherwise using Syllo, you agree to these Terms and the Privacy Policy.</p>
+        <p>These Terms form an agreement between you and <strong>Kavindra Senanayake, an individual trading as Syllo (Kavin HQ)</strong>, based in Colombo, Sri Lanka. By creating an account, using Google sign-in, or otherwise using Syllo, you agree to these Terms and the Privacy Policy.</p>
       </LegalSection>
 
       <LegalSection title="Students and guardian permission">
@@ -30,8 +30,8 @@ export default function Terms() {
       </LegalSection>
 
       <LegalSection title="Subscriptions and payment">
-        <p>Paid subscriptions are processed by Stripe and renew at the price and interval displayed at checkout until cancelled. Any introductory price applies only for the stated period, after which the standard recurring price applies. Taxes may apply depending on your location.</p>
-        <p>You can manage or cancel a subscription through the Stripe billing portal in Settings. Cancellation stops future renewals and normally takes effect at the end of the current paid period. Refunds are handled where required by applicable law or expressly stated at purchase.</p>
+        <p>Paid plans are not currently available. Scholar and Dean’s List are shown as upcoming plans, and displaying a planned price is not an offer to take payment.</p>
+        <p>When paid subscriptions launch, the checkout will show the payment provider, recurring price, billing interval, taxes, introductory terms, cancellation process, and any applicable refund terms before purchase.</p>
       </LegalSection>
 
       <LegalSection title="Your content">
@@ -43,7 +43,7 @@ export default function Terms() {
       </LegalSection>
 
       <LegalSection title="Syllo ownership">
-        <p>Syllo’s software, interface, branding, and original materials belong to Kavin HQ or its licensors. These Terms give you a personal, limited, revocable, non-exclusive right to use the service; they do not transfer ownership of Syllo.</p>
+        <p>Syllo’s software, interface, branding, and original materials belong to Kavindra Senanayake, trading as Syllo (Kavin HQ), or its licensors. These Terms give you a personal, limited, revocable, non-exclusive right to use the service; they do not transfer ownership of Syllo.</p>
       </LegalSection>
 
       <LegalSection title="Availability, suspension, and changes">
@@ -51,7 +51,7 @@ export default function Terms() {
       </LegalSection>
 
       <LegalSection title="Disclaimers and liability">
-        <p>To the extent permitted by law, Syllo is provided “as is” and “as available”. We disclaim implied warranties that cannot reasonably apply to a changing online study service. To the extent permitted by law, Kavin HQ is not liable for indirect, incidental, special, or consequential losses, lost study data, missed deadlines, academic outcomes, or reliance on generated content. Nothing in these Terms excludes rights or liability that cannot legally be excluded.</p>
+        <p>To the extent permitted by law, Syllo is provided “as is” and “as available”. We disclaim implied warranties that cannot reasonably apply to a changing online study service. To the extent permitted by law, Kavindra Senanayake, trading as Syllo (Kavin HQ), is not liable for indirect, incidental, special, or consequential losses, lost study data, missed deadlines, academic outcomes, or reliance on generated content. Nothing in these Terms excludes rights or liability that cannot legally be excluded.</p>
       </LegalSection>
 
       <LegalSection title="Governing law and contact">

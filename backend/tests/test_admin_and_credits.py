@@ -57,6 +57,29 @@ async def test_monthly_refill_is_idempotent(sql_app) -> None:
 
 
 @pytest.mark.asyncio
+async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+    async with factory() as session:
+        user = await session.scalar(select(User))
+        service = CreditService(session, app.state.settings)
+        assert await service.grant_bonus(user.user_id, 10, 60) == 10
+        for _ in range(12):
+            await service.consume(user.user_id)
+        user = await session.get(User, user.user_id)
+        assert user.ai_credits_remaining == 8
+        assert user.bonus_credits_remaining == 8
+        user.credit_period = "2020-01"
+        await session.commit()
+        refilled = await service.refill_if_needed(user.user_id)
+        assert refilled.ai_credits_remaining == 18
+        assert refilled.bonus_credits_remaining == 8
+
+
+@pytest.mark.asyncio
 async def test_referral_award_is_applied_once(sql_app) -> None:
     app, factory = sql_app
     transport = httpx.ASGITransport(app=app)
@@ -84,7 +107,10 @@ async def test_referral_award_is_applied_once(sql_app) -> None:
         referrer_user = await session.scalar(
             select(User).where(User.normalized_email == "referrer@example.com")
         )
-        assert referrer_user.ai_credits_remaining == 25
+        assert referrer_user.ai_credits_remaining == (
+            app.state.settings.free_plan_start_credits
+            + app.state.settings.referral_bonus_credits
+        )
 
 
 def test_freshman_milestones_can_unlock_fifty_extra_helps() -> None:

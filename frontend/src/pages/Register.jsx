@@ -53,7 +53,7 @@ export default function Register() {
             maxLength={12}
             data-testid="register-referral"
           />
-          {referral && <div className="text-xs text-muted-foreground mt-1">You and your friend will both get a small welcome bonus.</div>}
+          {referral && <div className="text-xs text-muted-foreground mt-1">With a valid code, you get 10 bonus helps. The friend who invited you earns up to 10, subject to their 110-help balance cap.</div>}
         </div>
         {err && <div className="text-destructive text-sm">{err}</div>}
         <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
@@ -71,6 +71,9 @@ export default function Register() {
         </a>
         <div className="text-center text-sm text-muted-foreground">
           Already have an account? <Link to="/login" className="text-foreground underline" data-testid="link-login">Sign in</Link>
+        </div>
+        <div className="text-center text-xs text-muted-foreground">
+          <Link to="/pricing" className="hover:text-foreground underline">View plans</Link>
         </div>
       </form>
     </div>

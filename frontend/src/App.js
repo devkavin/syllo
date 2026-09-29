@@ -72,6 +72,7 @@ export function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/pricing" element={<div className="min-h-screen bg-background text-foreground p-4 sm:p-8"><div className="max-w-6xl mx-auto"><Upgrade /></div></div>} />
         <Route path="/onboarding" element={<OnboardingRoute />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/cancel" element={<PaymentCancel />} />

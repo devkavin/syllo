@@ -50,6 +50,8 @@ export default function Login() {
           New here? <Link to="/register" className="text-foreground underline" data-testid="link-register">Create an account</Link>
         </div>
         <div className="text-center text-xs text-muted-foreground">
+          <Link to="/pricing" className="hover:text-foreground underline">Pricing</Link>
+          <span aria-hidden="true"> · </span>
           <Link to="/privacy" className="hover:text-foreground underline">Privacy</Link>
           <span aria-hidden="true"> · </span>
           <Link to="/terms" className="hover:text-foreground underline">Terms</Link>
