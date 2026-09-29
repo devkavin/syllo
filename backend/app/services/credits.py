@@ -1,25 +1,31 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.config import Settings
-from backend.app.models import Plan, User
+from backend.app.models import Plan, Referral, User
 
 BONUS_QUESTS = (
     {"id": "onboarded", "label": "Finish setting up", "credits": 10},
-    {"id": "first_subject", "label": "Add your first subject", "credits": 10},
-    {"id": "first_session", "label": "Log your first focus session", "credits": 10},
-    {"id": "first_lesson", "label": "Mark your first lesson done", "credits": 10},
-    {"id": "first_review", "label": "Complete your first review", "credits": 10},
+    {"id": "first_subject", "label": "Add your first subject", "credits": 5},
+    {"id": "first_session", "label": "Log your first focus session", "credits": 5},
+    {"id": "first_lesson", "label": "Mark your first lesson done", "credits": 5},
+    {"id": "first_review", "label": "Complete your first review", "credits": 5},
 )
 
 
 def current_period() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m")
+
+
+def referral_month_bounds() -> tuple[datetime, datetime]:
+    now = datetime.now(timezone.utc)
+    start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+    return start, (start + timedelta(days=32)).replace(day=1)
 
 
 class CreditService:
@@ -100,6 +106,52 @@ class CreditService:
         user.ai_credits_remaining += awarded
         if user.plan_id == "freshman":
             user.bonus_credits_remaining += awarded
+        if commit:
+            await self.session.commit()
+        else:
+            await self.session.flush()
+        return awarded
+
+    async def award_signup_referral(
+        self, referrer_id: str, referred_user_id: str, *, commit: bool = True
+    ) -> int:
+        # Lock the referrer across count, award, and referral insert so two
+        # simultaneous signups cannot both claim the final monthly reward.
+        referrer = await self._locked_user(referrer_id)
+        start, end = referral_month_bounds()
+        rewarded_this_month = await self.session.scalar(
+            select(func.count())
+            .select_from(Referral)
+            .where(
+                Referral.referrer_id == referrer_id,
+                Referral.credits_awarded > 0,
+                Referral.created_at >= start,
+                Referral.created_at < end,
+            )
+        )
+        awarded = 0
+        if rewarded_this_month < self.settings.referral_monthly_limit:
+            await self._apply_refill(referrer)
+            plan = await self.session.get(Plan, referrer.plan_id)
+            cap = (
+                self.settings.free_plan_max_credits
+                if referrer.plan_id == "freshman"
+                else (plan.credits if plan else referrer.ai_credits_remaining)
+            )
+            awarded = max(
+                0,
+                min(self.settings.referral_bonus_credits, cap - referrer.ai_credits_remaining),
+            )
+            referrer.ai_credits_remaining += awarded
+            if referrer.plan_id == "freshman":
+                referrer.bonus_credits_remaining += awarded
+        self.session.add(
+            Referral(
+                referrer_id=referrer_id,
+                referred_user_id=referred_user_id,
+                credits_awarded=awarded,
+            )
+        )
         if commit:
             await self.session.commit()
         else:

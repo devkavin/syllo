@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
 from backend.app.models import Lesson, Plan, Referral, Review, StudySession, Subject, User
-from backend.app.services.credits import BONUS_QUESTS, CreditService
+from backend.app.services.credits import BONUS_QUESTS, CreditService, referral_month_bounds
 
 router = APIRouter(tags=["credits"])
 
@@ -31,11 +31,28 @@ async def my_referrals(
             ).where(Referral.referrer_id == user.user_id)
         )
     ).one()
+    start, end = referral_month_bounds()
+    monthly_count, monthly_credits = (
+        await session.execute(
+            select(
+                func.count(Referral.referral_id),
+                func.coalesce(func.sum(Referral.credits_awarded), 0),
+            ).where(
+                Referral.referrer_id == user.user_id,
+                Referral.credits_awarded > 0,
+                Referral.created_at >= start,
+                Referral.created_at < end,
+            )
+        )
+    ).one()
     return {
         "referral_code": user.referral_code,
         "count": int(count),
         "credits_earned": int(credits),
         "per_signup_credits": request.app.state.settings.referral_bonus_credits,
+        "monthly_rewarded_count": int(monthly_count),
+        "monthly_reward_limit": request.app.state.settings.referral_monthly_limit,
+        "monthly_credits_earned": int(monthly_credits),
     }
 
 
@@ -104,7 +121,7 @@ async def claim_bonus(
         raise HTTPException(status_code=400, detail="Quest not completed yet")
 
     plan = await session.get(Plan, user.plan_id)
-    # Five one-time milestones add at most 50; the balance cap also leaves
+    # Five one-time milestones add at most 30; the balance cap also leaves
     # room for a student's referral helps instead of crowding them out.
     cap = (
         request.app.state.settings.free_plan_max_credits

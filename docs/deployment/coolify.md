@@ -90,9 +90,10 @@ Recommended values:
 - `GEMINI_PROJECT_REQUESTS_PER_MINUTE=10` (shared across all students; lower this to fit the active Google API tier)
 - `GEMINI_MONTHLY_BUDGET_CENTS=2500`
 - `FREE_PLAN_START_CREDITS=10`
-- `FREE_PLAN_MILESTONE_MAX_CREDITS=60`
+- `FREE_PLAN_MILESTONE_MAX_CREDITS=40` (10 starting helps plus 30 one-time milestone helps)
 - `REFERRAL_BONUS_CREDITS=10` (awarded to both students for a successful referral)
-- `FREE_PLAN_MAX_CREDITS=110` (maximum Freshman balance)
+- `REFERRAL_MONTHLY_LIMIT=5` (maximum rewarded distinct new signups per referrer per UTC month)
+- `FREE_PLAN_MAX_CREDITS=100` (maximum Freshman balance)
 
 Admin bootstrap is create-only. On the first healthy startup it creates one admin
 from `ADMIN_EMAIL` and `ADMIN_PASSWORD`; it creates no student, curriculum, task,
@@ -135,6 +136,8 @@ allowances still refill at the start of each UTC month. Earned Freshman helps
 are tracked separately so unspent earned helps can carry into the next month,
 subject to the configured Freshman balance cap. The `20260929_0003` migration
 adds that balance field automatically at startup.
+The referral earning cap resets monthly; unused earned helps continue to carry
+over up to the balance cap. The cap does not create automatic monthly invite helps.
 
 Use Gemini's Paid tier with Standard inference for the public production launch.
 The Free tier is suitable for private testing, but has lower rate limits and may

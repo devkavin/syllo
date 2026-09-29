@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
-from backend.app.models import Plan, Referral, User
+from backend.app.models import User
 from backend.app.schemas.auth import LoginRequest, ProfilePatch, RegisterRequest
 from backend.app.security import (
     TokenService,
@@ -98,26 +98,12 @@ async def register(
     try:
         await session.flush()
         if referrer:
-            plan = await session.get(Plan, referrer.plan_id)
-            cap = (
-                request.app.state.settings.free_plan_max_credits
-                if referrer.plan_id == "freshman"
-                else plan.credits
-            )
-            credits_awarded = await CreditService(
+            await CreditService(
                 session, request.app.state.settings
-            ).grant_bonus(
+            ).award_signup_referral(
                 referrer.user_id,
-                request.app.state.settings.referral_bonus_credits,
-                cap,
+                user.user_id,
                 commit=False,
-            )
-            session.add(
-                Referral(
-                    referrer_id=referrer.user_id,
-                    referred_user_id=user.user_id,
-                    credits_awarded=credits_awarded,
-                )
             )
         await session.commit()
     except IntegrityError as exc:

@@ -83,7 +83,8 @@ export default function Upgrade() {
               {isFree && usage?.free_max && (
                 <div className="mt-1 text-sm text-muted-foreground">
                   Earn up to {usage.free_milestone_max - usage.free_start} one-time milestone helps.
-                  Referrals can take your balance up to {usage.free_max}.
+                  Invite five new student signups each month for up to 50 more helps.
+                  Your balance is capped at {usage.free_max}.
                 </div>
               )}
               <ul className="mt-5 space-y-2 flex-1">

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 import pytest
@@ -67,7 +67,7 @@ async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
         user = await session.scalar(select(User))
         service = CreditService(session, app.state.settings)
         assert await service.grant_bonus(user.user_id, 10, 100) == 10
-        for _ in range(42):
+        for _ in range(12):
             await service.consume(user.user_id)
         user = await session.get(User, user.user_id)
         assert user.ai_credits_remaining == 8
@@ -75,7 +75,7 @@ async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
         user.credit_period = "2020-01"
         await session.commit()
         refilled = await service.refill_if_needed(user.user_id)
-        assert refilled.ai_credits_remaining == 48
+        assert refilled.ai_credits_remaining == 18
         assert refilled.bonus_credits_remaining == 8
 
 
@@ -113,9 +113,72 @@ async def test_referral_award_is_applied_once(sql_app) -> None:
         )
 
 
-def test_freshman_milestones_can_unlock_fifty_extra_helps() -> None:
+def test_freshman_milestones_unlock_thirty_extra_helps() -> None:
     assert len(BONUS_QUESTS) == 5
-    assert sum(quest["credits"] for quest in BONUS_QUESTS) == 50
+    assert sum(quest["credits"] for quest in BONUS_QUESTS) == 30
+
+
+@pytest.mark.asyncio
+async def test_only_five_distinct_signup_referrals_earn_helps_each_month(sql_app) -> None:
+    app, factory = sql_app
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as referrer:
+        await register(referrer, "referrer@example.com")
+        code = (await referrer.get("/api/me/referrals")).json()["referral_code"]
+
+    for index in range(6):
+        async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as student:
+            response = await student.post(
+                "/api/auth/register",
+                json={
+                    "email": f"student{index}@example.com",
+                    "password": "study-pass",
+                    "name": f"Student {index}",
+                    "referral_code": code,
+                },
+            )
+            assert response.status_code == 200
+
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as referrer:
+        await referrer.post(
+            "/api/auth/login",
+            json={"email": "referrer@example.com", "password": "study-pass"},
+        )
+        referral_status = (await referrer.get("/api/me/referrals")).json()
+        assert referral_status["monthly_rewarded_count"] == 5
+        assert referral_status["monthly_reward_limit"] == 5
+        assert referral_status["monthly_credits_earned"] == 50
+
+    async with factory() as session:
+        referrer_user = await session.scalar(
+            select(User).where(User.normalized_email == "referrer@example.com")
+        )
+        referrals = (await session.scalars(select(Referral))).all()
+        assert referrer_user.ai_credits_remaining == 60
+        assert sorted(referral.credits_awarded for referral in referrals) == [0, 10, 10, 10, 10, 10]
+
+        for referral in referrals:
+            if referral.credits_awarded:
+                referral.created_at = datetime.now(timezone.utc) - timedelta(days=45)
+        await session.commit()
+
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as next_month_student:
+        response = await next_month_student.post(
+            "/api/auth/register",
+            json={
+                "email": "next-month@example.com",
+                "password": "study-pass",
+                "name": "Next Month",
+                "referral_code": code,
+            },
+        )
+        assert response.status_code == 200
+
+    async with factory() as session:
+        referrer_user = await session.scalar(
+            select(User).where(User.normalized_email == "referrer@example.com")
+        )
+        assert referrer_user.ai_credits_remaining == 70
 
 
 @pytest.mark.asyncio
@@ -127,14 +190,14 @@ async def test_freshman_refill_preserves_bonuses_without_exceeding_100(sql_app) 
         await register(client, "student@example.com")
     async with factory() as session:
         user = await session.scalar(select(User))
-        assert user.ai_credits_remaining == 40
-        user.bonus_credits_remaining = 70
-        user.ai_credits_remaining = 70
+        assert user.ai_credits_remaining == 10
+        user.bonus_credits_remaining = 95
+        user.ai_credits_remaining = 95
         user.credit_period = "2020-01"
         await session.commit()
         refilled = await CreditService(session, app.state.settings).refill_if_needed(user.user_id)
         assert refilled.ai_credits_remaining == 100
-        assert refilled.bonus_credits_remaining == 60
+        assert refilled.bonus_credits_remaining == 90
 
 
 @pytest.mark.asyncio

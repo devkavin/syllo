@@ -39,9 +39,9 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
     )
     plan_rows = {row[0]: (row[1], row[2]) for row in rows}
     assert plan_rows == {
-        "freshman": (0, 40),
-        "scholar": (899, 300),
-        "deans_list": (1399, 1000),
+        "freshman": (0, 10),
+        "scholar": (899, 250),
+        "deans_list": (1399, 800),
     }
     usage_columns = {column["name"] for column in inspect(engine).get_columns("ai_usage_logs")}
     assert {

@@ -50,10 +50,11 @@ class Settings(BaseSettings):
     gemini_user_requests_per_minute: int = Field(default=10, ge=1, le=60)
     gemini_project_requests_per_minute: int = Field(default=10, ge=1, le=600)
     gemini_monthly_budget_cents: int = Field(default=2500, ge=0)
-    free_plan_start_credits: int = Field(default=40, ge=0)
-    free_plan_milestone_max_credits: int = Field(default=90, ge=0)
+    free_plan_start_credits: int = Field(default=10, ge=0)
+    free_plan_milestone_max_credits: int = Field(default=40, ge=0)
     free_plan_max_credits: int = Field(default=100, ge=0)
     referral_bonus_credits: int = Field(default=10, ge=0)
+    referral_monthly_limit: int = Field(default=5, ge=0)
     deans_intro_months: int = Field(default=3, ge=1, le=12)
 
     db_pool_size: int = 5

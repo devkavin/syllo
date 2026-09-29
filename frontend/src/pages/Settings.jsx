@@ -141,7 +141,7 @@ function InviteCard() {
         <h2 className="font-serif text-xl !mb-0">Study with a friend</h2>
       </div>
       <p className="text-sm text-muted-foreground">
-        Share Syllo. When a friend signs up with your code, you both get {data.per_signup_credits} extra helps. That's it. One time, one bonus.
+        Share Syllo. When a new student signs up with your code, you both get {data.per_signup_credits} extra helps. You can earn rewards from up to {data.monthly_reward_limit} new signups each month; the new student receives their signup bonus once.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
@@ -166,6 +166,7 @@ function InviteCard() {
       <div className="text-xs text-muted-foreground flex items-center gap-4 pt-1">
         <span><span className="font-mono text-foreground">{data.count}</span> friend{data.count === 1 ? "" : "s"} joined</span>
         <span><span className="font-mono text-foreground">{data.credits_earned}</span> extra helps earned</span>
+        <span>{data.monthly_rewarded_count} / {data.monthly_reward_limit} rewarded this month</span>
       </div>
     </section>
   );

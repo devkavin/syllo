@@ -4,13 +4,13 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const plans = [
-  { id: "freshman", name: "Freshman", price_cents: 0, credits: 40, features: [] },
-  { id: "scholar", name: "Scholar", price_cents: 899, credits: 300, features: [] },
+  { id: "freshman", name: "Freshman", price_cents: 0, credits: 10, features: [] },
+  { id: "scholar", name: "Scholar", price_cents: 899, credits: 250, features: [] },
   {
     id: "deans_list",
     name: "Dean's List",
     price_cents: 1399,
-    credits: 1000,
+    credits: 800,
     features: [],
     intro_offer: { price_cents: 1099, months: 3 },
   },
@@ -24,8 +24,8 @@ vi.mock("@/lib/billing", () => ({ createCheckout: vi.fn() }));
 vi.mock("@/lib/usage", () => ({
   useUsage: () => ({ usage: {
     plan: { id: "freshman" },
-    free_start: 40,
-    free_milestone_max: 90,
+    free_start: 10,
+    free_milestone_max: 40,
     free_max: 100,
   }, refresh: vi.fn() }),
 }));
@@ -44,10 +44,11 @@ describe("upgrade pricing", () => {
     expect(screen.getByText("Then $8.99 / month")).toBeInTheDocument();
     expect(screen.getByText("Then $13.99 / month")).toBeInTheDocument();
     expect(screen.getByText(/planned pricing/i)).toBeInTheDocument();
-    expect(screen.getByText("40 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText("300 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText("1000 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText(/Earn up to 50 one-time milestone helps/i)).toBeInTheDocument();
+    expect(screen.getByText("10 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText("250 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText("800 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText(/Earn up to 30 one-time milestone helps/i)).toBeInTheDocument();
+    expect(screen.getByText(/five new student signups each month/i)).toBeInTheDocument();
   });
 
   it("shows paid plans as coming soon without offering checkout", async () => {
