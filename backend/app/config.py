@@ -63,6 +63,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_contract(self) -> "Settings":
+        if self.database_url and self.database_url.startswith("mysql"):
+            if not self.database_url.startswith("mysql+asyncmy://"):
+                raise ValueError("DATABASE_URL must use mysql+asyncmy:// for MySQL")
+
         if self.environment != "production":
             return self
 

@@ -15,6 +15,10 @@ not global server privileges. Use an async SQLAlchemy URL:
 mysql+asyncmy://USER:PASSWORD@HOST:3306/DATABASE?charset=utf8mb4
 ```
 
+Keep the `mysql+asyncmy://` prefix in Coolify's `DATABASE_URL`. A
+`mysql+pymysql://` or plain `mysql://` URL selects a synchronous driver; this
+app's migrations and API both require the installed async driver.
+
 URL-encode reserved characters in the username or password. Allow the Coolify
 server's outbound IP at the database host and require TLS if your provider supports
 it. The API entrypoint runs `alembic upgrade head` before Uvicorn, so a failed
@@ -74,6 +78,8 @@ Do not add placeholder Stripe credentials. With `BILLING_ENABLED=false`, the API
 rejects checkout and billing-portal requests server-side, while the plan page shows
 Scholar and Dean's List as coming soon. Payment-provider credentials will be added
 when Paddle billing is implemented.
+Coolify's saved environment variables are separate from `backend/.env.example`;
+removing a placeholder from that example does not delete an existing Coolify value.
 
 ## 3. Configure Google and Gemini
 

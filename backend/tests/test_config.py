@@ -46,6 +46,18 @@ def test_production_launch_mode_does_not_require_payment_credentials(
     assert settings.billing_enabled is False
 
 
+@pytest.mark.parametrize("driver", ["mysql+pymysql", "mysql"])
+def test_mysql_url_requires_async_driver(driver: str) -> None:
+    with pytest.raises(
+        ValidationError, match=r"DATABASE_URL must use mysql\+asyncmy://"
+    ):
+        Settings(
+            environment="development",
+            database_url=f"{driver}://user:password@db.example/syllo",
+            _env_file=None,
+        )
+
+
 def test_production_requires_payment_credentials_when_billing_is_enabled(
     test_settings_values: dict[str, object],
 ) -> None:
