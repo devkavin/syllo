@@ -37,6 +37,13 @@ services:
       FREE_PLAN_MAX_CREDITS: ${FREE_PLAN_MAX_CREDITS:-110}
       REFERRAL_BONUS_CREDITS: ${REFERRAL_BONUS_CREDITS:-10}
       DEANS_INTRO_MONTHS: ${DEANS_INTRO_MONTHS:-3}
+    volumes:
+      - type: bind
+        source: /data/coolify/ssl/coolify-ca.crt
+        target: /etc/ssl/certs/coolify-ca.crt
+        read_only: true
+        bind:
+          create_host_path: false
     expose:
       - "8000"
     healthcheck:

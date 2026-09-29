@@ -1,7 +1,7 @@
 # Deploying Syllo on Coolify
 
 Syllo ships as two containers: `web` (Vite assets served by Nginx) and `api`
-(FastAPI). MySQL is deliberately external and is not created by Compose. Only the
+(FastAPI). MySQL is a separate Coolify database resource, not created by this Compose file. Only the
 web service should receive a public Coolify domain; the API is reachable privately
 as `api:8000` and Nginx proxies `/api/` to it.
 
@@ -9,20 +9,34 @@ as `api:8000` and Nginx proxies `/api/` to it.
 
 Create an empty UTF-8 database and a least-privilege application user. The user
 needs normal schema migration and application CRUD privileges on that database,
-not global server privileges. Use an async SQLAlchemy URL:
+not global server privileges.
+
+For a MySQL resource on the same Coolify server:
+
+1. Stop MySQL, enable SSL in its Configuration > General page, then restart it.
+2. Confirm `/data/coolify/ssl/coolify-ca.crt` exists on the server. The `api`
+   service mounts this file read-only at `/etc/ssl/certs/coolify-ca.crt`.
+3. In the Syllo application, enable Configuration > Advanced > Connect To
+   Predefined Network. Use the same Coolify server and destination as MySQL.
+   Do not add a custom Compose network just for this connection.
+4. Copy the host, port, user, password, and database from MySQL's **Internal URL**.
+   Set Coolify's `DATABASE_URL` using those values and the `mysql+asyncmy` driver:
 
 ```text
-mysql+asyncmy://USER:PASSWORD@HOST:3306/DATABASE?charset=utf8mb4
+mysql+asyncmy://USER:PASSWORD@INTERNAL_HOST:3306/DATABASE?charset=utf8mb4&ssl_ca=/etc/ssl/certs/coolify-ca.crt
 ```
 
 Keep the `mysql+asyncmy://` prefix in Coolify's `DATABASE_URL`. A
 `mysql+pymysql://` or plain `mysql://` URL selects a synchronous driver; this
 app's migrations and API both require the installed async driver.
 
-URL-encode reserved characters in the username or password. Allow the Coolify
-server's outbound IP at the database host and require TLS if your provider supports
-it. The API entrypoint runs `alembic upgrade head` before Uvicorn, so a failed
-connection or migration prevents the service from accepting traffic.
+URL-encode reserved characters in the username or password. Do not paste an
+`ssl-mode` parameter from Coolify's MySQL URL into this SQLAlchemy URL; the
+`ssl_ca` parameter enables TLS with CA and hostname verification for `asyncmy`.
+The API entrypoint runs `alembic upgrade head` before Uvicorn, so a failed
+connection or migration prevents the service from accepting traffic. Once the
+private connection works, MySQL's public access can be disabled if no external
+client needs it.
 
 ## 2. Create the Coolify resource
 
