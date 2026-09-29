@@ -66,8 +66,8 @@ async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
     async with factory() as session:
         user = await session.scalar(select(User))
         service = CreditService(session, app.state.settings)
-        assert await service.grant_bonus(user.user_id, 10, 60) == 10
-        for _ in range(12):
+        assert await service.grant_bonus(user.user_id, 10, 100) == 10
+        for _ in range(42):
             await service.consume(user.user_id)
         user = await session.get(User, user.user_id)
         assert user.ai_credits_remaining == 8
@@ -75,7 +75,7 @@ async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
         user.credit_period = "2020-01"
         await session.commit()
         refilled = await service.refill_if_needed(user.user_id)
-        assert refilled.ai_credits_remaining == 18
+        assert refilled.ai_credits_remaining == 48
         assert refilled.bonus_credits_remaining == 8
 
 
@@ -119,6 +119,25 @@ def test_freshman_milestones_can_unlock_fifty_extra_helps() -> None:
 
 
 @pytest.mark.asyncio
+async def test_freshman_refill_preserves_bonuses_without_exceeding_100(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+    async with factory() as session:
+        user = await session.scalar(select(User))
+        assert user.ai_credits_remaining == 40
+        user.bonus_credits_remaining = 70
+        user.ai_credits_remaining = 70
+        user.credit_period = "2020-01"
+        await session.commit()
+        refilled = await CreditService(session, app.state.settings).refill_if_needed(user.user_id)
+        assert refilled.ai_credits_remaining == 100
+        assert refilled.bonus_credits_remaining == 60
+
+
+@pytest.mark.asyncio
 async def test_freshman_refunds_preserve_referral_capacity_to_one_hundred(sql_app) -> None:
     app, factory = sql_app
     async with httpx.AsyncClient(
@@ -148,7 +167,7 @@ async def test_milestone_claim_never_erases_referral_helps(sql_app) -> None:
         response = await client.post("/api/bonuses/claim/onboarded")
 
     assert response.status_code == 200
-    assert response.json()["credits_remaining"] == 90
+    assert response.json()["credits_remaining"] == 100
 
 
 @pytest.mark.asyncio

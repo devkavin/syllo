@@ -450,6 +450,7 @@ async def test_web_callback_binds_state_sets_cookies_and_links_verified_account(
         user = await session.scalar(select(User))
         assert user.google_sub == "google-sub-1"
         assert user.normalized_email == "student@example.com"
+        assert user.ai_credits_remaining == 40
 
 
 @pytest.mark.asyncio

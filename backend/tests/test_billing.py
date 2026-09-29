@@ -232,7 +232,7 @@ async def test_checkout_uses_owned_plan_and_rejects_client_billing_fields(
         transaction = await session.scalar(select(PaymentTransaction))
         assert transaction.user_id == user.user_id
         assert transaction.plan_id == "scholar"
-        assert transaction.amount_cents == 599
+        assert transaction.amount_cents == 899
 
 
 @pytest.mark.asyncio

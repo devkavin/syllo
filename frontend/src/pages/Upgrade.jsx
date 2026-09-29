@@ -6,8 +6,8 @@ import { useUsage } from "@/lib/usage";
 import { Check, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
 
 const PLANNED_PRICING = {
-  scholar: { price_cents: 699, intro_offer: { price_cents: 599, months: 3 } },
-  deans_list: { price_cents: 1299, intro_offer: { price_cents: 999, months: 3 } },
+  scholar: { price_cents: 899, intro_offer: { price_cents: 699, months: 3 } },
+  deans_list: { price_cents: 1399, intro_offer: { price_cents: 1099, months: 3 } },
 };
 
 export default function Upgrade() {
@@ -82,7 +82,8 @@ export default function Upgrade() {
               <div className="mt-2 text-sm text-muted-foreground">{p.credits} study helps per month</div>
               {isFree && usage?.free_max && (
                 <div className="mt-1 text-sm text-muted-foreground">
-                  Earn milestone and referral bonuses up to {usage.free_max} helps in your balance.
+                  Earn up to {usage.free_milestone_max - usage.free_start} one-time milestone helps.
+                  Referrals can take your balance up to {usage.free_max}.
                 </div>
               )}
               <ul className="mt-5 space-y-2 flex-1">

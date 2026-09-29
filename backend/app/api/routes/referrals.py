@@ -104,8 +104,10 @@ async def claim_bonus(
         raise HTTPException(status_code=400, detail="Quest not completed yet")
 
     plan = await session.get(Plan, user.plan_id)
+    # Five one-time milestones add at most 50; the balance cap also leaves
+    # room for a student's referral helps instead of crowding them out.
     cap = (
-        request.app.state.settings.free_plan_milestone_max_credits
+        request.app.state.settings.free_plan_max_credits
         if user.plan_id == "freshman"
         else plan.credits
     )

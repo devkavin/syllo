@@ -53,6 +53,7 @@ def append_query(uri: str, **values: str) -> str:
 async def resolve_google_user(
     session: AsyncSession,
     identity: GoogleIdentity,
+    start_credits: int,
 ) -> User:
     subject_user = await session.scalar(
         select(User).where(User.google_sub == identity.subject)
@@ -85,6 +86,7 @@ async def resolve_google_user(
             google_sub=identity.subject,
             auth_provider="google",
             referral_code=secrets.token_hex(4),
+            ai_credits_remaining=start_credits,
             credit_period=datetime.now(timezone.utc).strftime("%Y-%m"),
         )
         session.add(user)
@@ -162,7 +164,9 @@ async def google_callback(
             status_code=401,
             detail=f"Google sign-in failed (unexpected_error: {type(exc).__name__})",
         ) from exc
-    user = await resolve_google_user(session, identity)
+    user = await resolve_google_user(
+        session, identity, request.app.state.settings.free_plan_start_credits
+    )
 
     if payload["client"] == "mobile":
         raw_code = secrets.token_urlsafe(32)

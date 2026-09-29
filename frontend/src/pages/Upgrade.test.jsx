@@ -4,15 +4,15 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const plans = [
-  { id: "freshman", name: "Freshman", price_cents: 0, credits: 10, features: [] },
-  { id: "scholar", name: "Scholar", price_cents: 599, credits: 500, features: [] },
+  { id: "freshman", name: "Freshman", price_cents: 0, credits: 40, features: [] },
+  { id: "scholar", name: "Scholar", price_cents: 899, credits: 300, features: [] },
   {
     id: "deans_list",
     name: "Dean's List",
-    price_cents: 1299,
-    credits: 1500,
+    price_cents: 1399,
+    credits: 1000,
     features: [],
-    intro_offer: { price_cents: 999, months: 3 },
+    intro_offer: { price_cents: 1099, months: 3 },
   },
 ];
 
@@ -22,7 +22,12 @@ vi.mock("@/lib/api", () => ({
 }));
 vi.mock("@/lib/billing", () => ({ createCheckout: vi.fn() }));
 vi.mock("@/lib/usage", () => ({
-  useUsage: () => ({ usage: { plan: { id: "freshman" } }, refresh: vi.fn() }),
+  useUsage: () => ({ usage: {
+    plan: { id: "freshman" },
+    free_start: 40,
+    free_milestone_max: 90,
+    free_max: 100,
+  }, refresh: vi.fn() }),
 }));
 
 import Upgrade from "./Upgrade";
@@ -33,13 +38,16 @@ describe("upgrade pricing", () => {
   it("shows planned intro and regular prices while checkout is unavailable", async () => {
     render(<MemoryRouter><Upgrade /></MemoryRouter>);
 
-    expect(await screen.findByText("$5.99")).toBeInTheDocument();
-    expect(screen.getByText("$9.99")).toBeInTheDocument();
+    expect(await screen.findByText("$6.99")).toBeInTheDocument();
+    expect(screen.getByText("$10.99")).toBeInTheDocument();
     expect(screen.getAllByText("for your first 3 months")).toHaveLength(2);
-    expect(screen.getByText("Then $6.99 / month")).toBeInTheDocument();
-    expect(screen.getByText("Then $12.99 / month")).toBeInTheDocument();
+    expect(screen.getByText("Then $8.99 / month")).toBeInTheDocument();
+    expect(screen.getByText("Then $13.99 / month")).toBeInTheDocument();
     expect(screen.getByText(/planned pricing/i)).toBeInTheDocument();
-    expect(screen.getByText("1500 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText("40 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText("300 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText("1000 study helps per month")).toBeInTheDocument();
+    expect(screen.getByText(/Earn up to 50 one-time milestone helps/i)).toBeInTheDocument();
   });
 
   it("shows paid plans as coming soon without offering checkout", async () => {

@@ -32,12 +32,17 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
     assert (
         engine.connect().exec_driver_sql("SELECT COUNT(*) FROM plans").scalar_one() == 3
     )
-    plan_rows = dict(
+    rows = (
         engine.connect()
-        .exec_driver_sql("SELECT plan_id, price_cents FROM plans")
+        .exec_driver_sql("SELECT plan_id, price_cents, credits FROM plans")
         .all()
     )
-    assert plan_rows == {"freshman": 0, "scholar": 599, "deans_list": 1299}
+    plan_rows = {row[0]: (row[1], row[2]) for row in rows}
+    assert plan_rows == {
+        "freshman": (0, 40),
+        "scholar": (899, 300),
+        "deans_list": (1399, 1000),
+    }
     usage_columns = {column["name"] for column in inspect(engine).get_columns("ai_usage_logs")}
     assert {
         "model",

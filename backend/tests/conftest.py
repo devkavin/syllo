@@ -36,13 +36,13 @@ async def sql_app(test_settings_values):
     async with factory() as session:
         session.add_all(
             [
-                Plan(plan_id="freshman", name="Freshman", price_cents=0, credits=10),
-                Plan(plan_id="scholar", name="Scholar", price_cents=599, credits=500),
+                Plan(plan_id="freshman", name="Freshman", price_cents=0, credits=40),
+                Plan(plan_id="scholar", name="Scholar", price_cents=899, credits=300),
                 Plan(
                     plan_id="deans_list",
                     name="Dean's List",
-                    price_cents=1299,
-                    credits=1500,
+                    price_cents=1399,
+                    credits=1000,
                 ),
             ]
         )

@@ -116,7 +116,7 @@ async def test_paid_checkout_is_atomic_and_duplicate_event_is_idempotent(
             select(func.count()).select_from(StripeEvent)
         )
         assert stored_user.plan_id == "scholar"
-        assert stored_user.ai_credits_remaining == 500
+        assert stored_user.ai_credits_remaining == 300
         assert stored_user.stripe_subscription_id == "sub_student"
         assert transaction.payment_status == "paid"
         assert transaction.amount_cents == 599
@@ -258,7 +258,7 @@ async def test_subscription_updates_failure_and_cancellation_update_access(
     async with factory() as session:
         stored_user = await session.get(User, user.user_id)
         assert stored_user.plan_id == "freshman"
-        assert stored_user.ai_credits_remaining == 10
+        assert stored_user.ai_credits_remaining == 40
         assert stored_user.subscription_status == "canceled"
 
 

@@ -197,8 +197,8 @@ async def test_failed_request_restores_earned_help(sql_app) -> None:
         async with factory() as session:
             user = await session.scalar(select(User))
             service = CreditService(session, app.state.settings)
-            await service.grant_bonus(user.user_id, 5, 60)
-            for _ in range(10):
+            await service.grant_bonus(user.user_id, 5, 100)
+            for _ in range(40):
                 await service.consume(user.user_id)
         response = await client.post("/api/ai/explain", json={"concept": "limits"})
     assert response.status_code == 502
@@ -298,7 +298,7 @@ async def test_usage_reports_weekly_pace_without_weekly_reset(sql_app) -> None:
         await register(client, "student@example.com")
         assert (await client.post("/api/ai/explain", json={"concept": "limits"})).status_code == 200
         usage = (await client.get("/api/billing/usage")).json()
-    assert usage["credits_remaining"] == 9
+    assert usage["credits_remaining"] == 39
     assert usage["cycle_used"] == 1
     assert usage["used_today"] == 1
     assert usage["used_this_week"] == 1
