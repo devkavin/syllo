@@ -17,6 +17,7 @@ from backend.app.database import get_session
 from backend.app.models import OAuthLoginCode, User
 from backend.app.services.google_oauth import (
     GoogleIdentity,
+    GoogleOAuthError,
     GoogleOAuthService,
     OAuthStateService,
 )
@@ -133,8 +134,16 @@ async def google_callback(
         )
     try:
         identity = await google_service(request).exchange_code(code)
+    except GoogleOAuthError as exc:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Google sign-in failed ({exc.stage}: {exc.code})",
+        ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=401, detail="Google sign-in failed") from exc
+        raise HTTPException(
+            status_code=401,
+            detail=f"Google sign-in failed (unexpected_error: {type(exc).__name__})",
+        ) from exc
     user = await resolve_google_user(session, identity)
 
     if payload["client"] == "mobile":

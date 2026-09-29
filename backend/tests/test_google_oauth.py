@@ -2,25 +2,32 @@ from __future__ import annotations
 
 import hashlib
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 from urllib.parse import parse_qs, urlparse
 
 import httpx
 import pytest
 from jose import jwt
+from oauthlib.oauth2.rfc6749.errors import InvalidClientError
 from sqlalchemy import func, select
 
+from backend.app.config import Settings
 from backend.app.models import OAuthLoginCode, User
+from backend.app.services import google_oauth
 from backend.app.services.google_oauth import GoogleIdentity, validate_identity_claims
 
 
 class FakeGoogleOAuth:
-    def __init__(self, identity: GoogleIdentity | None = None) -> None:
+    def __init__(
+        self, identity: GoogleIdentity | None = None, failure: Exception | None = None
+    ) -> None:
         self.identity = identity or GoogleIdentity(
             subject="google-sub-1",
             email="student@example.com",
             name="Student",
             picture="https://images.example/student.png",
         )
+        self.failure = failure
         self.states: list[str] = []
 
     def authorization_url(self, state: str) -> str:
@@ -28,6 +35,8 @@ class FakeGoogleOAuth:
         return f"https://accounts.google.com/o/oauth2/v2/auth?state={state}&response_type=code&scope=openid+email+profile"
 
     async def exchange_code(self, code: str) -> GoogleIdentity:
+        if self.failure is not None:
+            raise self.failure
         if code == "denied":
             raise ValueError("exchange denied")
         return self.identity
@@ -35,6 +44,203 @@ class FakeGoogleOAuth:
 
 def state_from(location: str) -> str:
     return parse_qs(urlparse(location).query)["state"][0]
+
+
+@pytest.mark.asyncio
+async def test_google_token_exchange_reports_safe_provider_error_code(
+    monkeypatch, test_settings_values
+) -> None:
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+
+    class RejectingFlow:
+        def fetch_token(self, *, code):
+            raise InvalidClientError(description="private-client-secret")
+
+    monkeypatch.setattr(service, "_flow", lambda: RejectingFlow())
+    with pytest.raises(Exception) as caught:
+        await service.exchange_code("private-authorization-code")
+
+    assert isinstance(caught.value, google_oauth.GoogleOAuthError)
+    assert caught.value.stage == "token_exchange"
+    assert caught.value.code == "invalid_client"
+    assert "private-client-secret" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_google_unknown_provider_failure_reports_type_not_secret(
+    monkeypatch, test_settings_values
+) -> None:
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+
+    class RejectingFlow:
+        def fetch_token(self, *, code):
+            raise RuntimeError("private-client-secret")
+
+    monkeypatch.setattr(service, "_flow", lambda: RejectingFlow())
+    with pytest.raises(google_oauth.GoogleOAuthError) as caught:
+        await service.exchange_code("private-code")
+
+    assert (caught.value.stage, caught.value.code) == (
+        "token_exchange",
+        "provider_error_RuntimeError",
+    )
+    assert "private-client-secret" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_google_missing_id_token_has_specific_safe_code(
+    monkeypatch, test_settings_values
+) -> None:
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+    flow = SimpleNamespace(
+        fetch_token=lambda **_kwargs: None,
+        credentials=SimpleNamespace(id_token=None),
+    )
+    monkeypatch.setattr(service, "_flow", lambda: flow)
+
+    with pytest.raises(google_oauth.GoogleOAuthError) as caught:
+        await service.exchange_code("private-authorization-code")
+
+    assert (caught.value.stage, caught.value.code) == ("id_token", "missing")
+
+
+@pytest.mark.asyncio
+async def test_google_id_token_verification_failure_has_specific_safe_code(
+    monkeypatch, test_settings_values
+) -> None:
+    from google.oauth2 import id_token
+
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+    flow = SimpleNamespace(
+        fetch_token=lambda **_kwargs: None,
+        credentials=SimpleNamespace(id_token="private-id-token"),
+    )
+    monkeypatch.setattr(service, "_flow", lambda: flow)
+
+    def reject_token(*_args):
+        raise ValueError("private-id-token")
+
+    monkeypatch.setattr(id_token, "verify_oauth2_token", reject_token)
+    with pytest.raises(google_oauth.GoogleOAuthError) as caught:
+        await service.exchange_code("private-authorization-code")
+
+    assert (caught.value.stage, caught.value.code) == (
+        "id_token",
+        "verification_failed",
+    )
+    assert "private-id-token" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_google_identity_claim_failure_reports_the_failed_check(
+    monkeypatch, test_settings_values
+) -> None:
+    from google.oauth2 import id_token
+
+    settings = Settings(
+        **test_settings_values,
+        google_client_id="client-id",
+        google_client_secret="private-client-secret",
+        google_redirect_uri="https://testserver/api/auth/google/callback",
+        _env_file=None,
+    )
+    service = google_oauth.GoogleOAuthService(settings)
+    flow = SimpleNamespace(
+        fetch_token=lambda **_kwargs: None,
+        credentials=SimpleNamespace(id_token="private-id-token"),
+    )
+    monkeypatch.setattr(service, "_flow", lambda: flow)
+    monkeypatch.setattr(
+        id_token,
+        "verify_oauth2_token",
+        lambda *_args: {
+            "aud": "other-client",
+            "email_verified": True,
+            "sub": "subject-1",
+            "email": "student@example.com",
+        },
+    )
+    with pytest.raises(google_oauth.GoogleOAuthError) as caught:
+        await service.exchange_code("private-authorization-code")
+
+    assert (caught.value.stage, caught.value.code) == (
+        "identity_claims",
+        "audience_mismatch",
+    )
+
+
+@pytest.mark.asyncio
+async def test_google_callback_returns_safe_diagnostic_without_secrets(sql_app) -> None:
+    app, _ = sql_app
+    failure = google_oauth.GoogleOAuthError("token_exchange", "invalid_client")
+    failure.__cause__ = RuntimeError("client_secret=private-client-secret")
+    app.state.google_service = FakeGoogleOAuth(failure=failure)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://testserver",
+        follow_redirects=False,
+    ) as client:
+        start = await client.get("/api/auth/google/start")
+        callback = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "private-code", "state": state_from(start.headers["location"])},
+        )
+
+    assert callback.status_code == 401
+    assert callback.json()["detail"] == "Google sign-in failed (token_exchange: invalid_client)"
+    assert "private" not in callback.text
+
+
+@pytest.mark.asyncio
+async def test_google_callback_identifies_unexpected_error_type_without_secrets(
+    sql_app,
+) -> None:
+    app, _ = sql_app
+    app.state.google_service = FakeGoogleOAuth(
+        failure=RuntimeError("client_secret=private-client-secret")
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://testserver",
+        follow_redirects=False,
+    ) as client:
+        start = await client.get("/api/auth/google/start")
+        callback = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "private-code", "state": state_from(start.headers["location"])},
+        )
+
+    assert callback.status_code == 401
+    assert callback.json()["detail"] == "Google sign-in failed (unexpected_error: RuntimeError)"
+    assert "private" not in callback.text
 
 
 @pytest.mark.asyncio

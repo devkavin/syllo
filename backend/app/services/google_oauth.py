@@ -10,6 +10,16 @@ from jose import JWTError, jwt
 from backend.app.config import Settings
 
 STATE_ALGORITHM = "HS256"
+SAFE_PROVIDER_ERRORS = frozenset(
+    {"invalid_client", "invalid_grant", "invalid_request", "unauthorized_client"}
+)
+
+
+class GoogleOAuthError(Exception):
+    def __init__(self, stage: str, code: str) -> None:
+        self.stage = stage
+        self.code = code
+        super().__init__(f"{stage}: {code}")
 
 
 @dataclass(frozen=True)
@@ -127,14 +137,39 @@ class GoogleOAuthService:
         from google.oauth2 import id_token
 
         flow = self._flow()
-        await asyncio.to_thread(flow.fetch_token, code=code)
-        raw_id_token = flow.credentials.id_token
+        try:
+            await asyncio.to_thread(flow.fetch_token, code=code)
+        except Exception as exc:
+            provider_code = getattr(exc, "error", None)
+            safe_code = (
+                provider_code
+                if provider_code in SAFE_PROVIDER_ERRORS
+                else f"provider_error_{type(exc).__name__}"
+            )
+            raise GoogleOAuthError("token_exchange", safe_code) from exc
+        try:
+            raw_id_token = flow.credentials.id_token
+        except Exception as exc:
+            raise GoogleOAuthError("id_token", "missing") from exc
         if not raw_id_token:
-            raise ValueError("Google returned no ID token")
-        claims = await asyncio.to_thread(
-            id_token.verify_oauth2_token,
-            raw_id_token,
-            GoogleRequest(),
-            self.client_id,
-        )
-        return validate_identity_claims(claims, self.client_id)
+            raise GoogleOAuthError("id_token", "missing")
+        try:
+            claims = await asyncio.to_thread(
+                id_token.verify_oauth2_token,
+                raw_id_token,
+                GoogleRequest(),
+                self.client_id,
+            )
+        except Exception as exc:
+            raise GoogleOAuthError("id_token", "verification_failed") from exc
+        try:
+            return validate_identity_claims(claims, self.client_id)
+        except ValueError as exc:
+            claim_errors = {
+                "Google token audience does not match": "audience_mismatch",
+                "Google email is not verified": "email_not_verified",
+                "Google identity is incomplete": "incomplete_identity",
+            }
+            raise GoogleOAuthError(
+                "identity_claims", claim_errors.get(str(exc), "invalid")
+            ) from exc
