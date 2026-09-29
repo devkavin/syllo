@@ -9,7 +9,7 @@ export default function Privacy() {
     >
       <LegalSection title="Who operates Syllo">
         <p>
-          Syllo is operated by <strong>Kavin HQ, trading as Syllo</strong>, in Colombo, Sri Lanka. In this policy, “Syllo”, “we”, and “us” refer to that operator.
+          Syllo is operated by <strong>Kavindra Senanayake, an individual trading as Syllo</strong>, based in Colombo, Sri Lanka. In this policy, “Syllo”, “we”, and “us” refer to that operator.
         </p>
       </LegalSection>
 
