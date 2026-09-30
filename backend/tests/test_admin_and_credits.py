@@ -80,6 +80,57 @@ async def test_earned_freshman_helps_survive_monthly_refill(sql_app) -> None:
 
 
 @pytest.mark.asyncio
+async def test_completed_starter_steps_permanently_refill_forty_helps(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        async with factory() as session:
+            user = await session.scalar(select(User))
+            user.credit_bonuses = {quest["id"]: True for quest in BONUS_QUESTS}
+            user.ai_credits_remaining = 0
+            user.bonus_credits_remaining = 0
+            user.credit_period = "2020-01"
+            await session.commit()
+
+        usage = (await client.get("/api/billing/usage")).json()
+        assert usage["credits_remaining"] == 40
+        assert usage["monthly_allowance"] == 40
+
+        async with factory() as session:
+            user = await session.scalar(select(User))
+            user.ai_credits_remaining = 0
+            user.credit_period = "2020-01"
+            await session.commit()
+
+        renewed = (await client.get("/api/billing/usage")).json()
+        assert renewed["credits_remaining"] == 40
+        assert renewed["monthly_allowance"] == 40
+
+
+@pytest.mark.asyncio
+async def test_incomplete_starter_steps_refill_ten_and_preserve_referrals(sql_app) -> None:
+    app, factory = sql_app
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        await register(client, "student@example.com")
+        async with factory() as session:
+            user = await session.scalar(select(User))
+            user.credit_bonuses = {"onboarded": True}
+            user.ai_credits_remaining = 10
+            user.bonus_credits_remaining = 10
+            user.credit_period = "2020-01"
+            await session.commit()
+
+        usage = (await client.get("/api/billing/usage")).json()
+        assert usage["credits_remaining"] == 20
+        assert usage["monthly_allowance"] == 10
+        assert usage["bonus_credits_remaining"] == 10
+
+
+@pytest.mark.asyncio
 async def test_referral_award_is_applied_once(sql_app) -> None:
     app, factory = sql_app
     transport = httpx.ASGITransport(app=app)

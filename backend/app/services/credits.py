@@ -28,6 +28,14 @@ def referral_month_bounds() -> tuple[datetime, datetime]:
     return start, (start + timedelta(days=32)).replace(day=1)
 
 
+def monthly_allowance(user: User, plan: Plan | None, settings: Settings) -> int:
+    if user.plan_id == "freshman" and all(
+        (user.credit_bonuses or {}).get(quest["id"]) for quest in BONUS_QUESTS
+    ):
+        return settings.free_plan_milestone_max_credits
+    return plan.credits if plan else 0
+
+
 class CreditService:
     def __init__(self, session: AsyncSession, settings: Settings) -> None:
         self.session = session
@@ -46,7 +54,7 @@ class CreditService:
         if user.credit_period == period:
             return
         plan = await self.session.get(Plan, user.plan_id)
-        recurring = plan.credits if plan else 0
+        recurring = monthly_allowance(user, plan, self.settings)
         if user.plan_id == "freshman":
             user.bonus_credits_remaining = min(
                 max(0, user.bonus_credits_remaining),

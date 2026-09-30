@@ -47,8 +47,8 @@ describe("upgrade pricing", () => {
     expect(screen.getByText("10 study helps per month")).toBeInTheDocument();
     expect(screen.getByText("250 study helps per month")).toBeInTheDocument();
     expect(screen.getByText("800 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText(/Earn up to 30 one-time milestone helps/i)).toBeInTheDocument();
-    expect(screen.getByText(/five new student signups each month/i)).toBeInTheDocument();
+    expect(screen.getByText(/Complete the starter steps to unlock 40 helps each month, for good/i)).toBeInTheDocument();
+    expect(screen.getByText(/up to five rewarded signups per month/i)).toBeInTheDocument();
   });
 
   it("shows paid plans as coming soon without offering checkout", async () => {

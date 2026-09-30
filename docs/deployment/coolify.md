@@ -90,7 +90,7 @@ Recommended values:
 - `GEMINI_PROJECT_REQUESTS_PER_MINUTE=10` (shared across all students; lower this to fit the active Google API tier)
 - `GEMINI_MONTHLY_BUDGET_CENTS=2500`
 - `FREE_PLAN_START_CREDITS=10`
-- `FREE_PLAN_MILESTONE_MAX_CREDITS=40` (10 starting helps plus 30 one-time milestone helps)
+- `FREE_PLAN_MILESTONE_MAX_CREDITS=40` (permanent monthly allowance after all starter milestones are claimed)
 - `REFERRAL_BONUS_CREDITS=10` (awarded to both students for a successful referral)
 - `REFERRAL_MONTHLY_LIMIT=5` (maximum rewarded distinct new signups per referrer per UTC month)
 - `FREE_PLAN_MAX_CREDITS=100` (maximum Freshman balance)

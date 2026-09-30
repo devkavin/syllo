@@ -9,8 +9,9 @@ from fastapi import HTTPException
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.config import Settings
+from backend.app.config import Settings, get_settings
 from backend.app.models import PaymentTransaction, Plan, User
+from backend.app.services.credits import monthly_allowance
 
 
 def as_dict(value: Any) -> dict:
@@ -240,9 +241,14 @@ class StripeBillingService:
         elif status in {"canceled", "unpaid", "incomplete_expired"}:
             freshman = await session.get(Plan, "freshman")
             user.plan_id = "freshman"
-            user.ai_credits_remaining = freshman.credits if freshman else 10
+            settings = get_settings()
+            recurring = monthly_allowance(user, freshman, settings)
+            user.bonus_credits_remaining = min(
+                max(0, user.bonus_credits_remaining),
+                max(0, settings.free_plan_max_credits - recurring),
+            )
+            user.ai_credits_remaining = recurring + user.bonus_credits_remaining
             user.credit_period = datetime.now(timezone.utc).strftime("%Y-%m")
-            user.credit_bonuses = {}
 
     @staticmethod
     async def _apply_invoice_failure(session: AsyncSession, obj: dict) -> None:

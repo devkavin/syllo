@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
 from backend.app.models import AIUsageLog, PaymentTransaction, Plan, User
-from backend.app.services.credits import BONUS_QUESTS, CreditService
+from backend.app.services.credits import BONUS_QUESTS, CreditService, monthly_allowance
 from backend.app.services.stripe_billing import StripeBillingService
 
 router = APIRouter(prefix="/billing", tags=["billing"])
@@ -120,6 +120,7 @@ async def usage(
         )
     ).one()
     cycle_used = int(cycle_used)
+    recurring = monthly_allowance(user, plan, request.app.state.settings)
     return {
         "plan": plan_dict(plan),
         "credits_remaining": user.ai_credits_remaining,
@@ -128,7 +129,8 @@ async def usage(
         "cycle_allowance": user.ai_credits_remaining + cycle_used,
         "used_today": int(used_today),
         "used_this_week": int(used_this_week),
-        "weekly_pace": round(plan.credits * 7 / monthrange(now.year, now.month)[1], 1),
+        "weekly_pace": round(recurring * 7 / monthrange(now.year, now.month)[1], 1),
+        "monthly_allowance": recurring,
         "next_refill_at": next_month.isoformat(),
         "bonus_credits_remaining": user.bonus_credits_remaining,
         "bonuses_claimed": user.credit_bonuses,

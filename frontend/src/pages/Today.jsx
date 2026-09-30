@@ -382,7 +382,7 @@ function BonusQuests() {
         <span className="section-title">Earn more helps</span>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Start with {usage.free_start} helps each month. Claim study milestones once, and earn more from up to five new student signups each month. Your balance is capped at {usage.free_max}.
+        Start with {usage.free_start} helps each month. Complete these starter steps to unlock {usage.free_milestone_max} monthly helps for good. Earn 10 extra helps when a new student joins through your invite, for up to five rewarded signups per month. Your balance is capped at {usage.free_max}.
       </p>
       <ul className="space-y-2">
         {quests.map((q) => {

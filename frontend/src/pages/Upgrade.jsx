@@ -79,12 +79,10 @@ export default function Upgrade() {
                   <div className="text-muted-foreground">Then ${(pricing.price_cents / 100).toFixed(2)} / month</div>
                 </div>
               )}
-              <div className="mt-2 text-sm text-muted-foreground">{p.credits} study helps per month</div>
+              <div className="mt-2 text-sm text-muted-foreground">{isFree && active ? (usage?.monthly_allowance ?? p.credits) : p.credits} study helps per month</div>
               {isFree && usage?.free_max && (
                 <div className="mt-1 text-sm text-muted-foreground">
-                  Earn up to {usage.free_milestone_max - usage.free_start} one-time milestone helps.
-                  Invite five new student signups each month for up to 50 more helps.
-                  Your balance is capped at {usage.free_max}.
+                  Start with {usage.free_start} study helps each month. Complete the starter steps to unlock {usage.free_milestone_max} helps each month, for good. Earn 10 extra helps when a new student joins through your invite, for up to five rewarded signups per month. Your total help balance is capped at {usage.free_max}.
                 </div>
               )}
               <ul className="mt-5 space-y-2 flex-1">

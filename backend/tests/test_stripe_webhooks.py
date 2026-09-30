@@ -7,6 +7,7 @@ import pytest
 from sqlalchemy import func, select
 
 from backend.app.models import PaymentTransaction, StripeEvent, User
+from backend.app.services.credits import BONUS_QUESTS
 from backend.app.services.stripe_billing import StripeBillingService
 
 
@@ -260,6 +261,50 @@ async def test_subscription_updates_failure_and_cancellation_update_access(
         assert stored_user.plan_id == "freshman"
         assert stored_user.ai_credits_remaining == 10
         assert stored_user.subscription_status == "canceled"
+
+
+@pytest.mark.asyncio
+async def test_cancellation_preserves_permanent_freshman_unlock(sql_app) -> None:
+    app, factory = sql_app
+    user = await seed_checkout(factory)
+    async with factory() as session:
+        stored_user = await session.get(User, user.user_id)
+        stored_user.credit_bonuses = {quest["id"]: True for quest in BONUS_QUESTS}
+        await session.commit()
+
+    app.state.stripe_service = FakeWebhookStripe(checkout_event(user.user_id, created=20))
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    ) as client:
+        paid = await client.post(
+            "/api/webhook/stripe",
+            content=b"signed",
+            headers={"Stripe-Signature": "valid"},
+        )
+        app.state.stripe_service.event = {
+            "id": "evt_canceled_after_unlock",
+            "type": "customer.subscription.deleted",
+            "created": 21,
+            "data": {"object": {
+                "id": "sub_student",
+                "customer": "cus_student",
+                "status": "canceled",
+                "metadata": {"user_id": user.user_id, "plan_id": "scholar"},
+            }},
+        }
+        canceled = await client.post(
+            "/api/webhook/stripe",
+            content=b"signed",
+            headers={"Stripe-Signature": "valid"},
+        )
+
+    assert paid.status_code == 200
+    assert canceled.status_code == 200
+    async with factory() as session:
+        stored_user = await session.get(User, user.user_id)
+        assert stored_user.plan_id == "freshman"
+        assert stored_user.ai_credits_remaining == 40
+        assert all(stored_user.credit_bonuses.get(quest["id"]) for quest in BONUS_QUESTS)
 
 
 @pytest.mark.asyncio
