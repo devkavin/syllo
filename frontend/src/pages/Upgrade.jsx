@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { createCheckout } from "@/lib/billing";
 import { useUsage } from "@/lib/usage";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 
 const PLANNED_PRICING = {
   scholar: { price_cents: 899, intro_offer: { price_cents: 699, months: 3 } },
@@ -78,6 +78,18 @@ export default function Upgrade() {
           const isFree = p.price_cents === 0;
           const pricing = !checkoutAvailable && PLANNED_PRICING[p.id] ? PLANNED_PRICING[p.id] : p;
           const shownPrice = pricing.intro_offer?.price_cents ?? pricing.price_cents;
+          const freshmanAllowance = isFree && active ? (usage?.monthly_allowance ?? p.credits) : p.credits;
+          const benefits = isFree
+            ? [
+                "Subjects, notes, tasks and timetable",
+                "Focus sessions and study progress",
+                freshmanAllowance >= (usage?.free_milestone_max ?? 40)
+                  ? `${freshmanAllowance} study helps monthly, unlocked through free study milestones`
+                  : `${freshmanAllowance} study helps monthly; unlock ${usage?.free_milestone_max ?? 40} monthly through free study milestones`,
+              ]
+            : p.id === "scholar"
+              ? ["Everything in Freshman", `${p.credits} study helps monthly`]
+              : ["Everything in Scholar", `${p.credits} study helps monthly instead of 250`];
           return (
             <div
               key={p.id}
@@ -95,14 +107,14 @@ export default function Upgrade() {
                   <div className="text-muted-foreground">Then ${(pricing.price_cents / 100).toFixed(2)} / month</div>
                 </div>
               )}
-              <div className="mt-2 text-sm text-muted-foreground">{isFree && active ? (usage?.monthly_allowance ?? p.credits) : p.credits} study helps per month</div>
-              <p className="mt-3 text-sm text-muted-foreground flex-1">
-                {isFree
-                  ? `Plan and study for free. Use Syllo’s free study milestones to earn ${usage?.free_milestone_max ?? 40} helps every month.`
-                  : p.id === "scholar"
-                    ? "Everything in Freshman, with more help for regular study."
-                    : "Everything in Scholar, with room for intensive study and revision."}
-              </p>
+              <ul className="mt-5 space-y-2 flex-1">
+                {benefits.map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{benefit}</span>
+                  </li>
+                ))}
+              </ul>
               <div className="mt-6">
                 {active ? (
                   <button className="btn btn-outline w-full" disabled data-testid={`plan-current-${p.id}`}>Your current plan</button>

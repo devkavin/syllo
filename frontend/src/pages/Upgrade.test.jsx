@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -47,13 +47,26 @@ describe("upgrade pricing", () => {
     expect(screen.getByText("Then $8.99 / month")).toBeInTheDocument();
     expect(screen.getByText("Then $13.99 / month")).toBeInTheDocument();
     expect(screen.getByText(/planned pricing/i)).toBeInTheDocument();
-    expect(screen.getByText("10 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText("250 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText("800 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText("Plan and study for free. Use Syllo’s free study milestones to earn 40 helps every month.")).toBeInTheDocument();
-    expect(screen.getByText("Everything in Freshman, with more help for regular study.")).toBeInTheDocument();
-    expect(screen.getByText("Everything in Scholar, with room for intensive study and revision.")).toBeInTheDocument();
     expect(screen.queryByText(/invite|balance is capped|Most popular|upload/i)).not.toBeInTheDocument();
+  });
+
+  it("lists the included tools and correct help allowance on each plan", async () => {
+    render(<MemoryRouter><Upgrade /></MemoryRouter>);
+
+    const freshman = await screen.findByTestId("plan-freshman");
+    expect(within(freshman).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Subjects, notes, tasks and timetable",
+      "Focus sessions and study progress",
+      "10 study helps monthly; unlock 40 monthly through free study milestones",
+    ]);
+    expect(within(screen.getByTestId("plan-scholar")).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Everything in Freshman",
+      "250 study helps monthly",
+    ]);
+    expect(within(screen.getByTestId("plan-deans_list")).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "Everything in Scholar",
+      "800 study helps monthly instead of 250",
+    ]);
   });
 
   it("sets a descriptive pricing-page title and summary", () => {
