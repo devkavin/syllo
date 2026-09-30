@@ -63,7 +63,7 @@ class StripeBillingService:
             return False
         self._intro_coupon_valid = bool(
             coupon.get("valid", True)
-            and coupon.get("amount_off") == 300
+            and coupon.get("amount_off") == 200
             and coupon.get("currency") == "usd"
             and coupon.get("duration") == "repeating"
             and coupon.get("duration_in_months") == self.settings.deans_intro_months

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { createCheckout } from "@/lib/billing";
 import { useUsage } from "@/lib/usage";
-import { Check, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 const PLANNED_PRICING = {
   scholar: { price_cents: 899, intro_offer: { price_cents: 699, months: 3 } },
-  deans_list: { price_cents: 1399, intro_offer: { price_cents: 1099, months: 3 } },
+  deans_list: { price_cents: 1399, intro_offer: { price_cents: 1199, months: 3 } },
 };
 
 export default function Upgrade() {
@@ -17,6 +17,24 @@ export default function Upgrade() {
   const [err, setErr] = useState("");
   const { usage, refresh } = useUsage();
   const nav = useNavigate();
+
+  useEffect(() => {
+    const previousTitle = document.title;
+    const existingDescription = document.querySelector('meta[name="description"]');
+    const description = existingDescription || document.createElement("meta");
+    const previousDescription = existingDescription?.content;
+    if (!existingDescription) {
+      description.name = "description";
+      document.head.appendChild(description);
+    }
+    document.title = "Syllo Plans & Pricing | Study Planner for Students";
+    description.content = "Compare Syllo study plans for subjects, notes, timetables, tasks, focus sessions, and progress. Start free and choose the study help that fits your routine.";
+    return () => {
+      document.title = previousTitle;
+      if (existingDescription) description.content = previousDescription;
+      else description.remove();
+    };
+  }, []);
 
   useEffect(() => {
     http.get("/billing/plans").then((r) => {
@@ -41,7 +59,10 @@ export default function Upgrade() {
       <div className="hero-glow relative rise">
         <button onClick={() => nav(-1)} className="btn btn-ghost !px-2 !py-1 -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
         <div className="section-title mb-2">Your plan</div>
-        <h1 className="font-serif text-4xl tracking-tight">Pick your rhythm</h1>
+        <h1 className="font-serif text-4xl tracking-tight">Study plans that fit your routine</h1>
+        <p className="text-muted-foreground mt-2 max-w-lg">
+          Every plan includes subjects, notes, a timetable, tasks, focus sessions, and progress.
+        </p>
         <p className="text-muted-foreground mt-2 max-w-lg">
           {checkoutAvailable
             ? "Start free. Upgrade when you want more study helps. Cancel anytime."
@@ -63,11 +84,6 @@ export default function Upgrade() {
               className={`card-elevated p-6 relative flex flex-col ${p.id === "scholar" ? "ring-1 ring-ring/40" : ""}`}
               data-testid={`plan-${p.id}`}
             >
-              {p.id === "scholar" && (
-                <div className="badge absolute -top-2.5 left-1/2 -translate-x-1/2" style={{ background: "hsl(30 60% 92%)", color: "hsl(30 60% 32%)", borderColor: "hsl(30 40% 78%)" }}>
-                  <Sparkles className="w-3 h-3" /> Most popular
-                </div>
-              )}
               <div className="section-title mb-2">{p.name}</div>
               <div className="flex items-baseline gap-1">
                 <span className="font-serif text-4xl">${(shownPrice / 100).toFixed(2)}</span>
@@ -80,19 +96,13 @@ export default function Upgrade() {
                 </div>
               )}
               <div className="mt-2 text-sm text-muted-foreground">{isFree && active ? (usage?.monthly_allowance ?? p.credits) : p.credits} study helps per month</div>
-              {isFree && usage?.free_max && (
-                <div className="mt-1 text-sm text-muted-foreground">
-                  Start with {usage.free_start} study helps each month. Complete the starter steps to unlock {usage.free_milestone_max} helps each month, for good. Earn 10 extra helps when a new student joins through your invite, for up to five rewarded signups per month. Your total help balance is capped at {usage.free_max}.
-                </div>
-              )}
-              <ul className="mt-5 space-y-2 flex-1">
-                {p.features.map((f, i) => (
-                  <li key={i} className="text-sm flex items-start gap-2">
-                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-3 text-sm text-muted-foreground flex-1">
+                {isFree
+                  ? `Plan and study for free. Use Syllo’s free study milestones to earn ${usage?.free_milestone_max ?? 40} helps every month.`
+                  : p.id === "scholar"
+                    ? "Everything in Freshman, with more help for regular study."
+                    : "Everything in Scholar, with room for intensive study and revision."}
+              </p>
               <div className="mt-6">
                 {active ? (
                   <button className="btn btn-outline w-full" disabled data-testid={`plan-current-${p.id}`}>Your current plan</button>

@@ -53,7 +53,7 @@ def plan_dict(
     }
     if settings is not None and plan.plan_id == "deans_list" and intro_offer_available:
         result["intro_offer"] = {
-            "price_cents": plan.price_cents - 300,
+            "price_cents": plan.price_cents - 200,
             "months": settings.deans_intro_months,
         }
     return result

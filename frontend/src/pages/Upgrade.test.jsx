@@ -12,7 +12,7 @@ const plans = [
     price_cents: 1399,
     credits: 800,
     features: [],
-    intro_offer: { price_cents: 1099, months: 3 },
+    intro_offer: { price_cents: 1199, months: 3 },
   },
 ];
 
@@ -38,8 +38,11 @@ describe("upgrade pricing", () => {
   it("shows planned intro and regular prices while checkout is unavailable", async () => {
     render(<MemoryRouter><Upgrade /></MemoryRouter>);
 
+    expect(screen.getByRole("heading", { name: "Study plans that fit your routine" })).toBeInTheDocument();
+    expect(screen.getByText(/Every plan includes subjects, notes, a timetable, tasks, focus sessions, and progress/i)).toBeInTheDocument();
     expect(await screen.findByText("$6.99")).toBeInTheDocument();
-    expect(screen.getByText("$10.99")).toBeInTheDocument();
+    expect(screen.getByText("$11.99")).toBeInTheDocument();
+    expect(screen.queryByText("$10.99")).not.toBeInTheDocument();
     expect(screen.getAllByText("for your first 3 months")).toHaveLength(2);
     expect(screen.getByText("Then $8.99 / month")).toBeInTheDocument();
     expect(screen.getByText("Then $13.99 / month")).toBeInTheDocument();
@@ -47,8 +50,17 @@ describe("upgrade pricing", () => {
     expect(screen.getByText("10 study helps per month")).toBeInTheDocument();
     expect(screen.getByText("250 study helps per month")).toBeInTheDocument();
     expect(screen.getByText("800 study helps per month")).toBeInTheDocument();
-    expect(screen.getByText(/Complete the starter steps to unlock 40 helps each month, for good/i)).toBeInTheDocument();
-    expect(screen.getByText(/up to five rewarded signups per month/i)).toBeInTheDocument();
+    expect(screen.getByText("Plan and study for free. Use Syllo’s free study milestones to earn 40 helps every month.")).toBeInTheDocument();
+    expect(screen.getByText("Everything in Freshman, with more help for regular study.")).toBeInTheDocument();
+    expect(screen.getByText("Everything in Scholar, with room for intensive study and revision.")).toBeInTheDocument();
+    expect(screen.queryByText(/invite|balance is capped|Most popular|upload/i)).not.toBeInTheDocument();
+  });
+
+  it("sets a descriptive pricing-page title and summary", () => {
+    render(<MemoryRouter><Upgrade /></MemoryRouter>);
+
+    expect(document.title).toBe("Syllo Plans & Pricing | Study Planner for Students");
+    expect(document.querySelector('meta[name="description"]')?.content).toContain("subjects, notes, timetables, tasks, focus sessions");
   });
 
   it("shows paid plans as coming soon without offering checkout", async () => {

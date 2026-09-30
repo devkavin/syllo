@@ -4,6 +4,7 @@ import httpx
 import pytest
 from sqlalchemy import select
 
+from backend.app.api.routes.billing import plan_dict
 from backend.app.config import Settings
 from backend.app.models import PaymentTransaction, Plan, User
 from backend.app.security import TokenService
@@ -54,7 +55,7 @@ class CaptureClient:
             {
                 "id": "coupon_deans_launch",
                 "valid": True,
-                "amount_off": 300,
+                "amount_off": 200,
                 "currency": "usd",
                 "duration": "repeating",
                 "duration_in_months": 3,
@@ -148,7 +149,7 @@ async def test_deans_checkout_applies_server_owned_three_month_coupon() -> None:
         name="Student",
     )
     plan = Plan(
-        plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500
+        plan_id="deans_list", name="Dean's List", price_cents=1399, credits=800
     )
 
     await stripe_service.create_checkout(user, plan)
@@ -156,6 +157,15 @@ async def test_deans_checkout_applies_server_owned_three_month_coupon() -> None:
     checkout = stripe_service.client.checkout.calls[0]
     assert checkout["discounts"] == [{"coupon": "coupon_deans_launch"}]
     assert stripe_service.client.coupons.retrieve_calls == ["coupon_deans_launch"]
+
+
+def test_deans_intro_offer_matches_planned_price() -> None:
+    settings = Settings(environment="test", _env_file=None)
+    plan = Plan(plan_id="deans_list", name="Dean's List", price_cents=1399, credits=800)
+
+    listed = plan_dict(plan, settings, intro_offer_available=True)
+
+    assert listed["intro_offer"] == {"price_cents": 1199, "months": 3}
 
 
 @pytest.mark.asyncio
@@ -183,7 +193,7 @@ async def test_deans_checkout_fails_closed_for_misconfigured_coupon() -> None:
         name="Student",
     )
     plan = Plan(
-        plan_id="deans_list", name="Dean's List", price_cents=1299, credits=1500
+        plan_id="deans_list", name="Dean's List", price_cents=1399, credits=800
     )
 
     with pytest.raises(Exception) as caught:
