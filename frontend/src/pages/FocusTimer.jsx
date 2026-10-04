@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { http, formatError } from "@/lib/api";
 import { formatTimer, formatSeconds, subjectClasses } from "@/lib/palette";
 import { Play, Pause, RotateCcw, Save, Maximize2, Minimize2 } from "lucide-react";
@@ -6,187 +7,323 @@ import { useTheme } from "@/lib/theme";
 import { useSubjectsQuery } from "@/hooks/useAcademicQueries";
 
 const MODES = {
-  pomodoro: { label: "Focus block", default: 25 * 60 },
-  short:    { label: "Short break",  default: 5 * 60 },
-  long:     { label: "Long break",   default: 15 * 60 },
-  stopwatch:{ label: "Stopwatch",    default: 0 },
+  pomodoro: { label: "Focus block", default: 25 * 60, presets: [25, 50, 90] },
+  short: { label: "Short break", default: 5 * 60, presets: [5, 10, 15] },
+  long: { label: "Long break", default: 15 * 60, presets: [15, 20, 30] },
+  stopwatch: { label: "Stopwatch", default: 0 },
 };
+const STORAGE = "syllo.timer.v1";
+const validMinutes = (value) => Number.isInteger(value) && value >= 1 && value <= 240;
 
-// Get the seconds a mode should start at, respecting subject presets when available
-function modeSeconds(mode, subject) {
+function modeSeconds(mode, subject, customDurations = {}) {
+  if (customDurations[mode]) return customDurations[mode] * 60;
   if (mode === "pomodoro" && subject?.focus_minutes) return subject.focus_minutes * 60;
   if (mode === "short" && subject?.break_minutes) return subject.break_minutes * 60;
   return MODES[mode].default;
 }
 
-const STORAGE = "syllo.timer.v1";
+function loadTimer(subjects) {
+  const defaults = { mode: "pomodoro", subjectId: "", seconds: 1500, sessionSeconds: 1500,
+    running: false, startedAt: null, customDurations: {} };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE));
+    if (!saved || !Object.hasOwn(MODES, saved.mode) || !Number.isInteger(saved.seconds) || saved.seconds < 0) return defaults;
+    const customDurations = Object.fromEntries(Object.entries(saved.customDurations || {})
+      .filter(([mode, value]) => mode !== "stopwatch" && Object.hasOwn(MODES, mode) && validMinutes(value)));
+    const subjectId = typeof saved.subjectId === "string" ? saved.subjectId : "";
+    const preset = modeSeconds(saved.mode, subjects.find((s) => s.subject_id === subjectId), customDurations);
+    const needsBaseline = saved.mode !== "stopwatch" && saved.sessionSeconds == null && !!subjectId;
+    const sessionSeconds = saved.mode === "stopwatch" ? 0 :
+      Number.isInteger(saved.sessionSeconds) && saved.sessionSeconds >= saved.seconds && saved.sessionSeconds >= 60 && saved.sessionSeconds <= 14400
+        ? saved.sessionSeconds : preset;
+    if (!needsBaseline && saved.mode !== "stopwatch" && saved.seconds > sessionSeconds) return defaults;
+    return { mode: saved.mode, subjectId, seconds: saved.seconds, sessionSeconds, needsBaseline,
+      customDurations, running: saved.running === true && (saved.mode === "stopwatch" || saved.seconds > 0),
+      startedAt: typeof saved.startedAt === "string" ? saved.startedAt : null };
+  } catch { return defaults; }
+}
 
 export default function FocusTimer() {
-  const { data: subjects = [] } = useSubjectsQuery();
-  const [mode, setMode] = useState("pomodoro");
-  const [subjectId, setSubjectId] = useState("");
-  const [seconds, setSeconds] = useState(MODES.pomodoro.default);
-  const [running, setRunning] = useState(false);
-  const [startedAt, setStartedAt] = useState(null); // ISO
-  const [fullscreen, setFullscreen] = useState(false);
+  const { data: subjects = [], isPending: subjectsPending, isError: subjectsFailed, refetch: retrySubjects } = useSubjectsQuery();
+  const [initial] = useState(() => loadTimer(subjects));
+  const [baselinePending, setBaselinePending] = useState(!!initial.needsBaseline);
+  const [mode, setMode] = useState(initial.mode);
+  const [subjectId, setSubjectId] = useState(initial.subjectId);
+  const [seconds, setSeconds] = useState(initial.seconds);
+  const [sessionSeconds, setSessionSeconds] = useState(initial.sessionSeconds);
+  const [customDurations, setCustomDurations] = useState(initial.customDurations);
+  const [running, setRunning] = useState(initial.running);
+  const [startedAt, setStartedAt] = useState(initial.startedAt);
+  const [nativeFullscreen, setNativeFullscreen] = useState(false);
+  const [fallbackFullscreen, setFallbackFullscreen] = useState(false);
+  const fullscreen = nativeFullscreen || fallbackFullscreen;
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
-  const tick = useRef(null);
+  const [timeError, setTimeError] = useState("");
+  const [minutes, setMinutes] = useState(String(initial.sessionSeconds / 60));
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const containerRef = useRef(null);
+  const fallbackRef = useRef(null);
+  const fullscreenButton = useRef(null);
+  const wasFullscreen = useRef(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const activeSubject = subjects.find((s) => s.subject_id === subjectId);
+  const locked = running || saving || baselinePending;
 
-  // Resume local timer state. Subjects come from the shared academic cache.
+  // Older saved sessions used subject presets without storing a starting duration.
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE);
-    if (raw) {
-      try {
-        const s = JSON.parse(raw);
-        setMode(s.mode); setSubjectId(s.subjectId || ""); setSeconds(s.seconds);
-        setStartedAt(s.startedAt); setRunning(s.running);
-      } catch {}
+    if (!baselinePending || subjectsPending || subjectsFailed) return;
+    const duration = Math.max(seconds, modeSeconds(mode, activeSubject, customDurations));
+    setSessionSeconds(duration);
+    setMinutes(String(duration / 60));
+    setBaselinePending(false);
+  }, [baselinePending, subjectsPending, subjectsFailed, seconds, mode, activeSubject, customDurations]);
+
+  useEffect(() => {
+    if (baselinePending) return;
+    try {
+      localStorage.setItem(STORAGE, JSON.stringify({ mode, subjectId, seconds, sessionSeconds, customDurations, startedAt, running }));
+    } catch {}
+  }, [mode, subjectId, seconds, sessionSeconds, customDurations, startedAt, running, baselinePending]);
+
+  useEffect(() => {
+    if (!running || baselinePending) return;
+    const tick = setInterval(() => setSeconds((s) => mode === "stopwatch" ? s + 1 : Math.max(0, s - 1)), 1000);
+    return () => clearInterval(tick);
+  }, [running, mode, baselinePending]);
+
+  // Log outside the state updater so StrictMode cannot submit a session twice.
+  useEffect(() => {
+    if (!baselinePending && running && mode !== "stopwatch" && seconds === 0) {
+      setRunning(false);
+      void tryLogSession(true);
     }
+  }, [seconds, running, mode, baselinePending]);
+
+  useEffect(() => {
+    const syncFullscreen = () => setNativeFullscreen(document.fullscreenElement === containerRef.current);
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    const container = containerRef.current;
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreen);
+      if (document.fullscreenElement === container && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
   }, []);
 
-  // persist state
   useEffect(() => {
-    localStorage.setItem(STORAGE, JSON.stringify({ mode, subjectId, seconds, startedAt, running }));
-  }, [mode, subjectId, seconds, startedAt, running]);
+    if (wasFullscreen.current && !fullscreen) fullscreenButton.current?.focus();
+    wasFullscreen.current = fullscreen;
+    if (!fullscreen) return;
+    fullscreenButton.current?.focus();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const background = fallbackFullscreen ? [...document.body.children]
+      .filter((element) => element !== fallbackRef.current)
+      .map((element) => ({ element, inert: element.getAttribute("inert") })) : [];
+    background.forEach(({ element }) => element.setAttribute("inert", ""));
+    const onKey = (event) => {
+      if (event.key === "Tab" && fallbackFullscreen) {
+        const controls = [...fallbackRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex="0"]')];
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !fallbackRef.current.contains(document.activeElement))) {
+          event.preventDefault(); last?.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !fallbackRef.current.contains(document.activeElement))) {
+          event.preventDefault(); first?.focus();
+        }
+      }
+      if (event.key === "Escape") {
+        if (document.fullscreenElement === containerRef.current) {
+          document.exitFullscreen?.().catch(() => setErr("Could not exit fullscreen. Try the browser's fullscreen control."));
+        } else setFallbackFullscreen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      background.forEach(({ element, inert }) => inert === null ? element.removeAttribute("inert") : element.setAttribute("inert", inert));
+      document.body.style.overflow = overflow;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [fullscreen, fallbackFullscreen]);
 
-  // ticking
-  useEffect(() => {
-    if (!running) { if (tick.current) clearInterval(tick.current); return; }
-    tick.current = setInterval(() => {
-      setSeconds((s) => {
-        if (mode === "stopwatch") return s + 1;
-        if (s <= 1) { setRunning(false); tryLogSession(true); return 0; }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(tick.current);
-    // eslint-disable-next-line
-  }, [running, mode]);
+  const toggleFullscreen = async () => {
+    if (fallbackFullscreen) { setFallbackFullscreen(false); return; }
+    if (document.fullscreenElement === containerRef.current) {
+      try { await document.exitFullscreen(); }
+      catch { setErr("Could not exit fullscreen. Try the browser's fullscreen control."); }
+      return;
+    }
+    if (containerRef.current?.requestFullscreen) {
+      try {
+        await containerRef.current.requestFullscreen();
+        setNativeFullscreen(document.fullscreenElement === containerRef.current);
+        return;
+      } catch {}
+    }
+    setFallbackFullscreen(true);
+  };
+
+  const prepareTimer = (duration) => {
+    setRunning(false);
+    setStartedAt(null);
+    setSeconds(duration);
+    setSessionSeconds(duration);
+    setMinutes(String(duration / 60));
+    setTimeError("");
+    setErr("");
+  };
+  const reset = () => prepareTimer(modeSeconds(mode, activeSubject, customDurations));
+  const changeMode = (nextMode) => {
+    setMode(nextMode);
+    prepareTimer(modeSeconds(nextMode, activeSubject, customDurations));
+  };
+  const onPickSubject = (sid) => {
+    setSubjectId(sid);
+    prepareTimer(modeSeconds(mode, subjects.find((s) => s.subject_id === sid), customDurations));
+  };
+  const applyMinutes = (value) => {
+    if (locked) return;
+    const duration = Number(value);
+    if (!validMinutes(duration)) {
+      setTimeError("Enter a whole number between 1 and 240 minutes.");
+      return;
+    }
+    setCustomDurations((previous) => ({ ...previous, [mode]: duration }));
+    prepareTimer(duration * 60);
+  };
+  const usePreset = () => {
+    const next = { ...customDurations };
+    delete next[mode];
+    setCustomDurations(next);
+    prepareTimer(modeSeconds(mode, activeSubject, next));
+  };
   const start = () => {
+    if (saving || baselinePending || (mode !== "stopwatch" && seconds === 0)) return;
     if (!startedAt) setStartedAt(new Date().toISOString());
     setRunning(true);
     setMsg("");
+    setErr("");
   };
-  const pause = () => setRunning(false);
-  const activeSubject = subjects.find((s) => s.subject_id === subjectId);
-  const reset = () => {
-    setRunning(false); setStartedAt(null);
-    setSeconds(modeSeconds(mode, activeSubject));
-  };
-  const changeMode = (m) => {
-    setMode(m); setSeconds(modeSeconds(m, activeSubject)); setRunning(false); setStartedAt(null);
-  };
-  // when user picks a subject and timer isn't running, adopt its preset for the current mode
-  const onPickSubject = (sid) => {
-    setSubjectId(sid);
-    if (!running) {
-      const sub = subjects.find((s) => s.subject_id === sid);
-      setSeconds(modeSeconds(mode, sub));
-      setStartedAt(null);
-    }
-  };
-
-  const currentDuration = () => {
-    if (mode === "stopwatch") return seconds;
-    return modeSeconds(mode, activeSubject) - seconds;
-  };
-
   const tryLogSession = async (auto = false) => {
-    const duration = currentDuration();
+    if (savingRef.current || baselinePending) return;
+    const duration = mode === "stopwatch" ? seconds : sessionSeconds - seconds;
     if (duration < 10) {
       if (!auto) setMsg("A session needs at least 10 seconds.");
       return;
     }
+    savingRef.current = true;
+    setSaving(true);
+    setRunning(false);
+    setErr("");
     try {
       await http.post("/sessions", {
-        subject_id: subjectId || null,
-        duration_seconds: duration,
-        mode,
-        started_at: startedAt || new Date().toISOString(),
-        note: "",
+        subject_id: subjectId || null, duration_seconds: duration, mode,
+        started_at: startedAt || new Date().toISOString(), note: "",
       });
-      setMsg(`Saved. ${formatSeconds(duration)} logged.`);
       reset();
+      setMsg(`Saved. ${formatSeconds(duration)} logged.`);
     } catch (e) { setErr(formatError(e)); }
+    finally { savingRef.current = false; setSaving(false); }
   };
 
   const dot = activeSubject ? subjectClasses(activeSubject.color, isDark).dot : "hsl(var(--muted-foreground))";
-
+  const subjectPreset = activeSubject && (mode === "pomodoro" || mode === "short");
   const view = (
-    <div className="max-w-2xl mx-auto text-center space-y-8" data-testid="focus-timer-page">
+    <div className="max-w-2xl w-full mx-auto text-center space-y-6" data-testid="focus-timer-page">
       <div>
         <h1 className="font-serif text-3xl tracking-tight">Focus</h1>
         <p className="text-muted-foreground mt-1">A calm block of time. That's all it needs to be.</p>
       </div>
-
       <div className="flex justify-center flex-wrap gap-1 p-1 rounded-lg bg-accent w-fit mx-auto">
         {Object.entries(MODES).map(([id, m]) => (
-          <button
-            key={id}
-            onClick={() => changeMode(id)}
+          <button key={id} onClick={() => changeMode(id)} disabled={saving || baselinePending} aria-pressed={mode === id}
             data-testid={`mode-${id}`}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${mode === id ? "bg-card shadow-sm" : "text-muted-foreground"}`}
-          >
+            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${mode === id ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
             {m.label}
           </button>
         ))}
       </div>
-      {activeSubject && (mode === "pomodoro" || mode === "short") && (
-        <div className="text-xs text-muted-foreground -mt-4" data-testid="preset-hint">
-          Using {activeSubject.name}'s preset: {activeSubject.focus_minutes || 25}m focus, {activeSubject.break_minutes || 5}m break.
+      {mode !== "stopwatch" && (
+        <div className="max-w-sm mx-auto rounded-xl border border-border bg-card p-4 space-y-3 text-left">
+          <form noValidate onSubmit={(event) => { event.preventDefault(); applyMinutes(minutes); }}>
+            <label htmlFor="timer-minutes" className="text-sm font-medium">Duration (minutes)</label>
+            <div className="flex gap-2 mt-2">
+              <input id="timer-minutes" type="number" min="1" max="240" step="1" inputMode="numeric"
+                className="input min-w-0 flex-1" value={minutes} disabled={locked}
+                onChange={(event) => { setMinutes(event.target.value); setTimeError(""); }}
+                aria-invalid={!!timeError} aria-describedby={timeError ? "timer-time-error" : "timer-time-hint"} />
+              <button className="btn btn-outline shrink-0" type="submit" disabled={locked}>Apply time</button>
+            </div>
+          </form>
+          <div className="flex flex-wrap gap-2" aria-label="Quick durations">
+            {MODES[mode].presets.map((value) => (
+              <button key={value} className="btn btn-ghost !px-3 !py-1 text-xs" disabled={locked}
+                aria-pressed={sessionSeconds === value * 60} onClick={() => applyMinutes(value)}>{value} min</button>
+            ))}
+          </div>
+          <p id="timer-time-hint" className="text-xs text-muted-foreground">
+            {baselinePending ? (subjectsFailed ? "Could not load your saved subject preset. Retry to restore your session." : "Loading your saved subject preset…") :
+              running ? "Pause to change the duration. Applying a time starts a fresh block." :
+              customDurations[mode] ? "Your custom time is remembered for this mode. Applying a time starts a fresh block." :
+              subjectPreset ? `Using ${activeSubject.name}'s preset. Choose a time for this mode above.` :
+              "Choose 1–240 minutes. Your custom time is remembered for this mode."}
+          </p>
+          {baselinePending && subjectsFailed && <button className="btn btn-outline" onClick={() => retrySubjects?.()}>Retry subject preset</button>}
+          {customDurations[mode] && <button className="text-xs text-primary underline underline-offset-4" disabled={locked}
+            onClick={usePreset}>{subjectPreset ? "Use subject preset" : "Use default time"}</button>}
+          {timeError && <p id="timer-time-error" role="alert" className="text-xs text-destructive">{timeError}</p>}
         </div>
       )}
-
-      <div className="mx-auto w-64 h-64 rounded-full grid place-items-center border border-border relative">
-        <div className="font-mono text-6xl tabular-nums font-semibold tracking-wider" data-testid="timer-display">
+      <div className="mx-auto w-56 h-56 sm:w-64 sm:h-64 rounded-full grid place-items-center border border-border relative">
+        <div className="font-mono text-5xl sm:text-6xl tabular-nums font-semibold tracking-wider" data-testid="timer-display">
           {formatTimer(seconds)}
         </div>
         <span className="absolute bottom-6 subject-dot !w-2 !h-2" style={{ background: dot }} />
       </div>
-
       <div className="flex justify-center flex-wrap gap-2">
         {!running ? (
-          <button className="btn btn-primary !px-6" onClick={start} data-testid="timer-start"><Play className="w-4 h-4" /> Start</button>
+          <button className="btn btn-primary !px-6" onClick={start} disabled={saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
+            data-testid="timer-start"><Play className="w-4 h-4" /> {startedAt && seconds > 0 ? "Resume" : "Start"}</button>
         ) : (
-          <button className="btn btn-outline !px-6" onClick={pause} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
+          <button className="btn btn-outline !px-6" onClick={() => setRunning(false)} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
         )}
-        <button className="btn btn-ghost" onClick={reset} data-testid="timer-reset"><RotateCcw className="w-4 h-4" /> Reset</button>
-        <button className="btn btn-outline" onClick={() => tryLogSession(false)} data-testid="timer-save">
-          <Save className="w-4 h-4" /> Log session
+        <button className="btn btn-ghost" onClick={reset} disabled={saving || baselinePending} data-testid="timer-reset"><RotateCcw className="w-4 h-4" /> Reset</button>
+        <button className="btn btn-outline" onClick={() => tryLogSession(false)} disabled={saving || baselinePending} data-testid="timer-save">
+          <Save className="w-4 h-4" /> {saving ? "Saving…" : "Log session"}
         </button>
-        <button className="btn btn-ghost" onClick={() => setFullscreen((f) => !f)} data-testid="timer-fullscreen">
+        <button ref={fullscreenButton} className="btn btn-ghost" onClick={toggleFullscreen} data-testid="timer-fullscreen" aria-pressed={fullscreen}>
           {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          {fullscreen ? "Exit" : "Fullscreen"}
+          {fullscreen ? "Exit fullscreen" : "Fullscreen"}
         </button>
       </div>
-
+      {fullscreen && <p className="text-xs text-muted-foreground">Press Esc to exit fullscreen.</p>}
       <div className="max-w-xs mx-auto">
-        <label className="text-xs text-muted-foreground">Working on</label>
-        <select
-          className="input mt-1"
-          value={subjectId}
-          onChange={(e) => onPickSubject(e.target.value)}
-          data-testid="timer-subject-select"
-        >
+        <label htmlFor="timer-subject" className="text-xs text-muted-foreground">Working on</label>
+        <select id="timer-subject" className="input mt-1" value={subjectId} disabled={locked}
+          onChange={(e) => onPickSubject(e.target.value)} data-testid="timer-subject-select">
           <option value="">No subject</option>
           {subjects.map((s) => <option key={s.subject_id} value={s.subject_id}>{s.name}</option>)}
         </select>
       </div>
-
-      {msg && <div className="text-sm text-primary" data-testid="timer-message">{msg}</div>}
-      {err && <div className="text-destructive text-sm">{err}</div>}
+      {msg && <div role="status" className="text-sm text-primary" data-testid="timer-message">{msg}</div>}
+      {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
     </div>
   );
-
-  if (fullscreen) {
-    return (
-      <div className="fixed inset-0 z-50 bg-background grid place-items-center p-6" data-testid="fullscreen-timer">
-        <div className="w-full">{view}</div>
+  const fullscreenClass = "fixed inset-0 z-[100] bg-background overflow-y-auto overscroll-contain p-4 sm:p-6";
+  return (
+    <>
+      <div ref={containerRef} className={nativeFullscreen ? fullscreenClass : undefined}
+        data-testid={nativeFullscreen ? "fullscreen-timer" : undefined}>
+        {!fallbackFullscreen && (nativeFullscreen ? <div className="min-h-full flex items-center py-4">{view}</div> : view)}
       </div>
-    );
-  }
-  return view;
+      {fallbackFullscreen && createPortal(
+        <div ref={fallbackRef} className={fullscreenClass} data-testid="fullscreen-timer" role="dialog" aria-modal="true" aria-label="Focus timer">
+          <div className="min-h-full flex items-center py-4">{view}</div>
+        </div>, document.body)}
+    </>
+  );
 }
