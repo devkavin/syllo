@@ -1,0 +1,36 @@
+import React from "react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, it, expect, vi } from "vitest";
+import Notebooks from "./Notebooks";
+import { http } from "@/lib/api";
+vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), patch: vi.fn() }, formatError: String }));
+vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
+vi.mock("@/lib/usage", () => ({ useUsage: () => ({ setRemaining: vi.fn() }) }));
+afterEach(() => { vi.useRealTimers(); vi.clearAllMocks(); sessionStorage.clear(); });
+it("saves title and content together instead of dropping a pending title", async () => {
+  const notebook = { notebook_id: "nb", title: "Old", content: "", subject_id: null };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  http.patch.mockImplementation((url, patch) => Promise.resolve({ data: { ...notebook, ...patch } }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.click(await screen.findByText("Old"));
+  const content = await screen.findByTestId("notebook-content-textarea");
+  vi.useFakeTimers();
+  fireEvent.change(screen.getByTestId("notebook-title-input"), { target: { value: "Limits" } });
+  fireEvent.change(content, { target: { value: "Limit definition" } });
+  await act(async () => vi.advanceTimersByTime(1000));
+  expect(http.patch).toHaveBeenCalledWith("/notebooks/nb", expect.objectContaining({ title: "Limits", content: "Limit definition" }));
+});
+it("keeps the latest selected notebook when fetches arrive out of order", async () => {
+  const a = { notebook_id: "a", title: "Alpha", content: "A" }, b = { notebook_id: "b", title: "Beta", content: "B" }, c = { notebook_id: "c", title: "Gamma", content: "C" };
+  let resolveB;
+  http.get.mockImplementation(url => url === "/notebooks/b" ? new Promise(resolve => { resolveB = resolve; }) : Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b, c] : url === "/notebooks/c" ? c : a }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  await screen.findByTestId("notebook-content-textarea");
+  fireEvent.click(screen.getByTestId("notebook-item-b"));
+  await act(async () => {});
+  fireEvent.click(screen.getByTestId("notebook-item-c"));
+  await screen.findByDisplayValue("C");
+  await act(async () => resolveB({ data: b }));
+  expect(screen.getByTestId("notebook-content-textarea")).toHaveValue("C");
+});
