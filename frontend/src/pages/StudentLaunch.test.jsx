@@ -12,6 +12,18 @@ vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), post: vi.fn() }, formatError
 afterEach(() => { vi.clearAllMocks(); sessionStorage.clear(); delete window.Paddle; state.user = null; });
 
 describe("circle invitations and sandbox checkout", () => {
+  it("prioritizes the pending invitation even after the global notice is dismissed", async () => {
+    state.user = { user_id: "student" };
+    const token = "A".repeat(43);
+    sessionStorage.setItem("syllo.circleInvite", JSON.stringify({ token, ref: "friend01" }));
+    sessionStorage.setItem("syllo.circleInviteDismissed", token);
+    http.get.mockResolvedValue({ data: [] });
+    render(<MemoryRouter><Circles /></MemoryRouter>);
+    expect(screen.getByRole("region", { name: "You have a circle invitation" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "View invitation" })).toHaveAttribute("href", `/join/${token}?ref=friend01`);
+    expect(http.post).not.toHaveBeenCalled();
+    await screen.findByRole("button", { name: "Create circle" });
+  });
   it("shows a private empty circle view", async () => {
     state.user = { user_id: "student" };
     http.get.mockResolvedValue({ data: [] });

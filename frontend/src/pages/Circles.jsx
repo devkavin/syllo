@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { ArrowRight, Users } from "lucide-react";
 
 export default function Circles() {
   const { user } = useAuth();
@@ -32,7 +33,19 @@ export default function Circles() {
   }
   return <section className="max-w-4xl space-y-6">
     <header><h1 className="font-serif text-3xl">Circles</h1><p className="text-muted-foreground mt-2">A small study group, on your terms. No public feed or rankings.</p></header>
-    {pendingInvite && <Link className="btn btn-outline" to={`/join/${pendingInvite.token}?ref=${encodeURIComponent(pendingInvite.ref || "")}`}>Review your circle invitation</Link>}
+    {pendingInvite && (
+      <section aria-labelledby="pending-circle-heading" className="rounded-xl border border-primary/30 bg-accent/60 p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground"><Users className="h-5 w-5" /></div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Invitation waiting</p>
+            <h2 id="pending-circle-heading" className="mt-1 text-xl font-semibold leading-snug">You have a circle invitation</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">See who you’ll study with before joining. Your notes and tasks stay private.</p>
+            <Link className="btn btn-primary mt-4 min-h-11 w-full justify-center gap-2 sm:w-auto" to={`/join/${pendingInvite.token}?ref=${encodeURIComponent(pendingInvite.ref || "")}`}>View invitation<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+          </div>
+        </div>
+      </section>
+    )}
     {error && <p role="alert" className="text-destructive">{error}</p>}
     {notice && <p role="status">{notice}</p>}
     {loading ? <p role="status">Loading your circles…</p> : <>

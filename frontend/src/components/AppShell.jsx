@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useEffect } from "react";
-import { NavLink, useNavigate, Link } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
@@ -150,8 +150,16 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
 }
 
 export default function AppShell({ children }) {
+  const { pathname } = useLocation();
   const [pendingCircle] = useState(() => {
-    try { const invite = JSON.parse(sessionStorage.getItem("syllo.circleInvite")); return /^[A-Za-z0-9_-]{30,64}$/.test(invite?.token); } catch { return false; }
+    try {
+      const invite = JSON.parse(sessionStorage.getItem("syllo.circleInvite"));
+      return /^[A-Za-z0-9_-]{30,64}$/.test(invite?.token) ? invite : null;
+    } catch { return null; }
+  });
+  const [inviteDismissed, setInviteDismissed] = useState(() => {
+    try { return sessionStorage.getItem("syllo.circleInviteDismissed") === pendingCircle?.token; }
+    catch { return false; }
   });
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -222,7 +230,27 @@ export default function AppShell({ children }) {
 
       <main className="flex-1 min-w-0 pt-14 md:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 fade-in">
-          {pendingCircle && <div className="mb-5 text-sm border-b border-border pb-3"><Link className="underline" to="/circles">Your circle invitation is ready to review</Link>. Joining is optional.</div>}
+          {pendingCircle && !inviteDismissed && pathname.replace(/\/$/, "") !== "/circles" && (
+            <section aria-labelledby="circle-invitation-heading" className="mb-6 rounded-xl border border-primary/25 bg-accent/60 p-4 sm:p-5">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">Circle invitation</p>
+                  <h2 id="circle-invitation-heading" className="text-lg font-semibold leading-snug">You’re invited to a study circle</h2>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Study with friends. Your notes stay private, and joining is up to you.</p>
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                    <Link className="btn btn-primary min-h-11 justify-center" to={`/join/${pendingCircle.token}${typeof pendingCircle.ref === "string" && pendingCircle.ref ? `?ref=${encodeURIComponent(pendingCircle.ref)}` : ""}`}>View invitation</Link>
+                    <button type="button" className="btn btn-ghost min-h-11 justify-center" onClick={() => {
+                      setInviteDismissed(true);
+                      try { sessionStorage.setItem("syllo.circleInviteDismissed", pendingCircle.token); } catch { /* Still dismiss when storage is unavailable. */ }
+                    }}>Not now</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
           {children}
         </div>
       </main>
