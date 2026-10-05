@@ -28,3 +28,13 @@ it("creates a unit through the app dialog rather than a browser prompt", async (
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   expect(http.post).toHaveBeenCalledWith("/units", { subject_id: "math", name: "Calculus", order: 0 });
 });
+
+it("offers weekly reflection in Progress only after the student explicitly asks for it", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/analytics" ? { total_seconds: 1500, daily: [], by_subject: [], heatmap: [], streak: { current: 1, longest: 1 } } : { text: "You studied for 25 minutes. Try a short review tomorrow.", credits_remaining: 9 } }));
+  render(<MemoryRouter><Analytics /></MemoryRouter>);
+  const action = await screen.findByRole("button", { name: "Reflect on my week" });
+  expect(http.get).not.toHaveBeenCalledWith("/ai/reflection");
+  fireEvent.click(action);
+  expect(await screen.findByText(/You studied for 25 minutes/)).toBeVisible();
+  expect(http.get).toHaveBeenCalledWith("/ai/reflection");
+});

@@ -4,6 +4,7 @@ import { formatSeconds, subjectClasses } from "@/lib/palette";
 import { useTheme } from "@/lib/theme";
 import { Flame, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import WeeklyReflection from "@/components/WeeklyReflection";
 
 export default function Analytics() {
   const [data, setData] = useState(null);
@@ -83,6 +84,7 @@ export default function Analytics() {
         )}
       </section>
       </>}
+      {data.total_seconds > 0 && <WeeklyReflection />}
     </div>
   );
 }

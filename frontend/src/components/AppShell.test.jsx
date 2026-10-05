@@ -31,7 +31,7 @@ it("dismisses mobile navigation with Escape and restores its trigger", async () 
 
 it("restores a persistent opener after a warmed Companion is opened from mobile navigation", async () => {
   renderShell();
-  const topbar = screen.getByTestId("mobile-ai-btn");
+  const topbar = screen.getByTestId("sidebar-ai-btn");
   topbar.focus(); fireEvent.click(topbar);
   await screen.findByRole("dialog", { name: "Study Companion" });
   fireEvent.click(screen.getByRole("button", { name: "Close Study Companion" }));
@@ -65,6 +65,31 @@ it("restores the menu trigger after warmed Search is opened from mobile navigati
   fireEvent.keyDown(document.activeElement, { key: "Escape" });
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   expect(menu).toHaveFocus();
+});
+
+it("keeps secondary study destinations behind Library while preserving their routes", () => {
+  renderShell();
+  expect(screen.queryByRole("link", { name: "Notebooks" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Library" }));
+  expect(screen.getByRole("link", { name: "Notebooks" })).toHaveAttribute("href", "/notebooks");
+  expect(screen.getByRole("link", { name: "Tasks" })).toHaveAttribute("href", "/tasks");
+  expect(screen.getByRole("link", { name: "Reviews" })).toHaveAttribute("href", "/reviews");
+  expect(screen.queryByTestId("floating-ai-btn")).not.toBeInTheDocument();
+});
+
+it("keeps the library open on a secondary destination so the current route is visible", () => {
+  render(<MemoryRouter initialEntries={["/notebooks"]}><AppShell><h1>Notes</h1></AppShell></MemoryRouter>);
+  expect(screen.getByRole("button", { name: "Library" })).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("link", { name: "Notebooks" })).toHaveAttribute("aria-current", "page");
+});
+
+it("makes settings and appearance reachable from the account menu", async () => {
+  renderShell();
+  fireEvent.keyDown(screen.getByRole("button", { name: "Account menu" }), { key: "Enter" });
+  const settings = await screen.findByRole("menuitem", { name: "Settings" });
+  expect(settings).toHaveAttribute("href", "/settings");
+  expect(screen.getByRole("menuitem", { name: "Dark mode" })).toBeVisible();
+  expect(screen.getByRole("menuitem", { name: "Sign out" })).toBeVisible();
 });
 
 describe("circle invitation notice", () => {

@@ -81,3 +81,33 @@ in both themes, with browser zoom at 200% and keyboard-only navigation:
 
 Full WCAG 2.2 AA compliance and visual quality are not claimed until that
 rendered/manual audit is completed.
+
+## Today redesign — October 6, 2026
+
+- One suggested next step replaces the generic Next label. Current activities,
+  overdue tasks, ready reviews, today's tasks and later activities are considered
+  in that order. A later class cannot hide due work.
+- Today's plan combines remaining tasks, reviews and scheduled activities.
+  The suggested item is not repeated; task/review entries from the agenda are
+  not rendered a second time. Empty feature modules are omitted.
+- First use offers optional setup, not mandatory curriculum entry. Quiet days
+  use the full timetable and recent study history before showing setup prompts;
+  a real recently studied lesson can link directly into Focus.
+- Add opens reusable task and activity dialogs on Today. Tasks default to the
+  student's current day; study time defaults to a one-off date with explicit
+  time selection. Saves refresh the day and announce confirmation, including
+  items scheduled outside today. Failed drafts stay open.
+- The sidebar prioritizes five destinations. Library expands secondary study
+  routes and remains open on those destinations. Circles remains available;
+  settings, appearance, legal links and sign-out live in the account menu.
+  Whole-sidebar scrolling replaces the nested navigation scrollbar. Companion
+  is available from the sidebar/menu; the duplicate floating action is removed.
+- Study totals are one compact Progress link. Starter claims remain available
+  in a small Getting started disclosure, with unchanged reward rules. Weekly
+  reflection moved to Progress and runs only after an explicit click.
+
+Use the same browser QA checklist above, with particular attention to the
+quiet-to-populated transition, quick-add menu/dialog focus handoff, Library
+expansion and the account menu on short screens. No app server or build was run.
+Final automated verification for this redesign: 140 tests passed across 34
+frontend test files; ESLint and `git diff --check` passed.
