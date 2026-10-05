@@ -6,6 +6,8 @@ import { http, formatError } from "@/lib/api";
 import { createBillingPortal } from "@/lib/billing";
 import { Loader2, ExternalLink, Gift, Copy, Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { browserTimezone } from "@/lib/studyTime";
+import AvailabilitySettings from "@/components/AvailabilitySettings";
 
 export default function Settings() {
   const { user, updateMe } = useAuth();
@@ -13,6 +15,7 @@ export default function Settings() {
   const { usage } = useUsage();
   const [name, setName] = useState(user?.name || "");
   const [goal, setGoal] = useState(user?.daily_goal_minutes || 60);
+  const [timezone, setTimezone] = useState(user?.timezone || browserTimezone());
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [portalBusy, setPortalBusy] = useState(false);
@@ -20,7 +23,7 @@ export default function Settings() {
   const save = async () => {
     setMsg(""); setErr("");
     try {
-      await updateMe({ name, daily_goal_minutes: Number(goal) || 60 });
+      await updateMe({ name, daily_goal_minutes: Number(goal) || 60, timezone });
       setMsg("Saved.");
     } catch (e) { setErr(formatError(e)); }
   };
@@ -82,6 +85,12 @@ export default function Settings() {
         </div>
       </section>
 
+      <section className="card p-5 space-y-3">
+        <h2 className="font-serif text-xl">Timezone</h2>
+        <p className="text-sm text-muted-foreground">Classes, dates and reviews use this timezone across devices.</p>
+        <label className="text-sm">Timezone<input className="input mt-1" list="study-timezones" value={timezone} onChange={e => setTimezone(e.target.value)} /></label>
+        <datalist id="study-timezones">{[browserTimezone(), "Asia/Colombo", "Europe/London", "America/New_York", "Asia/Kolkata", "UTC"].filter((v, i, a) => a.indexOf(v) === i).map(v => <option key={v} value={v} />)}</datalist>
+      </section>
       <section className="card p-5 space-y-3" data-testid="settings-billing">
         <h2 className="font-serif text-xl">Billing</h2>
         <p className="text-sm text-muted-foreground">
@@ -104,6 +113,7 @@ export default function Settings() {
       </section>
 
       <InviteCard />
+      <AvailabilitySettings timezone={user?.timezone || browserTimezone()} />
 
       <section className="card p-5 space-y-3" data-testid="settings-legal">
         <h2 className="font-serif text-xl">Legal and privacy</h2>

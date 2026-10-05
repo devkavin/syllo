@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 class RegisterRequest(BaseModel):
@@ -16,6 +17,16 @@ class LoginRequest(BaseModel):
 
 
 class ProfilePatch(BaseModel):
+    timezone: str | None = Field(default=None, max_length=64)
+
+    @field_validator("timezone")
+    @classmethod
+    def valid_timezone(cls, value):
+        if value is not None:
+            try: ZoneInfo(value)
+            except (ZoneInfoNotFoundError, ValueError): raise ValueError("Choose a valid timezone")
+        return value
+
     name: str | None = Field(default=None, min_length=1, max_length=120)
     theme: str | None = Field(default=None, pattern="^(light|dark|system)$")
     timezone_offset_min: int | None = Field(default=None, ge=-840, le=840)

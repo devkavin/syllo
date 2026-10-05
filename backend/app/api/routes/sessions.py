@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import and_, or_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
@@ -21,7 +21,9 @@ from backend.app.models import (
     TimetableEntry,
     User,
 )
-from backend.app.schemas.academics import ReviewOutcome, StudySessionCreate
+from backend.app.schemas.academics import ReviewOutcome, StudySessionCreate, SessionNotePatch, ReviewSchedule
+from backend.app.services.study import ensure_review, lock_student, schedule_review
+from backend.app.services.scheduling import build_agenda, user_timezone
 
 router = APIRouter(tags=["study"])
 REVIEW_STEPS = (1, 3, 7, 14, 30, 60, 120)
@@ -38,6 +40,8 @@ def utc_value(value: datetime) -> datetime:
 def session_dict(item: StudySession) -> dict:
     return {
         "session_id": item.session_id,
+        "request_id": item.request_id,
+        "circle_event_id": item.circle_event_id,
         "subject_id": item.subject_id,
         "unit_id": item.unit_id,
         "lesson_id": item.lesson_id,
@@ -83,6 +87,16 @@ async def record_study_session(
     user: User,
     body: StudySessionCreate,
 ) -> StudySession:
+    await lock_student(session, user.user_id)
+    if body.request_id:
+        previous = await session.scalar(select(StudySession).where(StudySession.user_id == user.user_id, StudySession.request_id == str(body.request_id)).with_for_update().execution_options(populate_existing=True))
+        if previous:
+            if (previous.circle_event_id != body.circle_event_id or previous.lesson_id != body.lesson_id or previous.duration_seconds != body.duration_seconds or previous.mode != body.mode or utc_value(previous.started_at).replace(microsecond=0) != utc_value(body.started_at).replace(microsecond=0) or (body.subject_id and previous.subject_id != body.subject_id)):
+                raise HTTPException(409, "This recording request already saved a different session")
+            return previous
+    if body.circle_event_id:
+        from backend.app.services.circle_scheduling import validate_recorded_event
+        await validate_recorded_event(session, user, body.circle_event_id)
     lesson = (
         await owned_lesson(session, user.user_id, body.lesson_id)
         if body.lesson_id
@@ -92,9 +106,14 @@ async def record_study_session(
         await owned_subject(session, user.user_id, body.subject_id)
     if lesson and body.subject_id and lesson.subject_id != body.subject_id:
         raise HTTPException(status_code=400, detail="Lesson does not belong to subject")
+    if lesson:
+        lesson = await session.scalar(select(Lesson).where(Lesson.lesson_id == lesson.lesson_id).with_for_update().execution_options(populate_existing=True))
 
-    started_at = utc_value(body.started_at)
+    # Match the existing MySQL DATETIME(0) precision before persisting/retrying.
+    started_at = utc_value(body.started_at).replace(microsecond=0)
     item = StudySession(
+        request_id=str(body.request_id) if body.request_id else None,
+        circle_event_id=body.circle_event_id,
         user_id=user.user_id,
         subject_id=lesson.subject_id if lesson else body.subject_id,
         unit_id=lesson.unit_id if lesson else None,
@@ -112,21 +131,9 @@ async def record_study_session(
         lesson.last_studied_at = datetime.now(timezone.utc)
         if lesson.status == "not_started":
             lesson.status = "in_progress"
-        existing_review = await session.scalar(
-            select(Review).where(
-                Review.user_id == user.user_id, Review.lesson_id == lesson.lesson_id
-            )
-        )
-        if existing_review is None:
-            session.add(
-                Review(
-                    user_id=user.user_id,
-                    lesson_id=lesson.lesson_id,
-                    next_review_at=datetime.now(timezone.utc) + timedelta(days=1),
-                )
-            )
+        await ensure_review(session, lesson)
 
-    local_day = (started_at + timedelta(minutes=user.timezone_offset_min)).date()
+    local_day = started_at.astimezone(user_timezone(user)).date()
     streak = await session.get(Streak, user.user_id, with_for_update=True)
     if streak is None:
         streak = Streak(user_id=user.user_id, current=1, longest=1, last_day=local_day)
@@ -197,6 +204,22 @@ async def list_reviews(
     return [review_dict(review, lesson_map.get(review.lesson_id)) for review in reviews]
 
 
+@router.patch("/sessions/{session_id}")
+async def update_session_note(session_id: str, body: SessionNotePatch, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    item = await session.scalar(select(StudySession).where(StudySession.session_id == session_id, StudySession.user_id == user.user_id).with_for_update())
+    if item is None:
+        raise HTTPException(404, "Session not found")
+    item.note = body.note
+    await session.commit()
+    return session_dict(item)
+
+
+@router.put("/lessons/{lesson_id}/review")
+async def set_review(lesson_id: str, body: ReviewSchedule, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    review, lesson = await schedule_review(session, user, lesson_id, body.next_review_at)
+    return review_dict(review, lesson)
+
+
 @router.post("/reviews/{review_id}/mark")
 async def mark_review(
     review_id: str,
@@ -235,12 +258,10 @@ async def today(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     now = datetime.now(timezone.utc)
-    local_now = now + timedelta(minutes=user.timezone_offset_min)
+    local_now = now.astimezone(user_timezone(user))
     local_day = local_now.date()
-    day_start = datetime.combine(
-        local_day, datetime.min.time(), timezone.utc
-    ) - timedelta(minutes=user.timezone_offset_min)
-    day_end = day_start + timedelta(days=1)
+    day_start = datetime.combine(local_day, datetime.min.time(), user_timezone(user)).astimezone(timezone.utc)
+    day_end = datetime.combine(local_day + timedelta(days=1), datetime.min.time(), user_timezone(user)).astimezone(timezone.utc)
 
     tasks = (
         await session.scalars(
@@ -278,7 +299,10 @@ async def today(
             select(TimetableEntry)
             .where(
                 TimetableEntry.user_id == user.user_id,
-                TimetableEntry.day_of_week == local_day.weekday(),
+                or_(
+                    and_(TimetableEntry.recurrence == "weekly", TimetableEntry.day_of_week == local_day.weekday()),
+                    and_(TimetableEntry.recurrence == "none", TimetableEntry.starts_at < day_end, TimetableEntry.ends_at > day_start),
+                ),
             )
             .order_by(TimetableEntry.start_time)
         )
@@ -307,8 +331,14 @@ async def today(
     subjects_count = await session.scalar(
         select(func.count()).select_from(Subject).where(Subject.user_id == user.user_id)
     )
+    day_agenda = await build_agenda(session, user, day_start, day_end)
+    future_agenda = await build_agenda(session, user, day_end, day_end + timedelta(days=7))
+    from backend.app.models import CircleStudyEvent, CircleParticipation, CircleMember
+    from backend.app.services.circle_scheduling import event_view
+    invitations = (await session.scalars(select(CircleStudyEvent).join(CircleParticipation).join(CircleMember, (CircleMember.circle_id == CircleStudyEvent.circle_id) & (CircleMember.user_id == CircleParticipation.user_id)).where(CircleParticipation.user_id == user.user_id, CircleParticipation.status == "invited", CircleStudyEvent.canceled.is_(False), CircleStudyEvent.ends_at > now).order_by(CircleStudyEvent.starts_at).limit(20))).all()
     return {
         "today": local_day.isoformat(),
+        "circle_invitations": [await event_view(session, e, user.user_id) for e in invitations],
         "seconds_today": int(seconds_today or 0),
         "tasks": [task_dict(task) for task in tasks],
         "sessions": [session_dict(item) for item in sessions],
@@ -320,7 +350,10 @@ async def today(
             ),
         },
         "subjects_count": int(subjects_count or 0),
-        "timetable": [timetable_dict(item) for item in timetable],
+        "timetable": [timetable_dict(item, user) for item in timetable],
+        "agenda": day_agenda["items"],
+        "schedule_warnings": day_agenda["warnings"],
+        "upcoming_deadlines": [i for i in future_agenda["items"] if i["kind"] in {"task", "exam", "deadline"}][:5],
         "reviews_due": [
             review_dict(review, lesson_map.get(review.lesson_id), day_start)
             for review in reviews

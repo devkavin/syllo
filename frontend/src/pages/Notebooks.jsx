@@ -7,43 +7,54 @@ import { useUsage } from "@/lib/usage";
 import ExplainPopover from "@/components/ExplainPopover";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
 import StudyResponse from "@/components/StudyResponse";
-
-const SAVE_DEBOUNCE = 800;
+import { useResourceAutosave } from "@/hooks/useResourceAutosave";
+import AcademicSelector from "@/components/AcademicSelector";
+import { Link, useSearchParams } from "react-router-dom";
 
 export default function Notebooks() {
+  const [params] = useSearchParams();
   const [list, setList] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [activeId, setActiveId] = useState(null);
-  const [notebook, setNotebook] = useState(null);
-  const [saveState, setSaveState] = useState("idle"); // idle | saving | saved
+  const [loadedNotebook, setNotebook] = useState(null);
   const [err, setErr] = useState("");
   const [summary, setSummary] = useState(null);
   const [summarizing, setSummarizing] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { setRemaining } = useUsage();
-  const saveTimer = useRef(null);
   const editorRef = useRef(null);
   const textareaRef = useRef(null);
+  const selectionRequest = useRef(0);
+  const autosave = useResourceAutosave({ resourceKey: activeId ? `notebook.${activeId}` : null, initialValue: loadedNotebook, save: async patch => {
+    const { data } = await http.patch(`/notebooks/${activeId}`, patch);
+    setList(prev => prev.map(n => n.notebook_id === data.notebook_id ? { ...n, title: data.title, updated_at: data.updated_at } : n));
+    return data;
+  } });
+  const notebook = activeId ? autosave.draft : null;
+  const { saveState } = autosave;
 
   const load = async () => {
     try {
       const [ls, ss] = await Promise.all([http.get("/notebooks"), http.get("/subjects")]);
       setList(ls.data);
       setSubjects(ss.data);
-      if (!activeId && ls.data.length > 0) selectNotebook(ls.data[0].notebook_id);
+      if (!activeId && ls.data.length > 0) selectNotebook(ls.data.find(n => n.notebook_id === params.get("notebook"))?.notebook_id || ls.data[0].notebook_id);
     } catch (e) { setErr(formatError(e)); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load(); return () => { selectionRequest.current += 1; }; }, []);
 
   const selectNotebook = async (id) => {
+    const request = ++selectionRequest.current;
+    if (activeId && id !== activeId && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
+    if (request !== selectionRequest.current) return;
     try {
       const { data } = await http.get(`/notebooks/${id}`);
+      if (request !== selectionRequest.current) return;
       setActiveId(id);
       setNotebook(data);
-      setSaveState("idle");
       setSummary(null);
-    } catch (e) { setErr(formatError(e)); }
+    } catch (e) { if (request === selectionRequest.current) setErr(formatError(e)); }
   };
 
   const summarize = async () => {
@@ -59,22 +70,8 @@ export default function Notebooks() {
 
   const subjectMap = useMemo(() => Object.fromEntries(subjects.map((s) => [s.subject_id, s])), [subjects]);
 
-  const scheduleSave = (patch) => {
-    setSaveState("saving");
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(async () => {
-      try {
-        const { data } = await http.patch(`/notebooks/${activeId}`, patch);
-        setNotebook(data);
-        setList((prev) => prev.map((n) => n.notebook_id === data.notebook_id ? { ...n, title: data.title, updated_at: data.updated_at } : n));
-        setSaveState("saved");
-      } catch (e) { setErr(formatError(e)); setSaveState("idle"); }
-    }, SAVE_DEBOUNCE);
-  };
-
-  const onTitleChange = (e) => { setNotebook((n) => ({ ...n, title: e.target.value })); scheduleSave({ title: e.target.value }); };
-  const onContentChange = (e) => { setNotebook((n) => ({ ...n, content: e.target.value })); scheduleSave({ content: e.target.value }); };
-  const onSubjectChange = (sid) => { setNotebook((n) => ({ ...n, subject_id: sid || null })); scheduleSave({ subject_id: sid || null }); };
+  const onTitleChange = (e) => autosave.update({ title: e.target.value });
+  const onContentChange = (e) => autosave.update({ content: e.target.value });
 
   const newNotebook = async () => {
     const { data } = await http.post("/notebooks", { title: "Untitled", content: "" });
@@ -134,15 +131,7 @@ export default function Notebooks() {
           <div className="paper card p-6 md:p-10 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" ref={editorRef}>
             <div className="flex items-center justify-between mb-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-3">
-                <select
-                  className="input !py-1 !text-xs !w-auto"
-                  value={notebook.subject_id || ""}
-                  onChange={(e) => onSubjectChange(e.target.value)}
-                  data-testid="notebook-subject-select"
-                >
-                  <option value="">No subject</option>
-                  {subjects.map((s) => <option key={s.subject_id} value={s.subject_id}>{s.name}</option>)}
-                </select>
+                <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -158,6 +147,7 @@ export default function Notebooks() {
                 <span data-testid="notebook-autosave-indicator" className="inline-flex items-center gap-1">
                   {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
                   {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
+                  {saveState === "failed" && <button className="text-destructive underline" onClick={autosave.retry}>Not saved · Retry</button>}
                 </span>
                 <button className="btn btn-ghost !p-1.5" onClick={() => removeNotebook(notebook.notebook_id)} data-testid="notebook-delete-btn" title="Delete">
                   <Trash2 className="w-3.5 h-3.5" />
@@ -201,4 +191,10 @@ export default function Notebooks() {
       </section>
     </div>
   );
+}
+
+function NotebookLinks({ notebook, subjects, update }) {
+  const [unitId, setUnitId] = useState(null);
+  useEffect(() => { let live = true; if (notebook.lesson_id) http.get(`/lessons/${notebook.lesson_id}`).then(r => { if (live) setUnitId(r.data.unit_id); }).catch(() => {}); return () => { live = false; }; }, [notebook.lesson_id]);
+  return <details><summary className="cursor-pointer">{notebook.lesson_id ? "Linked lesson" : "Link to a subject or lesson"}</summary><div className="mt-3"><AcademicSelector subjects={subjects} value={{ subject_id: notebook.subject_id, unit_id: unitId, lesson_id: notebook.lesson_id }} onChange={v => { setUnitId(v.unit_id); update({ subject_id: v.subject_id, lesson_id: v.lesson_id }); }} />{notebook.lesson_id && <Link className="block underline mt-2" to={`/lessons/${notebook.lesson_id}`}>Open lesson</Link>}</div></details>;
 }

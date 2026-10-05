@@ -175,7 +175,7 @@ async def test_notebook_task_and_timetable_lifecycle(sql_app) -> None:
         assert (
             await client.patch(
                 f"/api/timetable/{timetable['timetable_id']}",
-                json={"start_time": "10:00"},
+                    json={"start_time": "10:00", "end_time": "11:00"},
             )
         ).json()["start_time"] == "10:00"
         assert (

@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { Plus, CheckCircle2, Circle, Trash2, X } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import AcademicSelector from "@/components/AcademicSelector";
 
 const PRIORITIES = [
   { id: "low", label: "Low" },
@@ -11,10 +13,13 @@ const PRIORITIES = [
 ];
 
 export default function Tasks() {
+  const [params] = useSearchParams();
+  const openedTask = useRef(null);
+  const [editing, setEditing] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [tab, setTab] = useState("open"); // open | done | all
-  const [showNew, setShowNew] = useState(false);
+  const [showNew, setShowNew] = useState(!!params.get("lesson"));
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
@@ -28,6 +33,14 @@ export default function Tasks() {
     finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const id = params.get("task");
+    if (!id || openedTask.current === id || loading) return;
+    const task = tasks.find(t => t.task_id === id);
+    openedTask.current = id;
+    if (task) { setEditing(task); setShowNew(true); }
+    else setErr("That task is no longer available. Your other tasks are below.");
+  }, [params, tasks, loading]);
 
   const subMap = useMemo(() => Object.fromEntries(subjects.map((x) => [x.subject_id, x])), [subjects]);
   const filtered = tasks.filter((t) => tab === "all" ? true : tab === "done" ? t.completed : !t.completed);
@@ -85,7 +98,8 @@ export default function Tasks() {
                   {t.completed ? <CheckCircle2 className="w-5 h-5 text-primary" /> : <Circle className="w-5 h-5" />}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <div className={`text-sm ${t.completed ? "line-through text-muted-foreground" : ""}`}>{t.title}</div>
+                    <button className={`text-sm text-left hover:underline ${t.completed ? "line-through text-muted-foreground" : ""}`} onClick={() => { setEditing(t); setShowNew(true); }}>{t.title}</button>
+                    {t.lesson_id && <Link className="block text-xs underline" to={`/lessons/${t.lesson_id}`}>Open lesson</Link>}
                   <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
                     {sub && <span className="inline-flex items-center gap-1"><span className="subject-dot" style={{ background: c.dot }} />{sub.name}</span>}
                     {t.due_date && <span>Due {t.due_date}</span>}
@@ -101,25 +115,27 @@ export default function Tasks() {
         </ul>
       )}
 
-      {showNew && <NewTaskModal subjects={subjects} onClose={() => setShowNew(false)} onCreated={load} />}
+      {showNew && <NewTaskModal subjects={subjects} task={editing} prefillLesson={params.get("lesson")} onClose={() => { setShowNew(false); setEditing(null); }} onCreated={load} />}
     </div>
   );
 }
 
-function NewTaskModal({ subjects, onClose, onCreated }) {
-  const [title, setTitle] = useState("");
-  const [subjectId, setSubjectId] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState("normal");
+function NewTaskModal({ subjects, task, prefillLesson, onClose, onCreated }) {
+  const [title, setTitle] = useState(task?.title || "");
+  const [selection, setSelection] = useState({ subject_id: task?.subject_id || null, unit_id: task?.unit_id || null, lesson_id: task?.lesson_id || null });
+  const [dueDate, setDueDate] = useState(task?.due_date || "");
+  const [priority, setPriority] = useState(task?.priority || "normal");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  useEffect(() => { let live = true; if (!task && prefillLesson) http.get(`/lessons/${encodeURIComponent(prefillLesson)}`).then(r => { if (live) setSelection({ subject_id: r.data.subject_id, unit_id: r.data.unit_id, lesson_id: r.data.lesson_id }); }).catch(e => { if (live) setErr(formatError(e)); }); return () => { live = false; }; }, [task, prefillLesson]);
 
   const submit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
     setBusy(true); setErr("");
     try {
-      await http.post("/tasks", { title: title.trim(), subject_id: subjectId || null, due_date: dueDate || null, priority });
+      const body = { title: title.trim(), ...selection, due_date: dueDate || null, priority };
+      if (task) await http.patch(`/tasks/${task.task_id}`, body); else await http.post("/tasks", body);
       onCreated(); onClose();
     } catch (e) { setErr(formatError(e)); } finally { setBusy(false); }
   };
@@ -129,14 +145,10 @@ function NewTaskModal({ subjects, onClose, onCreated }) {
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <form onSubmit={submit} className="relative card p-6 w-full max-w-md" data-testid="new-task-modal">
         <button type="button" className="btn btn-ghost !p-1 absolute right-2 top-2" onClick={onClose}><X className="w-4 h-4" /></button>
-        <h2 className="font-serif text-xl mb-4">New task</h2>
+        <h2 className="font-serif text-xl mb-4">{task ? "Edit task" : "New task"}</h2>
         <label className="text-xs text-muted-foreground">Title</label>
         <input className="input mt-1 mb-3" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Write your task" autoFocus data-testid="new-task-title" />
-        <label className="text-xs text-muted-foreground">Subject</label>
-        <select className="input mt-1 mb-3" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} data-testid="new-task-subject">
-          <option value="">No subject</option>
-          {subjects.map((s) => <option key={s.subject_id} value={s.subject_id}>{s.name}</option>)}
-        </select>
+        <AcademicSelector subjects={subjects} value={selection} onChange={setSelection} disabled={busy} />
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Due date</label>
@@ -150,7 +162,7 @@ function NewTaskModal({ subjects, onClose, onCreated }) {
           </div>
         </div>
         {err && <div className="text-destructive text-sm mt-3">{err}</div>}
-        <button className="btn btn-primary w-full mt-4" disabled={busy} data-testid="new-task-submit">{busy ? "Adding" : "Add task"}</button>
+        <button className="btn btn-primary w-full mt-4" disabled={busy} data-testid="new-task-submit">{busy ? "Saving…" : task ? "Save task" : "Add task"}</button>
       </form>
     </div>
   );

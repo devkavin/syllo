@@ -8,7 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
-from backend.app.models import Circle, CircleMember, CircleGoal, StudySession, User
+from backend.app.models import Circle, CircleMember, CircleGoal, StudySession, User, Lesson, Task, CircleStudyEvent, CircleParticipation
+from backend.app.services.circle_scheduling import locked_circle
+from backend.app.services.scheduling import lock_schedule_users
 
 router = APIRouter(prefix="/circles", tags=["circles"])
 
@@ -27,7 +29,13 @@ class Title(BaseModel):
 
 class Privacy(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    share_weekly_time: bool
+    share_weekly_time: bool | None = None
+    share_availability: bool | None = None
+
+
+class GoalTitle(Title):
+    lesson_id: str | None = None
+    task_id: str | None = None
 
 
 class CircleTitle(Title):
@@ -111,22 +119,25 @@ async def detail(circle_id: str, request: Request, user: User = Depends(get_curr
     return {"id": circle_id, "name": circle.name, "owner_id": circle.owner_id,
             "invite_url": f"{base}/join/{circle.invite_token}?ref={user.referral_code}",
             "share_weekly_time": own.share_weekly_time,
+            "share_availability": own.share_availability,
             "members": [{"id": m.user_id, "name": name, "weekly_minutes": int(times.get(m.user_id, 0) / 60) if m.share_weekly_time else None} for m, name in rows],
-            "goals": [{"id": g.goal_id, "user_id": g.user_id, "title": g.title, "completed": g.completed} for g in goals]}
+            "goals": [{"id": g.goal_id, "user_id": g.user_id, "title": g.title, "completed": g.completed, **({"lesson_id": g.lesson_id, "task_id": g.task_id} if g.user_id == user.user_id else {})} for g in goals]}
 
 
 @router.patch("/{circle_id}/privacy")
 async def privacy(circle_id: str, body: Privacy, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    member = await membership(session, circle_id, user.user_id)
-    member.share_weekly_time = body.share_weekly_time
+    _, members = await locked_circle(session, user, circle_id)
+    member = members[user.user_id]
+    for key, value in body.model_dump(exclude_none=True).items(): setattr(member, key, value)
     await session.commit()
-    return {"share_weekly_time": member.share_weekly_time}
+    return {"share_weekly_time": member.share_weekly_time, "share_availability": member.share_availability}
 
 
 @router.post("/{circle_id}/goals", status_code=201)
-async def add_goal(circle_id: str, body: Title, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+async def add_goal(circle_id: str, body: GoalTitle, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     # Same circle -> membership lock order as removal. Validate the locking read,
     # not a membership snapshot obtained before another transaction removed it.
+    await lock_schedule_users(session, [user.user_id])
     await session.scalar(select(Circle).where(Circle.circle_id == circle_id).with_for_update())
     member = await session.scalar(select(CircleMember).where(CircleMember.circle_id == circle_id, CircleMember.user_id == user.user_id).with_for_update())
     if member is None:
@@ -134,7 +145,9 @@ async def add_goal(circle_id: str, body: Title, user: User = Depends(get_current
     count = await session.scalar(select(func.count()).select_from(CircleGoal).where(CircleGoal.circle_id == circle_id, CircleGoal.user_id == user.user_id))
     if count >= 10:
         raise HTTPException(400, "Keep up to ten goals in each circle. Remove an old goal to add another.")
-    goal = CircleGoal(circle_id=member.circle_id, user_id=user.user_id, title=body.title)
+    for key, model, field in ((body.lesson_id, Lesson, Lesson.lesson_id), (body.task_id, Task, Task.task_id)):
+        if key and not await session.scalar(select(model).where(field == key, model.user_id == user.user_id)): raise HTTPException(404, "Linked study item not found")
+    goal = CircleGoal(circle_id=member.circle_id, user_id=user.user_id, **body.model_dump())
     session.add(goal)
     await session.commit()
     return {"id": goal.goal_id}
@@ -171,11 +184,14 @@ async def rotate(circle_id: str, user: User = Depends(get_current_user), session
 
 @router.delete("/{circle_id}/members/{member_id}", status_code=204)
 async def remove_member(circle_id: str, member_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    await membership(session, circle_id, user.user_id)
-    circle = await session.scalar(select(Circle).where(Circle.circle_id == circle_id).with_for_update())
+    circle, _ = await locked_circle(session, user, circle_id, [member_id])
     if member_id == circle.owner_id or (member_id != user.user_id and user.user_id != circle.owner_id):
         raise HTTPException(403, "Only owners can remove other members. Owners must delete their circle to leave.")
     await session.scalar(select(CircleMember).where(CircleMember.circle_id == circle_id, CircleMember.user_id == member_id).with_for_update())
+    future = (await session.scalars(select(CircleStudyEvent).where(CircleStudyEvent.circle_id == circle_id, CircleStudyEvent.ends_at > datetime.now(timezone.utc)).with_for_update())).all()
+    for event in future:
+        if event.organizer_id == member_id: event.canceled = True
+    await session.execute(delete(CircleParticipation).where(CircleParticipation.user_id == member_id, CircleParticipation.event_id.in_([e.id for e in future])))
     await session.execute(delete(CircleGoal).where(CircleGoal.circle_id == circle_id, CircleGoal.user_id == member_id))
     await session.execute(delete(CircleMember).where(CircleMember.circle_id == circle_id, CircleMember.user_id == member_id))
     await session.commit()
@@ -183,11 +199,16 @@ async def remove_member(circle_id: str, member_id: str, user: User = Depends(get
 
 @router.delete("/{circle_id}", status_code=204)
 async def remove_circle(circle_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    await membership(session, circle_id, user.user_id)
-    circle = await session.scalar(select(Circle).where(Circle.circle_id == circle_id).with_for_update())
+    ids = (await session.scalars(select(CircleMember.user_id).where(CircleMember.circle_id == circle_id))).all()
+    circle, _ = await locked_circle(session, user, circle_id, ids)
     if circle.owner_id != user.user_id:
         raise HTTPException(403, "Only the owner can delete this circle")
     await session.execute(delete(CircleGoal).where(CircleGoal.circle_id == circle_id))
     await session.execute(delete(CircleMember).where(CircleMember.circle_id == circle_id))
+    event_ids = (await session.scalars(select(CircleStudyEvent.id).where(CircleStudyEvent.circle_id == circle_id))).all()
+    from sqlalchemy import update
+    await session.execute(update(StudySession).where(StudySession.circle_event_id.in_(event_ids)).values(circle_event_id=None))
+    await session.execute(delete(CircleParticipation).where(CircleParticipation.event_id.in_(event_ids)))
+    await session.execute(delete(CircleStudyEvent).where(CircleStudyEvent.circle_id == circle_id))
     await session.delete(circle)
     await session.commit()

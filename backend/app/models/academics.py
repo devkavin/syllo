@@ -11,6 +11,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -135,6 +136,7 @@ class StudySession(TimestampMixin, Base):
     __tablename__ = "study_sessions"
     __table_args__ = (
         Index("ix_study_sessions_owner_started", "user_id", "started_at"),
+        UniqueConstraint("user_id", "request_id", name="uq_study_session_request"),
     )
 
     session_id: Mapped[str] = mapped_column(
@@ -153,6 +155,8 @@ class StudySession(TimestampMixin, Base):
         ForeignKey("lessons.lesson_id", ondelete="SET NULL")
     )
     duration_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
+    request_id: Mapped[str | None] = mapped_column(String(36))
+    circle_event_id: Mapped[str | None] = mapped_column(ForeignKey("circle_study_events.id", ondelete="SET NULL"), index=True)
     mode: Mapped[str] = mapped_column(String(32), default="pomodoro", nullable=False)
     note: Mapped[str] = mapped_column(Text, default="", nullable=False)
     started_at: Mapped[datetime] = mapped_column(
@@ -188,6 +192,9 @@ class TimetableEntry(TimestampMixin, Base):
         ForeignKey("subjects.subject_id", ondelete="SET NULL")
     )
     title: Mapped[str] = mapped_column(String(240), nullable=False)
+    scheduled_date: Mapped[date | None] = mapped_column("date", Date)
+    starts_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     day_of_week: Mapped[int] = mapped_column(Integer, nullable=False)
     start_time: Mapped[str] = mapped_column(String(8), nullable=False)
     end_time: Mapped[str] = mapped_column(String(8), nullable=False)

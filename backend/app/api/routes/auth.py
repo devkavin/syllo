@@ -20,6 +20,7 @@ from backend.app.security import (
     verify_password,
 )
 from backend.app.services.credits import CreditService
+from backend.app.services.scheduling import lock_schedule_users, user_timezone, validate_timezone_conflicts
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -34,6 +35,7 @@ def serialize_user(user: User) -> dict:
         "onboarded": user.onboarded,
         "theme": user.theme,
         "timezone_offset_min": user.timezone_offset_min,
+        "timezone": user.timezone,
         "daily_goal_minutes": user.daily_goal_minutes,
         "role": user.role,
         "plan": user.plan_id,
@@ -146,8 +148,26 @@ async def update_me(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    for field, value in body.model_dump(exclude_none=True).items():
+    await lock_schedule_users(session, [user.user_id])
+    previous_zone = user_timezone(user)
+    for field, value in body.model_dump(exclude_unset=True).items():
+        if value is None and field != "timezone": continue
         setattr(user, field, value.strip() if field == "name" else value)
+    if user_timezone(user) != previous_zone:
+        await validate_timezone_conflicts(session, user)
     await session.commit()
     await session.refresh(user)
+    return serialize_user(user)
+
+
+@router.post("/timezone")
+async def infer_timezone(body: ProfilePatch, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    if not body.timezone: raise HTTPException(422, "Choose a valid timezone")
+    await lock_schedule_users(session, [user.user_id])
+    if user.timezone is None:
+        previous_zone = user_timezone(user)
+        user.timezone = body.timezone
+        if user_timezone(user) != previous_zone:
+            await validate_timezone_conflicts(session, user)
+    await session.commit(); await session.refresh(user)
     return serialize_user(user)

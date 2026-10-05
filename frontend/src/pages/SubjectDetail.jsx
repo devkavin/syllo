@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { Plus, ChevronDown, ChevronRight, Timer, Check, StickyNote } from "lucide-react";
 import ExplainPopover from "@/components/ExplainPopover";
+import { useResourceAutosave } from "@/hooks/useResourceAutosave";
 
 export default function SubjectDetail() {
   const { id } = useParams();
@@ -164,25 +165,17 @@ function StatusIcon({ status }) {  if (status === "done") {
 
 function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) {
   const [open, setOpen] = useState(false);
-  const [notes, setNotes] = useState(lesson.notes || "");
-  const [saveState, setSaveState] = useState("idle");
-  const timer = useRef(null);
+  const autosave = useResourceAutosave({ resourceKey: `lesson.${lesson.lesson_id}`, initialValue: { notes: lesson.notes || "" }, save: async patch => {
+    const { data } = await http.patch(`/lessons/${lesson.lesson_id}`, patch);
+    onNotesSaved?.(data);
+    return { notes: data.notes };
+  } });
+  const notes = autosave.draft.notes;
+  const { saveState } = autosave;
   const containerRef = useRef(null);
   const textareaRef = useRef(null);
 
-  useEffect(() => { setNotes(lesson.notes || ""); }, [lesson.lesson_id, lesson.notes]);
-
-  const onChange = (e) => {
-    setNotes(e.target.value); setSaveState("saving");
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(async () => {
-      try {
-        const { data } = await http.patch(`/lessons/${lesson.lesson_id}`, { notes: e.target.value });
-        setSaveState("saved");
-        onNotesSaved?.(data);
-      } catch { setSaveState("idle"); }
-    }, 800);
-  };
+  const onChange = (e) => autosave.update({ notes: e.target.value });
 
   return (
     <div data-testid={`lesson-${lesson.lesson_id}`}>
@@ -198,7 +191,7 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
           <StatusIcon status={lesson.status} />
         </button>
         <div className={`text-sm flex-1 min-w-0 flex items-center gap-2 ${lesson.status === "done" ? "text-muted-foreground line-through" : ""}`}>
-          <span className="truncate">{lesson.title}</span>
+          <Link className="truncate hover:underline" to={`/lessons/${lesson.lesson_id}`}>{lesson.title}</Link>
           {lesson.status !== "not_started" && (
             <span
               className="badge shrink-0"
@@ -235,6 +228,7 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
           />
           <div className="text-[10px] text-muted-foreground mt-1">
             {saveState === "saving" ? "Saving..." : saveState === "saved" ? "Saved" : ""}
+            {saveState === "failed" && <button onClick={autosave.retry}>Not saved · Retry</button>}
           </div>
           <ExplainPopover textareaRef={textareaRef} containerRef={containerRef} subjectName={subjectName} extraTestId={`explain-popover-${lesson.lesson_id}`} />
         </div>

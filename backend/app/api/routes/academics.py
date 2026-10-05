@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.api.dependencies import get_current_user
 from backend.app.database import get_session
 from backend.app.models import Lesson, Review, Subject, Unit, User
+from backend.app.services.study import ensure_review, lock_student
 from backend.app.schemas.academics import (
     LessonCreate,
     LessonPatch,
@@ -282,6 +283,7 @@ async def patch_lesson(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    await lock_student(session, user.user_id)
     lesson = await owned_lesson(session, user.user_id, lesson_id)
     data = body.model_dump(exclude_none=True)
     if "order" in data:
@@ -290,19 +292,7 @@ async def patch_lesson(
     for field, value in data.items():
         setattr(lesson, field, value)
     if lesson.status in {"done", "completed"} and not status_was_done:
-        review = await session.scalar(
-            select(Review).where(
-                Review.user_id == user.user_id, Review.lesson_id == lesson.lesson_id
-            )
-        )
-        if review is None:
-            session.add(
-                Review(
-                    user_id=user.user_id,
-                    lesson_id=lesson.lesson_id,
-                    next_review_at=datetime.now(timezone.utc) + timedelta(days=1),
-                )
-            )
+        await ensure_review(session, lesson)
     await session.commit()
     await session.refresh(lesson)
     return lesson_dict(lesson)

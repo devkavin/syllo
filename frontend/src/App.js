@@ -16,6 +16,7 @@ const Circles = lazy(() => import("@/pages/Circles"));
 const Checkout = lazy(() => import("@/pages/Checkout"));
 const CircleInvite = lazy(() => import("@/pages/Circles").then(m => ({ default: m.CircleInvite })));
 const SubjectDetail = lazy(() => import("@/pages/SubjectDetail"));
+const LessonWorkspace = lazy(() => import("@/pages/LessonWorkspace"));
 const Notebooks = lazy(() => import("@/pages/Notebooks"));
 const Tasks = lazy(() => import("@/pages/Tasks"));
 const FocusTimer = lazy(() => import("@/pages/FocusTimer"));
@@ -23,6 +24,7 @@ const Analytics = lazy(() => import("@/pages/Analytics"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Timetable = lazy(() => import("@/pages/Timetable"));
+const Planner = lazy(() => import("@/pages/Planner"));
 const Reviews = lazy(() => import("@/pages/Reviews"));
 const Upgrade = lazy(() => import("@/pages/Upgrade"));
 const Admin = lazy(() => import("@/pages/Admin"));
@@ -88,7 +90,9 @@ export function AppRoutes() {
         <Route path="/today" element={<Protected><Today /></Protected>} />
         <Route path="/subjects" element={<Protected><Subjects /></Protected>} />
         <Route path="/subjects/:id" element={<Protected><SubjectDetail /></Protected>} />
+        <Route path="/lessons/:id" element={<Protected><LessonWorkspace /></Protected>} />
         <Route path="/timetable" element={<Protected><Timetable /></Protected>} />
+        <Route path="/planner" element={<Protected><Planner /></Protected>} />
         <Route path="/notebooks" element={<Protected><Notebooks /></Protected>} />
         <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
         <Route path="/reviews" element={<Protected><Reviews /></Protected>} />

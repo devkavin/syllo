@@ -1,6 +1,6 @@
 # Circle referral integration handoff
 
-Syllo Circles is not implemented yet. The current reward trigger is one distinct
+Syllo Circles is implemented. The reward trigger remains one distinct
 new account registration through an existing user's referral code or link.
 That signup creates one `Referral` row, with a unique referred user ID, and awards
 up to 10 helps to the referrer. At most five such signups can earn a referrer
@@ -8,7 +8,7 @@ helps in a UTC calendar month. A referred new student receives a separate 10-hel
 welcome bonus once. Unused earned helps carry over under the Freshman 100-help
 balance cap; only the *ability to earn from five new signups* resets monthly.
 
-When Circles is built:
+Implemented integration contract:
 
 1. A Circle invitation may carry the inviter's existing referral code.
 2. Only a new account's first qualifying signup may invoke
@@ -24,5 +24,9 @@ When Circles is built:
 5. Before a public viral launch, add stronger signup verification and abuse
    controls for disposable accounts, self-referrals, and automated registrations.
 
-Circle membership does not currently exist in the schema or UI. This note is
-the integration contract, not a claim that Circles itself is live.
+Membership, private goals, optional UTC weekly totals and opt-in availability now
+exist in the schema and UI. Scheduled Circle participation never awards helps,
+completes academic work, copies personal timetable entries or logs planned minutes.
+Only actual focus recording updates a student's personal study time. Private
+lesson/task goal IDs are returned only to their author. Broader abuse verification,
+report/block tools and moderation remain follow-up work before a public viral launch.

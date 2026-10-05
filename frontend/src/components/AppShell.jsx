@@ -16,12 +16,12 @@ const AiCompanion = lazy(() => import("@/components/AiCompanion"));
 const NAV = [
   { to: "/today", label: "Today", icon: Home, testid: "nav-today" },
   { to: "/subjects", label: "Subjects", icon: BookOpen, testid: "nav-subjects" },
-  { to: "/timetable", label: "Timetable", icon: Calendar, testid: "nav-timetable" },
+  { to: "/planner", label: "Planner", icon: Calendar, testid: "nav-timetable" },
   { to: "/notebooks", label: "Notebooks", icon: NotebookPen, testid: "nav-notebooks" },
   { to: "/tasks", label: "Tasks", icon: ListTodo, testid: "nav-tasks" },
   { to: "/reviews", label: "Reviews", icon: Sparkles, testid: "nav-reviews" },
   { to: "/timer", label: "Focus", icon: Timer, testid: "nav-timer" },
-  { to: "/analytics", label: "Analytics", icon: BarChart3, testid: "nav-analytics" },
+  { to: "/analytics", label: "Progress", icon: BarChart3, testid: "nav-analytics" },
   { to: "/settings", label: "Settings", icon: Settings, testid: "nav-settings" },
   { to: "/circles", label: "Circles", icon: Users, testid: "nav-circles" },
 ];

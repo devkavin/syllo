@@ -24,7 +24,7 @@ export default function Analytics() {
     <div className="space-y-8" data-testid="analytics-page">
       <div className="hero-glow relative rise">
         <div className="section-title mb-2">Your rhythm</div>
-        <h1 className="font-serif text-4xl tracking-tight">Analytics</h1>
+        <h1 className="font-serif text-4xl tracking-tight">Progress</h1>
         <p className="text-muted-foreground mt-2">A calm look at how you've been studying.</p>
       </div>
 
@@ -34,6 +34,7 @@ export default function Analytics() {
         <Stat icon={Calendar} label="Longest streak" value={`${data.streak.longest} day${data.streak.longest === 1 ? "" : "s"}`} />
       </div>
 
+      {!!data.heatmap?.length && <section aria-label="Study consistency"><h2 className="font-serif text-xl mb-4">Last 30 days</h2><div className="flex flex-wrap gap-1">{data.heatmap.map(day => <span key={day.day} title={`${day.day}: ${formatSeconds(day.seconds)}`} aria-label={`${day.day}: ${formatSeconds(day.seconds)}`} className={`h-5 w-5 rounded-sm ${day.seconds ? "bg-primary" : "bg-accent"}`} />)}</div><p className="mt-2 text-xs text-muted-foreground">Filled squares are days with recorded study.</p></section>}
       <section className="card p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-xl">Last 14 days</h2>

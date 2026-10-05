@@ -78,11 +78,33 @@ not just averages. Provider/model evaluations and image/PDF support remain futur
 
 ## Current versus proposed UX
 
-The homepage describes planning → studying → remembering. Existing Today still has
-statistics-first sections; post-focus review linking and first-use onboarding
-simplification are proposed follow-ups, not changes made in this release. Circles
-is optional and personal content remains private. There is no claim that a starter
-prompt can automatically infer someone's timetable without supplied context.
+Connected Study is now implemented: action-first Today, skippable setup, a dedicated
+lesson workspace, linked tasks/notebooks, retry-safe lesson focus, private session
+notes and review scheduling. Planner has day/week dated agendas alongside weekly
+timetable management. Timezones sync to the profile; ambiguous one-off local times
+need an explicit offset, and nonexistent times are rejected.
+
+Circles now includes optional personal available hours/time off, a separate sharing
+switch per Circle, up to five common-time suggestions, manual proposals, explicit
+accept/decline, reconfirmation after rescheduling and cancellation. Accepted sessions
+appear in Today/Planner and can link actual personal focus time. Private calendar
+titles, lesson choices and notes are never shared. Own goal links are author-only.
+
+Items 1–3 above are implemented. Item 5 now has recoverable local-tab drafts and
+save/retry status, but cross-device conflict resolution and rich equations remain
+later. Item 8 now has dated group study and personal links; report/block/moderation
+and real-time rooms remain later. Full month calendar, push delivery, upload processing
+and live paid launch remain out of scope. Circles and curriculum are never required.
+
+Release verification includes Vitest, pytest and additive migration roundtrip/schema
+comparison in temporary SQLite. Actual MySQL concurrency checks are opt-in and must
+use a disposable `syllo_test_*` database with `SYLLO_TEST_MYSQL_URL` and explicit
+`SYLLO_TEST_MYSQL_ALLOW_SCHEMA_RESET=1`; these are test-only, not Coolify variables.
+Without that database the three race tests are skipped, not claimed as verified.
+
+Deploy revisions 0007–0009 via the existing entrypoint migration workflow after
+backing up MySQL. No new application environment variables, worker or inference
+service is needed. Production build/deployment remains unverified in this change.
 
 No build, production deployment, live Paddle mutation or paid Google inference was
 performed during this implementation. Mobile source remains separate from web

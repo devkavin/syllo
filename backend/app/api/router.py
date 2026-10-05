@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.database import get_session
 from backend.app.api.routes.auth import router as auth_router
+from backend.app.api.routes.agenda import router as agenda_router
+from backend.app.api.routes.availability import router as availability_router
+from backend.app.api.routes.circle_scheduling import router as circle_schedule_router
 from backend.app.api.routes.circles import router as circles_router
 from backend.app.api.routes.paddle import router as paddle_router
 from backend.app.api.routes.billing import router as billing_router
@@ -22,6 +25,9 @@ from backend.app.api.routes.stripe_webhooks import router as stripe_webhook_rout
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
+api_router.include_router(agenda_router)
+api_router.include_router(availability_router)
+api_router.include_router(circle_schedule_router)
 api_router.include_router(circles_router)
 api_router.include_router(paddle_router)
 api_router.include_router(billing_router)

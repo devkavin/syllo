@@ -20,6 +20,7 @@ from backend.app.models.billing import (
 )
 from backend.app.models.identity import OAuthLoginCode, User
 from backend.app.models.circles import Circle, CircleMember, CircleGoal
+from backend.app.models.scheduling import AvailabilityWindow, AvailabilityExclusion, CircleStudyEvent, CircleParticipation
 from backend.app.models.paddle import PaddleAccount, PaddlePayment, PaddleEvent
 
 __all__ = [

@@ -3,14 +3,20 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { ArrowRight, Users } from "lucide-react";
+import CircleSchedule from "@/components/CircleSchedule";
+import AcademicSelector from "@/components/AcademicSelector";
 
 export default function Circles() {
+  const [params] = useSearchParams();
   const { user } = useAuth();
   const [circles, setCircles] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(params.get("circle"));
   const [detail, setDetail] = useState(null);
   const [name, setName] = useState("");
   const [goal, setGoal] = useState("");
+  const [goalLink, setGoalLink] = useState({ subject_id: null, unit_id: null, lesson_id: null });
+  const [goalTask, setGoalTask] = useState("");
+  const [ownTasks, setOwnTasks] = useState([]);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
@@ -26,6 +32,7 @@ export default function Circles() {
     else { setSelected(null); setDetail(null); }
   }
   useEffect(() => { load().catch(e => setError(formatError(e))).finally(() => setLoading(false)); }, []);
+  useEffect(() => { if (selected) http.get("/tasks").then(r => setOwnTasks(r.data)).catch(() => setOwnTasks([])); }, [selected]);
   async function act(action) {
     if (busy) return;
     setBusy(true); setError(""); setNotice("");
@@ -60,11 +67,14 @@ export default function Circles() {
       <div className="flex flex-wrap gap-3 items-center justify-between"><h2 className="font-serif text-2xl">{detail.name}</h2><button className="btn btn-outline" disabled={busy} onClick={() => act(async () => { await navigator.clipboard.writeText(detail.invite_url); setNotice("Invite link copied. Share it only with people you trust."); })}>Copy invite link</button></div>
       <p className="text-sm text-muted-foreground">Anyone with the link can request to join. A new signup uses your existing friend-code allowance; joining or rejoining never earns extra helps.</p>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={detail.share_weekly_time} disabled={busy} onChange={e => { const checked = e.target.checked; act(async () => { await http.patch(`/circles/${selected}/privacy`, { share_weekly_time: checked }); await load(); }); }} />Share my total focus time this week (UTC). Off by default.</label>
+      <CircleSchedule key={detail.id} circle={detail} user={user} onRefresh={() => load(detail.id)} />
       <section><h3 className="font-medium mb-2">Members · {detail.members.length}/30</h3><ul className="divide-y divide-border">{detail.members.map(m => <li key={m.id} className="flex flex-wrap items-center gap-3 py-3"><span>{m.name}{m.id === user.user_id ? " (you)" : ""}</span><span className="text-sm text-muted-foreground">{m.weekly_minutes === null ? "Study time private" : `${m.weekly_minutes} min this week`}</span>{detail.owner_id === user.user_id && m.id !== user.user_id && <button className="btn btn-ghost ml-auto text-xs" disabled={busy} onClick={() => { if (window.confirm(`Remove ${m.name} from this circle?`)) act(async () => { await http.delete(`/circles/${selected}/members/${m.id}`); await load(); }); }}>Remove</button>}</li>)}</ul></section>
       <section><h3 className="font-medium">Our next steps</h3><p className="text-sm text-muted-foreground mt-1">Share a goal, not your private notes. Only you can mark your goal complete.</p>
-        <form className="flex flex-wrap gap-2 my-3" onSubmit={e => { e.preventDefault(); act(async () => { await http.post(`/circles/${selected}/goals`, { title: goal }); setGoal(""); await load(); }); }}><input className="input max-w-sm" aria-label="Study goal" maxLength={160} required value={goal} onChange={e => setGoal(e.target.value)} placeholder="For example: practise three limits" /><button className="btn btn-outline" disabled={busy || !goal.trim()}>Share goal</button></form>
+        <details className="my-3 text-sm"><summary className="cursor-pointer">Link my goal to personal work (only visible to me)</summary><AcademicSelector value={goalLink} onChange={setGoalLink} disabled={busy} /><label>My task<select className="input mt-2" value={goalTask} onChange={e => setGoalTask(e.target.value)}><option value="">No task</option>{ownTasks.map(t => <option key={t.task_id} value={t.task_id}>{t.title}</option>)}</select></label></details>
+        <form className="flex flex-wrap gap-2 my-3" onSubmit={e => { e.preventDefault(); act(async () => { await http.post(`/circles/${selected}/goals`, { title: goal, lesson_id: goalLink.lesson_id, task_id: goalTask || null }); setGoal(""); setGoalLink({ subject_id: null, unit_id: null, lesson_id: null }); setGoalTask(""); await load(); }); }}><input className="input max-w-sm" aria-label="Study goal" maxLength={160} required value={goal} onChange={e => setGoal(e.target.value)} placeholder="For example: practise three limits" /><button className="btn btn-outline" disabled={busy || !goal.trim()}>Share goal</button></form>
         {!detail.goals.length && <p className="text-muted-foreground text-sm py-3">What would you like to work on together?</p>}
         <ul className="divide-y divide-border">{detail.goals.map(g => <li key={g.id} className="flex gap-3 py-3 items-center"><input type="checkbox" aria-label={`Complete ${g.title}`} checked={g.completed} disabled={busy || g.user_id !== user.user_id} onChange={e => { const completed = e.target.checked; act(async () => { await http.patch(`/circles/${selected}/goals/${g.id}`, { completed }); await load(); }); }} /><span className={g.completed ? "line-through text-muted-foreground" : ""}>{g.title}<small className="block text-muted-foreground">{detail.members.find(m => m.id === g.user_id)?.name}</small></span>{g.user_id === user.user_id && <button className="btn btn-ghost text-xs ml-auto" disabled={busy} onClick={() => act(async () => { await http.delete(`/circles/${selected}/goals/${g.id}`); await load(); })}>Remove goal</button>}</li>)}</ul>
+        {detail.goals.filter(g => g.user_id === user.user_id && (g.lesson_id || g.task_id)).map(g => <div key={g.id} className="text-xs flex gap-3 py-2"><span>{g.title}:</span>{g.lesson_id && <Link className="underline" to={`/lessons/${g.lesson_id}`}>My lesson</Link>}{g.task_id && <Link className="underline" to={`/tasks?task=${g.task_id}`}>My task</Link>}</div>)}
       </section>
       <footer className="flex flex-wrap gap-3 border-t border-border pt-4">{detail.owner_id === user.user_id ? <><button className="btn btn-outline" disabled={busy} onClick={() => { if (window.confirm("Replace this invite link? The old link will stop working.")) act(async () => { await http.post(`/circles/${selected}/rotate-invite`); await load(); setNotice("Invite replaced."); }); }}>Replace invite link</button><button className="btn btn-ghost text-destructive" disabled={busy} onClick={() => { if (window.confirm("Delete this circle and its shared goals? Personal study data will stay untouched.")) act(async () => { await http.delete(`/circles/${selected}`); await load(); }); }}>Delete circle</button></> : <button className="btn btn-outline" disabled={busy} onClick={() => { if (window.confirm("Leave this circle and remove your shared goals?")) act(async () => { await http.delete(`/circles/${selected}/members/${user.user_id}`); await load(); }); }}>Leave circle</button>}</footer>
     </div>}

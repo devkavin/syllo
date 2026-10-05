@@ -33,6 +33,7 @@ class User(TimestampMixin, Base):
     onboarded: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     theme: Mapped[str] = mapped_column(String(16), default="light", nullable=False)
     timezone_offset_min: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    timezone: Mapped[str | None] = mapped_column(String(64))
     daily_goal_minutes: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
     ai_credits_remaining: Mapped[int] = mapped_column(
         Integer, default=10, nullable=False

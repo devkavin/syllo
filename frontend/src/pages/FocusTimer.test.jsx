@@ -1,13 +1,15 @@
 import React from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render as rtlRender, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { http } from "@/lib/api";
 
 const queryState = vi.hoisted(() => ({ pending: false, failed: false, subjects: [] }));
-vi.mock("@/lib/api", () => ({ http: { post: vi.fn() }, formatError: String }));
+vi.mock("@/lib/api", () => ({ http: { post: vi.fn(), get: vi.fn(), patch: vi.fn(), put: vi.fn() }, formatError: String }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 vi.mock("@/hooks/useAcademicQueries", () => ({ useSubjectsQuery: () => ({ data: queryState.subjects, isPending: queryState.pending, isError: queryState.failed }) }));
 import FocusTimer from "./FocusTimer";
+const render = ui => rtlRender(ui, { wrapper: MemoryRouter });
 
 function setMinutes(value) {
   fireEvent.change(screen.getByLabelText("Duration (minutes)"), { target: { value } });
@@ -24,6 +26,7 @@ beforeEach(() => {
   queryState.subjects = [{ subject_id: "math", name: "Math", color: "sage", focus_minutes: 45, break_minutes: 10 }];
   vi.clearAllMocks();
   http.post.mockResolvedValue({ data: {} });
+  http.get.mockResolvedValue({ data: [] });
   Object.defineProperty(document, "fullscreenElement", { configurable: true, writable: true, value: null });
   Object.defineProperty(HTMLElement.prototype, "requestFullscreen", { configurable: true, writable: true, value: undefined });
   Object.defineProperty(document, "exitFullscreen", { configurable: true, writable: true, value: undefined });
@@ -31,6 +34,53 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("focus duration", () => {
+  it("waits for lesson prefill before allowing a session to start", async () => {
+    let resolveLesson; http.get.mockImplementation(url => url === "/lessons/limits" ? new Promise(resolve => { resolveLesson = resolve; }) : Promise.resolve({ data: [] }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?lesson=limits"]}><FocusTimer /></MemoryRouter>);
+    expect(screen.getByTestId("timer-start")).toBeDisabled();
+    await act(async () => resolveLesson({ data: { lesson_id: "limits", subject_id: "math", unit_id: "calculus", title: "Limits" } }));
+    expect(screen.getByTestId("timer-start")).toBeEnabled();
+  });
+  it("does not count breaks as focused study", async () => {
+    render(<FocusTimer />); vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("mode-short"));
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).not.toHaveBeenCalled();
+  });
+  it("keeps lesson selection locked while a session is paused", async () => {
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/lessons/limits" ? { lesson_id: "limits", subject_id: "math", unit_id: "calculus", title: "Limits" } : [] }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?lesson=limits"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {}); vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    fireEvent.click(screen.getByTestId("timer-pause"));
+    expect(screen.getByTestId("timer-subject-select")).toBeDisabled();
+    expect(screen.getByTestId("mode-short")).toBeDisabled();
+  });
+  it("starts from a lesson and offers review only after saving actual study time", async () => {
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/lessons/limits" ? { lesson_id: "limits", subject_id: "math", unit_id: "calculus", title: "Limits" } : [] }));
+    http.post.mockResolvedValue({ data: { session_id: "saved", duration_seconds: 45, lesson_id: "limits" } });
+    rtlRender(<FocusTimer />, { wrapper: ({ children }) => <MemoryRouter initialEntries={["/timer?lesson=limits"]}>{children}</MemoryRouter> });
+    await act(async () => {});
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start"));
+    advance(45);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ lesson_id: "limits", duration_seconds: 45, request_id: expect.any(String) }));
+    expect(screen.getByRole("heading", { name: "Session complete" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "30 minutes" })).toBeInTheDocument();
+  });
+  it("retains the same recording request when a failed save is retried", async () => {
+    http.post.mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ data: { session_id: "saved", duration_seconds: 20 } });
+    render(<FocusTimer />);
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    const first = http.post.mock.calls[0][1];
+    expect(first.request_id).toEqual(expect.any(String));
+    expect(http.post.mock.calls[1][1]).toEqual(first);
+  });
   it("preserves a legacy session through a failed subject request and recovers on retry", async () => {
     localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", subjectId: "math", seconds: 1400, running: false, startedAt: "2026-10-05T00:00:00Z" }));
     queryState.subjects = [];
@@ -128,6 +178,44 @@ describe("focus duration", () => {
 });
 
 describe("focus fullscreen", () => {
+  it("starts fresh personal focus without a previous Circle context", async () => {
+    localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", seconds: 1500, sessionSeconds: 1500, running: false, startedAt: null, eventId: "old", eventTopic: "Old group" }));
+    render(<FocusTimer />);
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ circle_event_id: null }));
+  });
+  it("preserves an active Circle timer when returning through plain Focus", async () => {
+    localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", seconds: 1480, sessionSeconds: 1500, running: false, startedAt: "2026-10-05T09:00:00Z", eventId: "active", eventTopic: "Study group" }));
+    render(<FocusTimer />);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ circle_event_id: "active" }));
+  });
+  it("detaches the Circle context after a successful session", async () => {
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/circle-sessions/e" ? { id: "e", topic: "Limits together", my_status: "accepted", canceled: false } : [] }));
+    http.post.mockResolvedValue({ data: { session_id: "s", duration_seconds: 20 } });
+    rtlRender(<MemoryRouter initialEntries={["/timer?event=e"]}><FocusTimer /></MemoryRouter>);
+    await screen.findByText("Limits together");
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    fireEvent.click(screen.getByTestId("timer-start")); advance(20);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post.mock.calls[0][1].circle_event_id).toBe("e");
+    expect(http.post.mock.calls[1][1].circle_event_id).toBeNull();
+  });
+  it("links accepted Circle study to actual recorded time only", async () => {
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/circle-sessions/e" ? { id: "e", topic: "Limits with friends", my_status: "accepted", canceled: false } : [] }));
+    http.post.mockResolvedValue({ data: { session_id: "s", duration_seconds: 30 } });
+    rtlRender(<MemoryRouter initialEntries={["/timer?event=e"]}><FocusTimer /></MemoryRouter>);
+    expect(await screen.findByText("Limits with friends")).toBeInTheDocument();
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByTestId("timer-start"));
+    act(() => vi.advanceTimersByTime(30000));
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ circle_event_id: "e", duration_seconds: 30 }));
+  });
   it("contains keyboard focus and isolates background controls in fallback fullscreen", async () => {
     const view = render(<><button>Background control</button><FocusTimer /></>);
     await act(async () => fireEvent.click(screen.getByTestId("timer-fullscreen")));

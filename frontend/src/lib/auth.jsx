@@ -1,7 +1,8 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { http } from "./api";
 import { queryKeys } from "./queryKeys";
+import { browserTimezone } from "./studyTime";
 
 const AuthCtx = createContext(null);
 
@@ -20,6 +21,14 @@ export function AuthProvider({ children }) {
     staleTime: 5 * 60_000,
   });
   const user = profile.isPending ? undefined : (profile.data ?? null);
+  const timezoneAttempt = useRef(null);
+  useEffect(() => {
+    if (!user || user.timezone || timezoneAttempt.current === user.user_id) return;
+    const id = user.user_id; timezoneAttempt.current = id;
+    http.post("/auth/timezone", { timezone: browserTimezone() }).then(({ data }) => {
+      client.setQueryData(queryKeys.profile, current => current?.user_id === id && !current.timezone ? data : current);
+    }).catch(() => { /* Legacy offset remains usable; Settings exposes retry/change. */ });
+  }, [user, client]);
 
   const storeUser = (data) => {
     client.setQueryData(queryKeys.profile, data);

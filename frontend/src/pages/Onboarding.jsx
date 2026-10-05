@@ -43,6 +43,13 @@ export default function Onboarding() {
     finally { setBusy(false); }
   };
 
+  const skip = async () => {
+    setBusy(true); setErr("");
+    try { await updateMe({ onboarded: true }); nav("/today"); }
+    catch (e) { setErr(formatError(e)); }
+    finally { setBusy(false); }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground grid place-items-center p-4">
       <div className="w-full max-w-lg space-y-6 fade-in" data-testid="onboarding-page">
@@ -52,6 +59,8 @@ export default function Onboarding() {
           ))}
         </div>
 
+        <button className="btn btn-outline w-full" disabled={busy} onClick={skip}>Skip for now</button>
+        {err && <p role="alert" className="text-destructive">{err}</p>}
         {step === 0 && (
           <div className="card p-8">
             <h1 className="font-serif text-3xl tracking-tight mb-2">Welcome to Syllo</h1>

@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Check, RotateCcw, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Reviews() {
   const [items, setItems] = useState([]);
   const [subjects, setSubjects] = useState([]);
-  const [busyId, setBusyId] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
@@ -26,14 +26,6 @@ export default function Reviews() {
   const due = items.filter((r) => new Date(r.next_review_at) <= now);
   const later = items.filter((r) => new Date(r.next_review_at) > now);
 
-  const mark = async (r, quality) => {
-    setBusyId(r.review_id);
-    try {
-      await http.post(`/reviews/${r.review_id}/mark`, { quality });
-      load();
-    } catch (e) { setErr(formatError(e)); } finally { setBusyId(null); }
-  };
-
   const renderItem = (r) => {
     const sub = r.subject_id ? subMap[r.subject_id] : null;
     const c = sub ? subjectClasses(sub.color, isDark) : null;
@@ -41,22 +33,15 @@ export default function Reviews() {
     return (
       <li key={r.review_id} className="card px-4 py-3 flex items-center gap-3" data-testid={`review-${r.review_id}`}>
         <div className="flex-1 min-w-0">
-          <div className="text-sm">{r.lesson_title || "Lesson"}</div>
+          <div className="text-sm">{r.lesson_id ? <Link className="hover:underline" to={`/lessons/${r.lesson_id}`}>{r.lesson_title || "Lesson"}</Link> : "Lesson no longer available"}</div>
           <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
             {sub && <span className="inline-flex items-center gap-1"><span className="subject-dot" style={{ background: c.dot }} />{sub.name}</span>}
             <span>Next: {new Date(r.next_review_at).toLocaleDateString()}</span>
             <span>Interval: {r.interval_days}d</span>
           </div>
         </div>
-        {dueSoon ? (
-          <div className="flex gap-2">
-            <button className="btn btn-outline text-xs" onClick={() => mark(r, "again")} disabled={busyId === r.review_id} data-testid={`review-again-${r.review_id}`}>
-              <RotateCcw className="w-3.5 h-3.5" /> Again
-            </button>
-            <button className="btn btn-primary text-xs" onClick={() => mark(r, "good")} disabled={busyId === r.review_id} data-testid={`review-good-${r.review_id}`}>
-              <Check className="w-3.5 h-3.5" /> Good
-            </button>
-          </div>
+        {dueSoon && r.lesson_id ? (
+          <Link className="btn btn-primary text-xs" to={`/lessons/${r.lesson_id}`}>Open lesson to review</Link>
         ) : (
           <div className="text-xs text-muted-foreground">Scheduled</div>
         )}

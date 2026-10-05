@@ -16,6 +16,7 @@ class CircleMember(TimestampMixin, Base):
     circle_id: Mapped[str] = mapped_column(ForeignKey("circles.circle_id", ondelete="CASCADE"), primary_key=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
     share_weekly_time: Mapped[bool] = mapped_column(Boolean, default=False)
+    share_availability: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class CircleGoal(TimestampMixin, Base):
@@ -25,3 +26,5 @@ class CircleGoal(TimestampMixin, Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"))
     title: Mapped[str] = mapped_column(String(160))
     completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    lesson_id: Mapped[str | None] = mapped_column(ForeignKey("lessons.lesson_id", ondelete="SET NULL"))
+    task_id: Mapped[str | None] = mapped_column(ForeignKey("tasks.task_id", ondelete="SET NULL"))
