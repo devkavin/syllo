@@ -32,6 +32,14 @@ class Settings(BaseSettings):
     mobile_oauth_redirect_uri: str = "syllo://google-callback"
 
     billing_enabled: bool = False
+    billing_provider: Literal["paddle", "stripe"] = "paddle"
+    paddle_sandbox_enabled: bool = False
+    paddle_api_key: SecretStr | None = None
+    paddle_webhook_secret: SecretStr | None = None
+    paddle_client_token: str | None = None
+    paddle_price_scholar: str | None = None
+    paddle_price_deans_list: str | None = None
+    paddle_intro_discount_id: str | None = None
     stripe_secret_key: SecretStr | None = None
     stripe_webhook_secret: SecretStr | None = None
     stripe_price_scholar: str | None = None
@@ -65,6 +73,15 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_contract(self) -> "Settings":
+        if self.paddle_sandbox_enabled:
+            required_paddle = (self.paddle_api_key, self.paddle_webhook_secret, self.paddle_client_token,
+                               self.paddle_price_scholar, self.paddle_price_deans_list, self.paddle_intro_discount_id)
+            if not all(required_paddle):
+                raise ValueError("Paddle sandbox requires API key, webhook secret, client token, two price IDs and intro discount ID")
+            if not self.paddle_api_key.get_secret_value().startswith("pdl_sdbx_apikey_") or not self.paddle_client_token.startswith("test_"):
+                raise ValueError("Only Paddle sandbox credentials are supported during this launch phase")
+        if self.billing_enabled and self.billing_provider == "paddle":
+            raise ValueError("Public Paddle billing is not enabled yet. Use PADDLE_SANDBOX_ENABLED=true and BILLING_ENABLED=false")
         if self.database_url and self.database_url.startswith("mysql"):
             if not self.database_url.startswith("mysql+asyncmy://"):
                 raise ValueError("DATABASE_URL must use mysql+asyncmy:// for MySQL")

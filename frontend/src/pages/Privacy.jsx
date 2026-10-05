@@ -19,6 +19,7 @@ export default function Privacy() {
           <li><strong>Study information:</strong> subjects, units, lessons, notes, notebooks, tasks, schedules, reviews, focus sessions, progress, goals, and other content you choose to add.</li>
           <li><strong>Study Companion information:</strong> prompts, selected notebook or study content sent for an explanation or summary, generated responses, model name, token counts, latency, and help usage.</li>
           <li><strong>Billing information:</strong> paid plans are not currently available. When billing launches, we may store plan, subscription status, and transaction references, but Syllo will not store full payment-card details.</li>
+          <li><strong>Circles:</strong> circle membership, shared goals and completion status. Other members can see your name and shared goals. Your total weekly focus time is visible only when you enable sharing for that circle. Notes, personal tasks, email addresses and Companion questions are not shared with circle members.</li>
           <li><strong>Referral and usage information:</strong> referral codes and rewards, feature activity, timestamps, device or browser information made available in normal web requests, and security logs.</li>
         </ul>
       </LegalSection>
@@ -33,9 +34,11 @@ export default function Privacy() {
         <ul>
           <li><strong>Google</strong> for optional Google sign-in.</li>
           <li><strong>Google Gemini</strong> to process Study Companion requests. Do not include sensitive personal information in prompts or notes submitted to this feature.</li>
+          <li><strong>Paddle</strong> for administrator-only sandbox checkout testing. Sandbox customer, subscription and transaction references are stored to verify test payments. Public paid plans remain unavailable.</li>
           <li><strong>Hosting and database providers</strong> to run the application and store Syllo account and study data in a hosted MySQL database.</li>
         </ul>
         <p>These providers may process information outside Sri Lanka under their own security and privacy programs. We do not sell personal information or use it for third-party advertising.</p>
+        <p>Google may use free-quota Companion inputs and responses to improve its products and may use human reviewers. Paid API processing has different data-use terms. See <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Google’s Gemini API terms</a>. Syllo’s usage ledger stores token counts and cost estimates, not copies of your Companion questions or answers.</p>
       </LegalSection>
 
       <LegalSection title="Cookies and local storage">

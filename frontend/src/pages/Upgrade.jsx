@@ -13,6 +13,7 @@ const PLANNED_PRICING = {
 export default function Upgrade() {
   const [plans, setPlans] = useState([]);
   const [checkoutAvailable, setCheckoutAvailable] = useState(false);
+  const [sandbox, setSandbox] = useState(false);
   const [busy, setBusy] = useState(null);
   const [err, setErr] = useState("");
   const { usage, refresh } = useUsage();
@@ -40,6 +41,7 @@ export default function Upgrade() {
     http.get("/billing/plans").then((r) => {
       setPlans(r.data.plans);
       setCheckoutAvailable(Boolean(r.data.checkout_available));
+      setSandbox(Boolean(r.data.sandbox));
     }).catch((e) => setErr(formatError(e)));
     refresh();
   }, [refresh]);
@@ -71,6 +73,7 @@ export default function Upgrade() {
       </div>
 
       {err && <div className="text-destructive text-sm">{err}</div>}
+      {sandbox && <p className="text-sm border border-border p-3" role="status">Paddle sandbox · Admin tests only. No real payments. <a className="underline" href="/checkout">Resume unfinished checkout</a> · <button className="underline" onClick={async () => { try { window.location.href = (await http.post("/billing/portal", {})).data.url; } catch (e) { setErr(formatError(e)); } }}>Manage test subscription</button></p>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {plans.map((p) => {
@@ -146,7 +149,7 @@ export default function Upgrade() {
 
       {checkoutAvailable && (
         <div className="text-xs text-muted-foreground text-center">
-          Secure recurring checkout. You can cancel anytime from your account.
+          Secure recurring checkout. You can cancel anytime from your account. Applicable tax is shown before payment.
         </div>
       )}
       {!checkoutAvailable && <div className="text-xs text-muted-foreground text-center">Planned pricing preview. Subscriptions are not available yet.</div>}

@@ -1,0 +1,7 @@
+{
+  "name": "syllo-paddle-sandbox-catalog",
+  "private": true,
+  "type": "module",
+  "scripts": { "setup": "node --env-file=../../backend/.env setup.mjs" },
+  "dependencies": { "@paddle/paddle-node-sdk": "3.10.0" }
+}

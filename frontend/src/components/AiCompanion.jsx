@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useUsage } from "@/lib/usage";
-import { Sparkles, X, Send, Loader2 } from "lucide-react";
+import { BookOpen, X, Send, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
 import { recentChatContext } from "@/lib/chatContext";
 import HelpUsage from "@/components/HelpUsage";
+import StudyResponse from "@/components/StudyResponse";
+import { TODAY_STARTER } from "@/lib/studyPrompts";
 
 export default function AiCompanion({ open, onClose, contextLabel }) {
   const [messages, setMessages] = useState([]);
@@ -14,12 +16,13 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
   const [err, setErr] = useState("");
   const { usage, setRemaining, refresh } = useUsage();
   const scroller = useRef(null);
+  const composer = useRef(null);
 
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: "model", isGreeting: true, text: contextLabel
-        ? `Hi. I can help you with ${contextLabel}. Ask me anything.`
-        : "Hi. Ask me to explain a topic, give you a practice question, or plan a short study session." }]);
+        ? `What would you like to understand about ${contextLabel}?`
+        : "Ask about a topic, try a practice question, or work out what to study next." }]);
     }
   }, [open, contextLabel, messages.length]);
 
@@ -68,7 +71,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg grid place-items-center" style={{ background: "hsl(267 30% 92%)", color: "hsl(267 40% 32%)" }}>
-              <Sparkles className="w-4 h-4" />
+              <BookOpen className="w-4 h-4" />
             </div>
             <div>
               <div className="font-serif text-lg leading-none">Study Companion</div>
@@ -77,26 +80,29 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
               </div>
             </div>
           </div>
-          <button className="btn btn-ghost !p-1.5" onClick={onClose} data-testid="ai-close"><X className="w-4 h-4" /></button>
+          <button aria-label="Close Study Companion" className="btn btn-ghost !p-1.5" onClick={onClose} data-testid="ai-close"><X className="w-4 h-4" /></button>
         </div>
 
         <div ref={scroller} className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-sm whitespace-pre-wrap ${
+                className={`px-3.5 py-2.5 text-sm ${
                   m.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-sm"
-                    : "bg-accent text-foreground rounded-bl-sm"
+                    ? "max-w-[85%] bg-primary text-primary-foreground rounded-2xl rounded-br-sm whitespace-pre-wrap"
+                    : "max-w-full text-foreground"
                 }`}
                 data-testid={`ai-msg-${m.role}`}
               >
                 {m.pending
-                  ? <span className="inline-flex items-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" /> thinking</span>
-                  : m.text}
+                  ? <span role="status" className="inline-flex items-center gap-2"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Working…</span>
+                  : m.role === "model" ? <StudyResponse text={m.text} /> : m.text}
               </div>
             </div>
           ))}
+          {!messages.some((m) => m.role === "user") && !outOfCredits && (
+            <button className="w-full rounded-lg border border-border p-3 text-left text-sm leading-relaxed text-muted-foreground hover:bg-accent" onClick={() => { setInput(TODAY_STARTER); composer.current?.focus(); }}>{TODAY_STARTER}</button>
+          )}
         </div>
 
         {err && <div className="px-4 pb-2 text-destructive text-xs">{err}</div>}
@@ -111,15 +117,17 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
           <div className="p-3 border-t border-border flex items-end gap-2">
             <textarea
               className="input resize-none min-h-[44px] max-h-32"
+              ref={composer}
               rows={1}
               maxLength={3000}
-              placeholder="Ask something calm..."
+              aria-label="Your study question"
+              placeholder="Ask a study question…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
               data-testid="ai-input"
             />
-            <button className="btn btn-primary" onClick={send} disabled={busy || !input.trim()} data-testid="ai-send">
+            <button aria-label="Send question" className="btn btn-primary" onClick={send} disabled={busy || !input.trim()} data-testid="ai-send">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>
           </div>

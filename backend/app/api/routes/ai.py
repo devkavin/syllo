@@ -26,6 +26,18 @@ from backend.app.services.progress import build_progress
 router = APIRouter(prefix="/ai", tags=["study companion"])
 
 
+def record_tokens(usage: AIUsageLog, result: GenerationResult) -> None:
+    usage.input_tokens = result.input_tokens
+    usage.output_tokens = result.output_tokens
+    usage.thinking_tokens = result.thinking_tokens
+    usage.cached_input_tokens = result.cached_input_tokens
+    usage.total_tokens = result.total_tokens
+    usage.finish_reason = result.finish_reason
+    # Missing metadata must not release a conservative spend reservation.
+    if result.input_tokens or result.output_tokens or result.thinking_tokens:
+        usage.estimated_cost_microusd = estimate_cost_microusd(result)
+
+
 class ChatHistoryItem(BaseModel):
     role: Literal["user", "model"]
     text: str = Field(max_length=2000)
@@ -136,11 +148,16 @@ async def reserve_help(
     request: Request,
     user: User,
     session: AsyncSession,
-) -> tuple[str, int, int]:
-    reserved_cost = reserve_cost_microusd(
-        model=model, prompt=prompt, system=system, max_tokens=max_tokens
-    )
+) -> tuple[str, int, int, str]:
+    # Authentication may have opened a MySQL REPEATABLE READ snapshot before
+    # another request reserved spend. End it before acquiring the project lock.
+    await session.commit()
     async with reservation_lock(request, session):
+        user = await CreditService(session, request.app.state.settings).refill_if_needed(user.user_id, commit=False)
+        model = model_for_feature(user.plan_id, feature, request.app.state.settings)
+        reserved_cost = reserve_cost_microusd(
+            model=model, prompt=prompt, system=system, max_tokens=max_tokens
+        )
         await enforce_usage_guards(session, request, user, reserved_cost)
         remaining, bonus_used = await CreditService(
             session, request.app.state.settings
@@ -148,6 +165,7 @@ async def reserve_help(
         usage = AIUsageLog(
             user_id=user.user_id,
             feature=feature,
+            plan_id=user.plan_id,
             model=model,
             ok=False,
             credits=0,
@@ -156,7 +174,7 @@ async def reserve_help(
         )
         session.add(usage)
         await session.commit()
-        return usage.usage_id, remaining, bonus_used
+        return usage.usage_id, remaining, bonus_used, model
 
 
 async def run_feature(
@@ -175,7 +193,7 @@ async def run_feature(
         user.plan_id, feature, request.app.state.settings
     )
     credits = CreditService(session, request.app.state.settings)
-    usage_id, remaining, bonus_used = await reserve_help(
+    usage_id, remaining, bonus_used, model = await reserve_help(
         feature=feature,
         model=model,
         prompt=prompt,
@@ -207,6 +225,9 @@ async def run_feature(
             if isinstance(exc, EmptyGenerationError)
             else "provider_error"
         )
+        failed_result = getattr(exc, "result", None)
+        if failed_result is not None:
+            record_tokens(usage, failed_result)
         await session.commit()
         raise HTTPException(
             status_code=502, detail="Study companion is temporarily unavailable"
@@ -216,9 +237,7 @@ async def run_feature(
         usage.model = result.model
         usage.ok = True
         usage.credits = 1
-        usage.input_tokens = result.input_tokens
-        usage.output_tokens = result.output_tokens
-        usage.estimated_cost_microusd = estimate_cost_microusd(result)
+        record_tokens(usage, result)
         usage.latency_ms = int((perf_counter() - started) * 1000)
         usage.error_code = None
         await session.commit()
@@ -261,7 +280,12 @@ async def chat(
     return await run_feature(
         feature="chat",
         prompt=f"{history}\nuser: {body.message}".strip(),
-        system="Be a calm study companion. Answer clearly and concisely.",
+        system=("Help a student understand or choose a practical next step. "
+                "Lead with the answer. Usually use 40–120 words, short paragraphs, "
+                "and only the steps needed. No canned introductions, praise, emojis, "
+                "repeated summaries or unnecessary headings. Preserve equations and "
+                "necessary reasoning; never sacrifice correctness for brevity. "
+                "Say when uncertain. Ask one short clarification if essential."),
         request=request,
         user=user,
         session=session,
@@ -279,7 +303,7 @@ async def summarize(
     return await run_feature(
         feature="summarize",
         prompt=f"Notebook content:\n\n{body.text}",
-        system="Return three concise bullet points and one self-check question.",
+        system="Return three short, specific bullet points and one useful self-check question. No introduction, praise or concluding summary. Preserve key equations and do not invent missing facts.",
         request=request,
         user=user,
         session=session,
@@ -299,7 +323,7 @@ async def explain(
     return await run_feature(
         feature="explain",
         prompt=f"Explain {body.concept}{subject}.",
-        system="Explain in two or three beginner-friendly sentences with a simple example.",
+        system="Lead with a direct explanation in two or three beginner-friendly sentences, then one short example if useful. Keep necessary academic steps and equations. No filler, praise or unnecessary headings; say when uncertain.",
         request=request,
         user=user,
         session=session,
@@ -318,11 +342,11 @@ async def reflection(
     return await run_feature(
         feature="reflection",
         prompt=(
-            f"This week: {progress['weekly_seconds']} seconds, "
-            f"{progress['sessions_completed']} sessions, "
+            f"Study time this week: {progress['weekly_seconds']} seconds. "
+            f"All-time totals: {progress['sessions_completed']} sessions, "
             f"{progress['lessons_studied']} lessons studied."
         ),
-        system="Write a warm weekly reflection with one strength and one small next step.",
+        system="Write two brief sentences: one factual observation and one practical next step. Do not turn all-time totals into weekly statistics. No generic praise, guilt, comparisons, headings or introduction.",
         request=request,
         user=user,
         session=session,

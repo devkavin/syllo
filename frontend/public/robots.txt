@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /join/
+Disallow: /checkout
+Disallow: /payment/
+Sitemap: https://syllo.kavinhq.com/sitemap.xml

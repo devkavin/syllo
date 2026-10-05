@@ -7,7 +7,7 @@ import HelpUsage from "@/components/HelpUsage";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, X, GraduationCap,
-  Calendar, Sparkles, Search as SearchIcon, ShieldCheck, Zap,
+  Calendar, Sparkles, Search as SearchIcon, ShieldCheck, Zap, Users,
 } from "lucide-react";
 
 const SearchDialog = lazy(() => import("@/components/SearchDialog"));
@@ -23,6 +23,7 @@ const NAV = [
   { to: "/timer", label: "Focus", icon: Timer, testid: "nav-timer" },
   { to: "/analytics", label: "Analytics", icon: BarChart3, testid: "nav-analytics" },
   { to: "/settings", label: "Settings", icon: Settings, testid: "nav-settings" },
+  { to: "/circles", label: "Circles", icon: Users, testid: "nav-circles" },
 ];
 
 function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
@@ -149,6 +150,9 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
 }
 
 export default function AppShell({ children }) {
+  const [pendingCircle] = useState(() => {
+    try { const invite = JSON.parse(sessionStorage.getItem("syllo.circleInvite")); return /^[A-Za-z0-9_-]{30,64}$/.test(invite?.token); } catch { return false; }
+  });
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -218,6 +222,7 @@ export default function AppShell({ children }) {
 
       <main className="flex-1 min-w-0 pt-14 md:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 fade-in">
+          {pendingCircle && <div className="mb-5 text-sm border-b border-border pb-3"><Link className="underline" to="/circles">Your circle invitation is ready to review</Link>. Joining is optional.</div>}
           {children}
         </div>
       </main>

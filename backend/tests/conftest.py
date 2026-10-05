@@ -20,6 +20,7 @@ def test_settings_values() -> dict[str, object]:
         "oauth_state_secret": "test-oauth-secret-with-at-least-32-characters",
         "cookie_secure": False,
         "billing_enabled": True,
+        "billing_provider": "stripe",
     }
 
 

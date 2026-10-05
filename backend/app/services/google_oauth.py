@@ -67,7 +67,7 @@ class OAuthStateService:
             raise RuntimeError("OAUTH_STATE_SECRET is required for Google sign-in")
         self.secret = settings.oauth_state_secret.get_secret_value()
 
-    def issue(self, client: str, return_to: str) -> tuple[str, str]:
+    def issue(self, client: str, return_to: str, referral_code: str = "") -> tuple[str, str]:
         now = datetime.now(timezone.utc)
         nonce = secrets.token_urlsafe(32)
         state = jwt.encode(
@@ -75,6 +75,7 @@ class OAuthStateService:
                 "client": client,
                 "return_to": safe_return_path(return_to),
                 "nonce": nonce,
+                "referral_code": referral_code.strip().lower()[:12],
                 "iat": now,
                 "exp": now + timedelta(minutes=10),
             },

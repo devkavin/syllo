@@ -3,6 +3,7 @@ import { http, formatError } from "@/lib/api";
 import { useUsage } from "@/lib/usage";
 import { Sparkles, Loader2, X } from "lucide-react";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
+import StudyResponse from "@/components/StudyResponse";
 
 /**
  * ExplainPopover: given a ref to a textarea, shows a floating "Explain" button
@@ -103,7 +104,7 @@ export default function ExplainPopover({ textareaRef, containerRef, subjectName,
         <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40 relative" data-testid="explain-result">
           <button className="btn btn-ghost !p-1 absolute right-2 top-2" onClick={() => setResult(null)}><X className="w-3.5 h-3.5" /></button>
           <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-2"><Sparkles className="w-3.5 h-3.5" /> Explaining "{result.source.slice(0, 40)}{result.source.length > 40 ? "..." : ""}"</div>
-          <div className="text-sm whitespace-pre-wrap">{result.text}</div>
+          <StudyResponse text={result.text} />
           <AiPrivacyNote className="mt-3" />
         </div>
       )}

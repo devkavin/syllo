@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig } from "vitest/config";
 import { transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
+import { prerenderHome } from "./scripts/prerender-home.js";
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,7 @@ export default defineConfig({
       },
     },
     react(),
+    prerenderHome(),
   ],
   esbuild: {
     loader: "jsx",

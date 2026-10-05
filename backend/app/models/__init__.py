@@ -19,6 +19,8 @@ from backend.app.models.billing import (
     StripeEvent,
 )
 from backend.app.models.identity import OAuthLoginCode, User
+from backend.app.models.circles import Circle, CircleMember, CircleGoal
+from backend.app.models.paddle import PaddleAccount, PaddlePayment, PaddleEvent
 
 __all__ = [
     "AIUsageLog",

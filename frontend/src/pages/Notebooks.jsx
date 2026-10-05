@@ -6,6 +6,7 @@ import { subjectClasses } from "@/lib/palette";
 import { useUsage } from "@/lib/usage";
 import ExplainPopover from "@/components/ExplainPopover";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
+import StudyResponse from "@/components/StudyResponse";
 
 const SAVE_DEBOUNCE = 800;
 
@@ -190,7 +191,7 @@ export default function Notebooks() {
                   <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-0"><Sparkles className="w-3.5 h-3.5" /> Study Companion</div>
                   <button className="btn btn-ghost !p-1" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
                 </div>
-                <div className="text-sm whitespace-pre-wrap">{summary}</div>
+                <StudyResponse text={summary} />
                 <AiPrivacyNote className="mt-3" />
               </div>
             )}

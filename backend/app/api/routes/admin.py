@@ -15,6 +15,26 @@ from backend.app.models import AIUsageLog, PaymentTransaction, Plan, User
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
+@router.get("/companion-usage")
+async def companion_usage(days: int = Query(default=30, ge=1, le=90),
+    _: User = Depends(require_admin), session: AsyncSession = Depends(get_session)):
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    rows = (await session.execute(select(
+        AIUsageLog.plan_id, AIUsageLog.model, AIUsageLog.feature, AIUsageLog.ok,
+        func.count(), func.sum(AIUsageLog.input_tokens), func.sum(AIUsageLog.output_tokens),
+        func.sum(AIUsageLog.thinking_tokens), func.sum(AIUsageLog.cached_input_tokens),
+        func.sum(AIUsageLog.total_tokens), func.sum(AIUsageLog.estimated_cost_microusd),
+        func.avg(AIUsageLog.latency_ms),
+    ).where(AIUsageLog.created_at >= since).group_by(
+        AIUsageLog.plan_id, AIUsageLog.model, AIUsageLog.feature, AIUsageLog.ok))).all()
+    return {"days": days, "cost_basis": "conservative estimate; includes unresolved reservations",
+        "groups": [{"plan": plan, "model": model, "feature": feature, "successful": ok,
+                    "requests": count, "input_tokens": inputs, "output_tokens": outputs,
+                    "thinking_tokens": thinking, "cached_input_tokens": cached, "total_tokens": total,
+                    "estimated_cost_microusd": cost, "mean_latency_ms": round(latency or 0)}
+                   for plan, model, feature, ok, count, inputs, outputs, thinking, cached, total, cost, latency in rows]}
+
+
 class AdminUserPatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

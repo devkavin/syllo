@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.config import Settings
-from backend.app.models import Plan, Referral, User
+from backend.app.models import Plan, Referral, User, PaddleAccount, AIUsageLog
 
 BONUS_QUESTS = (
     {"id": "onboarded", "label": "Finish setting up", "credits": 10},
@@ -43,13 +43,27 @@ class CreditService:
 
     async def _locked_user(self, user_id: str) -> User:
         user = await self.session.scalar(
-            select(User).where(User.user_id == user_id).with_for_update()
+            select(User).where(User.user_id == user_id).with_for_update().execution_options(populate_existing=True)
         )
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
         return user
 
     async def _apply_refill(self, user: User) -> None:
+        account = await self.session.get(PaddleAccount, user.user_id)
+        if account and user.plan_id != "freshman":
+            until = account.paid_through
+            if until and until.tzinfo is None:
+                until = until.replace(tzinfo=timezone.utc)
+            if account.status in {"canceled", "paused"} or not until or until <= datetime.now(timezone.utc):
+                user.plan_id = "freshman"
+                user.bonus_credits_remaining = 0
+                free = await self.session.get(Plan, "freshman")
+                now = datetime.now(timezone.utc)
+                used = int(await self.session.scalar(select(func.coalesce(func.sum(AIUsageLog.credits), 0)).where(
+                    AIUsageLog.user_id == user.user_id,
+                    AIUsageLog.created_at >= now.replace(day=1, hour=0, minute=0, second=0, microsecond=0))) or 0)
+                user.ai_credits_remaining = min(user.ai_credits_remaining, max(0, monthly_allowance(user, free, self.settings) - used))
         period = current_period()
         if user.credit_period == period:
             return

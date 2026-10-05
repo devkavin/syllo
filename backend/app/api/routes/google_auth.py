@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.api.routes.auth import authenticated_response
 from backend.app.database import get_session
 from backend.app.models import OAuthLoginCode, User
+from backend.app.services.credits import CreditService
 from backend.app.services.google_oauth import (
     GoogleIdentity,
     GoogleOAuthError,
@@ -54,6 +55,8 @@ async def resolve_google_user(
     session: AsyncSession,
     identity: GoogleIdentity,
     start_credits: int,
+    settings=None,
+    referral_code: str = "",
 ) -> User:
     subject_user = await session.scalar(
         select(User).where(User.google_sub == identity.subject)
@@ -78,6 +81,8 @@ async def resolve_google_user(
         user.name = user.name or identity.name
         user.picture = identity.picture or user.picture
     else:
+        referrer = await session.scalar(select(User).where(User.referral_code == referral_code).with_for_update()) if referral_code and settings else None
+        bonus = min(settings.referral_bonus_credits, max(0, settings.free_plan_max_credits - start_credits)) if referrer else 0
         user = User(
             email=identity.email,
             normalized_email=identity.email,
@@ -86,10 +91,15 @@ async def resolve_google_user(
             google_sub=identity.subject,
             auth_provider="google",
             referral_code=secrets.token_hex(4),
-            ai_credits_remaining=start_credits,
+            ai_credits_remaining=start_credits + bonus,
+            bonus_credits_remaining=bonus,
+            referred_by=referrer.user_id if referrer else None,
             credit_period=datetime.now(timezone.utc).strftime("%Y-%m"),
         )
         session.add(user)
+        await session.flush()
+        if referrer:
+            await CreditService(session, settings).award_signup_referral(referrer.user_id, user.user_id, commit=False)
     await session.commit()
     await session.refresh(user)
     return user
@@ -100,9 +110,10 @@ async def google_start(
     request: Request,
     client: str = Query(default="web", pattern="^(web|mobile)$"),
     return_to: str = "/",
+    ref: str = Query(default="", max_length=12),
 ) -> RedirectResponse:
     state, nonce = OAuthStateService(request.app.state.settings).issue(
-        client, return_to
+        client, return_to, ref
     )
     authorization_url, code_verifier = google_service(request).authorization_url(state)
     response = RedirectResponse(
@@ -165,7 +176,8 @@ async def google_callback(
             detail=f"Google sign-in failed (unexpected_error: {type(exc).__name__})",
         ) from exc
     user = await resolve_google_user(
-        session, identity, request.app.state.settings.free_plan_start_credits
+        session, identity, request.app.state.settings.free_plan_start_credits,
+        request.app.state.settings, payload.get("referral_code", ""),
     )
 
     if payload["client"] == "mobile":

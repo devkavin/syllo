@@ -25,6 +25,8 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "plans",
         "stripe_events",
         "oauth_login_codes",
+        "circles", "circle_members", "circle_goals",
+        "paddle_accounts", "paddle_payments", "paddle_events",
     }.issubset(tables)
     assert (
         engine.connect().exec_driver_sql("SELECT COUNT(*) FROM users").scalar_one() == 0
@@ -51,6 +53,7 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "estimated_cost_microusd",
         "latency_ms",
         "error_code",
+        "thinking_tokens", "cached_input_tokens", "total_tokens", "finish_reason", "plan_id",
     }.issubset(usage_columns)
     assert "bonus_credits_remaining" in {
         column["name"] for column in inspect(engine).get_columns("users")

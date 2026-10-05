@@ -105,11 +105,16 @@ class AIUsageLog(Base):
         ForeignKey("users.user_id", ondelete="SET NULL")
     )
     feature: Mapped[str] = mapped_column(String(64), nullable=False)
+    plan_id: Mapped[str | None] = mapped_column(String(64))
     model: Mapped[str | None] = mapped_column(String(120))
     ok: Mapped[bool] = mapped_column(Boolean, nullable=False)
     credits: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     input_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    thinking_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    cached_input_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    finish_reason: Mapped[str | None] = mapped_column(String(64))
     estimated_cost_microusd: Mapped[int] = mapped_column(
         Integer, default=0, nullable=False
     )

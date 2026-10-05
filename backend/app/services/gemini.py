@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from math import ceil
+from datetime import datetime, timezone
 from typing import Protocol
 
 from google import genai
@@ -17,10 +18,16 @@ class GenerationResult:
     model: str
     input_tokens: int = 0
     output_tokens: int = 0
+    thinking_tokens: int = 0
+    cached_input_tokens: int = 0
+    total_tokens: int = 0
+    finish_reason: str | None = None
 
 
 class EmptyGenerationError(RuntimeError):
-    pass
+    def __init__(self, message: str, result: GenerationResult | None = None):
+        super().__init__(message)
+        self.result = result
 
 
 MODEL_PRICE_HUNDREDTHS_OF_MICROUSD = {
@@ -35,8 +42,11 @@ def estimate_cost_microusd(result: GenerationResult) -> int:
     # bypassing the application-side monthly budget.
     rates = MODEL_PRICE_HUNDREDTHS_OF_MICROUSD.get(result.model, (100, 1000))
     input_rate, output_rate = rates
+    if result.model == "gemini-3.8-flash" and datetime.now(timezone.utc).year >= 2027:
+        input_rate, output_rate = 150, 750
     return ceil(
-        (result.input_tokens * input_rate + result.output_tokens * output_rate) / 100
+        (result.input_tokens * input_rate
+         + (result.output_tokens + result.thinking_tokens) * output_rate) / 100
     )
 
 
@@ -45,7 +55,8 @@ def reserve_cost_microusd(
 ) -> int:
     # Three characters per token is intentionally conservative for mixed prose,
     # equations, and markup. Reservations are reconciled to provider metadata.
-    input_tokens = ceil((len(prompt) + len(system)) / 3)
+    # UTF-8 bytes safely bound mixed-language text instead of a prose char ratio.
+    input_tokens = len((prompt + system).encode("utf-8"))
     return estimate_cost_microusd(
         GenerationResult(
             text="",
@@ -108,15 +119,22 @@ class GoogleGeminiProvider:
                 config=config,
             )
         text = (getattr(response, "text", None) or "").strip()
-        if not text:
-            raise EmptyGenerationError("Gemini returned no usable content")
         usage = getattr(response, "usage_metadata", None)
-        return GenerationResult(
+        candidates = getattr(response, "candidates", None) or []
+        finish = getattr(candidates[0], "finish_reason", None) if candidates else None
+        result = GenerationResult(
             text=text,
             model=model,
             input_tokens=int(getattr(usage, "prompt_token_count", 0) or 0),
             output_tokens=int(getattr(usage, "candidates_token_count", 0) or 0),
+            thinking_tokens=int(getattr(usage, "thoughts_token_count", 0) or 0),
+            cached_input_tokens=int(getattr(usage, "cached_content_token_count", 0) or 0),
+            total_tokens=int(getattr(usage, "total_token_count", 0) or 0),
+            finish_reason=str(getattr(finish, "value", finish)) if finish else None,
         )
+        if not text or result.finish_reason == "MAX_TOKENS":
+            raise EmptyGenerationError("Gemini returned no complete answer", result)
+        return result
 
 
 def build_gemini_service(settings: Settings) -> GoogleGeminiProvider | None:

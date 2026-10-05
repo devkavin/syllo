@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
+import StudyResponse from "@/components/StudyResponse";
 
 export default function Today() {
   const { user } = useAuth();
@@ -438,7 +439,7 @@ function WeeklyReflection() {
       </div>
       {!text ? (
         <>
-          <p className="text-sm text-muted-foreground mb-4">A short, warm summary of your week. Uses one AI help.</p>
+            <p className="text-sm text-muted-foreground mb-4">A short look at your week and one next step. Uses one study help.</p>
           <button className="btn btn-outline" onClick={generate} disabled={busy} data-testid="reflection-generate">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Reflect on my week
@@ -446,7 +447,7 @@ function WeeklyReflection() {
           <AiPrivacyNote className="mt-3" />
         </>
       ) : (
-        <div className="text-sm font-serif italic leading-relaxed" data-testid="reflection-text">{text}</div>
+          <div data-testid="reflection-text"><StudyResponse text={text} /></div>
       )}
       {err && <div className="text-destructive text-xs mt-3">{err}</div>}
     </div>

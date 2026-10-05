@@ -14,20 +14,26 @@ export function PaymentSuccess() {
 
   useEffect(() => {
     if (!sessionId) { setStatus("error"); setErr("Missing session"); return; }
+    let stopped = false;
+    let timer;
+    tries.current = 0;
     const poll = async () => {
+      if (stopped) return;
       if (tries.current >= 12) { setStatus("timeout"); return; }
       tries.current += 1;
       try {
         const { data } = await http.get(`/billing/status/${sessionId}`);
+        if (stopped) return;
         if (data.payment_status === "paid") {
           setStatus("paid");
           refresh();
           return;
         }
-        setTimeout(poll, 2000);
-      } catch (e) { setErr(formatError(e)); setTimeout(poll, 2000); }
+        timer = setTimeout(poll, 2000);
+      } catch (e) { if (!stopped) { setErr(formatError(e)); timer = setTimeout(poll, 2000); } }
     };
     poll();
+    return () => { stopped = true; clearTimeout(timer); };
     // eslint-disable-next-line
   }, [sessionId]);
 

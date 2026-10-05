@@ -13,6 +13,8 @@ from backend.app.database import get_session
 from backend.app.models import AIUsageLog, PaymentTransaction, Plan, User
 from backend.app.services.credits import BONUS_QUESTS, CreditService, monthly_allowance
 from backend.app.services.stripe_billing import StripeBillingService
+from backend.app.api.routes import paddle
+from backend.app.models import PaddlePayment, PaddleAccount
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -69,6 +71,16 @@ async def plans(
             select(Plan).where(Plan.active.is_(True)).order_by(Plan.price_cents)
         )
     ).all()
+    if request.app.state.settings.billing_provider == "paddle":
+        try:
+            viewer = await get_current_user(request, session)
+        except HTTPException:
+            viewer = None
+        available = bool(viewer and paddle.permitted(request.app.state.settings, viewer))
+        account = await session.get(PaddleAccount, viewer.user_id) if viewer else None
+        introductory = not bool(account and account.subscription_id)
+        return {"checkout_available": available, "sandbox": available,
+                "plans": [{**plan_dict(p), **({"intro_offer": {"price_cents": p.price_cents - 200, "months": 3}} if p.price_cents and introductory else {})} for p in rows]}
     intro_offer_available = False
     if (
         request.app.state.settings.billing_enabled
@@ -149,6 +161,8 @@ async def checkout(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    if request.app.state.settings.billing_provider == "paddle":
+        return await paddle.create_checkout(body, request, user, session)
     if not request.app.state.settings.billing_enabled:
         raise HTTPException(status_code=503, detail="Paid plans are coming soon")
     plan = await session.get(Plan, body.plan_id)
@@ -185,6 +199,11 @@ async def status(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    if checkout_session_id.startswith("txn_"):
+        payment = await session.scalar(select(PaddlePayment).where(PaddlePayment.transaction_id == checkout_session_id, PaddlePayment.user_id == user.user_id))
+        if payment is None:
+            raise HTTPException(404, "Payment not found")
+        return {"session_id": checkout_session_id, "status": payment.status, "payment_status": payment.status}
     transaction = await session.scalar(
         select(PaymentTransaction).where(
             PaymentTransaction.stripe_checkout_session_id == checkout_session_id,
@@ -205,7 +224,10 @@ async def portal(
     _: EmptyRequest,
     request: Request,
     user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
+    if request.app.state.settings.billing_provider == "paddle":
+        return await paddle.portal(request, user, session)
     if not request.app.state.settings.billing_enabled:
         raise HTTPException(status_code=503, detail="Paid plans are coming soon")
     if not user.stripe_customer_id:

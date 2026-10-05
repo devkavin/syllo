@@ -55,7 +55,7 @@ export default function Register() {
             maxLength={12}
             data-testid="register-referral"
           />
-          {referral && <div className="text-xs text-muted-foreground mt-1">With a valid code, you get 10 bonus helps. The friend who invited you earns up to 10, subject to their 110-help balance cap.</div>}
+          {referral && <div className="text-xs text-muted-foreground mt-1">A valid friend code adds 10 bonus study helps. Monthly invite limits and balance caps apply.</div>}
         </div>
         {err && <div className="text-destructive text-sm">{err}</div>}
         <p className="text-[11px] leading-relaxed text-muted-foreground text-center">
@@ -68,7 +68,7 @@ export default function Register() {
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
           <div className="relative flex justify-center"><span className="bg-card px-2 text-xs text-muted-foreground">or</span></div>
         </div>
-        <a href="/api/auth/google/start?client=web&return_to=%2Ftoday" className="btn btn-outline w-full" data-testid="register-google">
+        <a href={`/api/auth/google/start?client=web&return_to=%2Ftoday${referral ? `&ref=${encodeURIComponent(referral)}` : ""}`} className="btn btn-outline w-full" data-testid="register-google">
           Continue with Google
         </a>
         <div className="text-center text-sm text-muted-foreground">

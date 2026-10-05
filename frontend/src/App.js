@@ -7,9 +7,14 @@ import AppShell from "@/components/AppShell";
 import Today from "@/pages/Today";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Home from "@/pages/Home";
+import RouteMetadata from "@/components/RouteMetadata";
 import "@/App.css";
 
 const Subjects = lazy(() => import("@/pages/Subjects"));
+const Circles = lazy(() => import("@/pages/Circles"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const CircleInvite = lazy(() => import("@/pages/Circles").then(m => ({ default: m.CircleInvite })));
 const SubjectDetail = lazy(() => import("@/pages/SubjectDetail"));
 const Notebooks = lazy(() => import("@/pages/Notebooks"));
 const Tasks = lazy(() => import("@/pages/Tasks"));
@@ -66,10 +71,14 @@ function AdminRoute({ children }) {
 export function AppRoutes() {
   return (
     <Suspense fallback={<RouteLoading />}>
+      <RouteMetadata />
       <Routes>
-        <Route path="/" element={<Navigate to="/today" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/join/:token" element={<CircleInvite />} />
+        <Route path="/circles" element={<Protected><Circles /></Protected>} />
+        <Route path="/checkout" element={<AdminRoute><Checkout /></AdminRoute>} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/pricing" element={<div className="min-h-screen bg-background text-foreground p-4 sm:p-8"><div className="max-w-6xl mx-auto"><Upgrade /></div></div>} />
