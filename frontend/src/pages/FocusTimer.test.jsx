@@ -34,6 +34,14 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("focus duration", () => {
+  it("hides setup controls during focus and restores them when paused", () => {
+    render(<FocusTimer />);
+    fireEvent.click(screen.getByTestId("timer-start"));
+    expect(screen.queryByRole("spinbutton", { name: "Duration (minutes)" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(screen.getByRole("spinbutton", { name: "Duration (minutes)" })).toBeDisabled();
+  });
   it("waits for lesson prefill before allowing a session to start", async () => {
     let resolveLesson; http.get.mockImplementation(url => url === "/lessons/limits" ? new Promise(resolve => { resolveLesson = resolve; }) : Promise.resolve({ data: [] }));
     rtlRender(<MemoryRouter initialEntries={["/timer?lesson=limits"]}><FocusTimer /></MemoryRouter>);

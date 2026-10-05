@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Plus, CheckCircle2, Circle, Trash2, X } from "lucide-react";
+import { Plus, CheckCircle2, Circle, Trash2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import AcademicSelector from "@/components/AcademicSelector";
+import Modal from "@/components/Modal";
 
 const PRIORITIES = [
   { id: "low", label: "Low" },
@@ -57,22 +58,23 @@ export default function Tasks() {
 
   return (
     <div className="space-y-8" data-testid="tasks-page">
-      <div className="hero-glow relative rise flex items-end justify-between">
+      <div className="page-header">
         <div>
           <div className="section-title mb-2">Your list</div>
-          <h1 className="font-serif text-4xl tracking-tight">Tasks</h1>
+          <h1 className="page-title">Tasks</h1>
           <p className="text-muted-foreground mt-2">Small steps, gently kept.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowNew(true)} data-testid="new-task-btn"><Plus className="w-4 h-4" /> New task</button>
       </div>
 
-      <div className="flex gap-1 p-1 rounded-lg bg-accent w-fit">
+      <div className="segmented-control" role="group" aria-label="Task filter">
         {["open", "done", "all"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
+            aria-pressed={tab === t}
             data-testid={`tasks-tab-${t}`}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${tab === t ? "bg-card shadow-sm" : "text-muted-foreground"}`}
+            className="segment"
           >
             {t === "open" ? "Open" : t === "done" ? "Done" : "All"}
           </button>
@@ -84,29 +86,29 @@ export default function Tasks() {
       {loading ? (
         <div className="space-y-2">{[0,1,2,3].map((i) => <div key={i} className="h-14 bg-muted rounded-xl animate-pulse" />)}</div>
       ) : filtered.length === 0 ? (
-        <div className="card p-10 text-center text-muted-foreground text-sm">
+        <div className="empty-state">
           {tab === "done" ? "Completed tasks will appear here." : "Nothing to do here. Add one when you're ready."}
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="divide-y divide-border">
           {filtered.map((t) => {
             const sub = t.subject_id ? subMap[t.subject_id] : null;
             const c = sub ? subjectClasses(sub.color, isDark) : null;
             return (
-              <li key={t.task_id} className="card px-4 py-3 flex items-center gap-3" data-testid={`task-${t.task_id}`}>
-                <button onClick={() => toggle(t)} data-testid={`task-toggle-${t.task_id}`} className="text-muted-foreground hover:text-foreground">
+              <li key={t.task_id} className="py-3 flex items-center gap-3" data-testid={`task-${t.task_id}`}>
+                <button onClick={() => toggle(t)} aria-label={`${t.completed ? "Reopen" : "Complete"} ${t.title}`} aria-pressed={!!t.completed} data-testid={`task-toggle-${t.task_id}`} className="btn btn-ghost btn-icon text-muted-foreground">
                   {t.completed ? <CheckCircle2 className="w-5 h-5 text-primary" /> : <Circle className="w-5 h-5" />}
                 </button>
                 <div className="flex-1 min-w-0">
-                    <button className={`text-sm text-left hover:underline ${t.completed ? "line-through text-muted-foreground" : ""}`} onClick={() => { setEditing(t); setShowNew(true); }}>{t.title}</button>
-                    {t.lesson_id && <Link className="block text-xs underline" to={`/lessons/${t.lesson_id}`}>Open lesson</Link>}
+                    <button className={`action-link text-left ${t.completed ? "line-through text-muted-foreground" : ""}`} onClick={() => { setEditing(t); setShowNew(true); }}>{t.title}</button>
+                    {t.lesson_id && <Link className="action-link" to={`/lessons/${t.lesson_id}`}>Open lesson</Link>}
                   <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
                     {sub && <span className="inline-flex items-center gap-1"><span className="subject-dot" style={{ background: c.dot }} />{sub.name}</span>}
                     {t.due_date && <span>Due {t.due_date}</span>}
                     <span className="capitalize">{t.priority}</span>
                   </div>
                 </div>
-                <button className="btn btn-ghost !p-1.5 text-muted-foreground" onClick={() => remove(t)} data-testid={`task-delete-${t.task_id}`}>
+                <button className="btn btn-ghost btn-icon text-muted-foreground" aria-label={`Delete ${t.title}`} onClick={() => remove(t)} data-testid={`task-delete-${t.task_id}`}>
                   <Trash2 className="w-4 h-4" />
                 </button>
               </li>
@@ -141,22 +143,19 @@ function NewTaskModal({ subjects, task, prefillLesson, onClose, onCreated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <form onSubmit={submit} className="relative card p-6 w-full max-w-md" data-testid="new-task-modal">
-        <button type="button" className="btn btn-ghost !p-1 absolute right-2 top-2" onClick={onClose}><X className="w-4 h-4" /></button>
-        <h2 className="font-serif text-xl mb-4">{task ? "Edit task" : "New task"}</h2>
-        <label className="text-xs text-muted-foreground">Title</label>
-        <input className="input mt-1 mb-3" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Write your task" autoFocus data-testid="new-task-title" />
+    <Modal title={task ? "Edit task" : "New task"} onClose={onClose}>
+      <form onSubmit={submit} className="space-y-4" data-testid="new-task-modal">
+        <div><label htmlFor="task-title" className="field-label">Title</label>
+        <input id="task-title" className="input" required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Write your task" autoFocus data-testid="new-task-title" /></div>
         <AcademicSelector subjects={subjects} value={selection} onChange={setSelection} disabled={busy} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-muted-foreground">Due date</label>
-            <input type="date" className="input mt-1" value={dueDate} onChange={(e) => setDueDate(e.target.value)} data-testid="new-task-due" />
+            <label htmlFor="task-due" className="field-label">Due date</label>
+            <input id="task-due" type="date" className="input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} data-testid="new-task-due" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Priority</label>
-            <select className="input mt-1" value={priority} onChange={(e) => setPriority(e.target.value)} data-testid="new-task-priority">
+            <label htmlFor="task-priority" className="field-label">Priority</label>
+            <select id="task-priority" className="input" value={priority} onChange={(e) => setPriority(e.target.value)} data-testid="new-task-priority">
               {PRIORITIES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
           </div>
@@ -164,6 +163,6 @@ function NewTaskModal({ subjects, task, prefillLesson, onClose, onCreated }) {
         {err && <div className="text-destructive text-sm mt-3">{err}</div>}
         <button className="btn btn-primary w-full mt-4" disabled={busy} data-testid="new-task-submit">{busy ? "Saving…" : task ? "Save task" : "Add task"}</button>
       </form>
-    </div>
+    </Modal>
   );
 }

@@ -86,13 +86,13 @@ export default function Notebooks() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 min-h-[75vh]" data-testid="notebooks-page">
-      <aside className="md:w-72 shrink-0">
+    <div className="flex flex-col lg:flex-row gap-6 min-h-[75vh]" data-testid="notebooks-page">
+      <aside className="lg:w-60 shrink-0">
         <div className="flex items-center justify-between mb-3">
           <h1 className="font-serif text-2xl">Notebooks</h1>
-          <button className="btn btn-outline !p-2" onClick={newNotebook} data-testid="new-notebook-btn" title="New notebook"><Plus className="w-4 h-4" /></button>
+          <button className="btn btn-outline btn-icon" onClick={newNotebook} data-testid="new-notebook-btn" aria-label="New notebook" title="New notebook"><Plus className="w-4 h-4" /></button>
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 max-h-48 lg:max-h-none overflow-y-auto">
           {list.length === 0 && <div className="text-sm text-muted-foreground py-6 text-center">Start with a blank page.</div>}
           {list.map((nb) => {
             const sub = nb.subject_id ? subjectMap[nb.subject_id] : null;
@@ -102,6 +102,7 @@ export default function Notebooks() {
               <button
                 key={nb.notebook_id}
                 onClick={() => selectNotebook(nb.notebook_id)}
+                aria-pressed={active}
                 data-testid={`notebook-item-${nb.notebook_id}`}
                 className={`w-full text-left flex items-start gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${active ? "bg-accent" : "hover:bg-accent/60"}`}
               >
@@ -128,18 +129,18 @@ export default function Notebooks() {
             </div>
           </div>
         ) : (
-          <div className="paper card p-6 md:p-10 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" ref={editorRef}>
-            <div className="flex items-center justify-between mb-4 text-xs text-muted-foreground">
+          <div className="paper card p-4 sm:p-6 lg:p-8 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" ref={editorRef}>
+            <div className="flex flex-wrap gap-3 items-start justify-between mb-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3">
                 <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   className="btn btn-outline !py-1 !px-2 text-xs"
                   onClick={summarize}
                   disabled={summarizing}
                   data-testid="notebook-summarize-btn"
-                  title="Summarize with Study Companion"
+                  aria-label="Summarize with Study Companion" title="Summarize with Study Companion"
                 >
                   {summarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   Summarize
@@ -147,23 +148,25 @@ export default function Notebooks() {
                 <span data-testid="notebook-autosave-indicator" className="inline-flex items-center gap-1">
                   {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
                   {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
-                  {saveState === "failed" && <button className="text-destructive underline" onClick={autosave.retry}>Not saved · Retry</button>}
+                  {saveState === "failed" && <button className="text-destructive action-link" onClick={autosave.retry}>Not saved · Retry</button>}
                 </span>
-                <button className="btn btn-ghost !p-1.5" onClick={() => removeNotebook(notebook.notebook_id)} data-testid="notebook-delete-btn" title="Delete">
+                <button className="btn btn-ghost btn-icon" onClick={() => removeNotebook(notebook.notebook_id)} data-testid="notebook-delete-btn" title="Delete">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
             <AiPrivacyNote className="mb-3 text-right" />
             <input
-              className="bg-transparent w-full font-serif text-3xl outline-none border-none placeholder:text-muted-foreground/60 mb-4"
+              aria-label="Notebook title"
+              className="bg-transparent w-full font-display text-2xl sm:text-3xl border-none placeholder:text-muted-foreground mb-4 rounded-md p-1"
               placeholder="A quiet title"
               value={notebook.title || ""}
               onChange={onTitleChange}
               data-testid="notebook-title-input"
             />
             <textarea
-              className="bg-transparent w-full flex-1 resize-none outline-none border-none text-base leading-relaxed placeholder:text-muted-foreground/60 font-serif"
+              aria-label="Notebook notes"
+              className="bg-transparent w-full flex-1 min-h-64 resize-y border-none text-base leading-8 placeholder:text-muted-foreground rounded-md p-1"
               placeholder="Begin here. Autosave will keep up. Select any text to explain it."
               value={notebook.content || ""}
               onChange={onContentChange}
@@ -179,7 +182,7 @@ export default function Notebooks() {
               <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40" data-testid="notebook-summary">
                 <div className="flex items-center justify-between mb-2">
                   <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-0"><Sparkles className="w-3.5 h-3.5" /> Study Companion</div>
-                  <button className="btn btn-ghost !p-1" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
+                  <button aria-label="Close summary" className="btn btn-ghost btn-icon" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
                 </div>
                 <StudyResponse text={summary} />
                 <AiPrivacyNote className="mt-3" />
@@ -196,5 +199,5 @@ export default function Notebooks() {
 function NotebookLinks({ notebook, subjects, update }) {
   const [unitId, setUnitId] = useState(null);
   useEffect(() => { let live = true; if (notebook.lesson_id) http.get(`/lessons/${notebook.lesson_id}`).then(r => { if (live) setUnitId(r.data.unit_id); }).catch(() => {}); return () => { live = false; }; }, [notebook.lesson_id]);
-  return <details><summary className="cursor-pointer">{notebook.lesson_id ? "Linked lesson" : "Link to a subject or lesson"}</summary><div className="mt-3"><AcademicSelector subjects={subjects} value={{ subject_id: notebook.subject_id, unit_id: unitId, lesson_id: notebook.lesson_id }} onChange={v => { setUnitId(v.unit_id); update({ subject_id: v.subject_id, lesson_id: v.lesson_id }); }} />{notebook.lesson_id && <Link className="block underline mt-2" to={`/lessons/${notebook.lesson_id}`}>Open lesson</Link>}</div></details>;
+  return <details><summary className="cursor-pointer">{notebook.lesson_id ? "Linked lesson" : "Link to a subject or lesson"}</summary><div className="mt-3"><AcademicSelector subjects={subjects} value={{ subject_id: notebook.subject_id, unit_id: unitId, lesson_id: notebook.lesson_id }} onChange={v => { setUnitId(v.unit_id); update({ subject_id: v.subject_id, lesson_id: v.lesson_id }); }} />{notebook.lesson_id && <Link className="block action-link mt-2" to={`/lessons/${notebook.lesson_id}`}>Open lesson</Link>}</div></details>;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppShell from "./AppShell";
@@ -10,6 +10,62 @@ vi.mock("@/lib/usage", () => ({ useUsage: () => ({ usage: null }) }));
 
 const token = "abcdefghijklmnopqrstuvwxyz123456";
 const renderShell = () => render(<MemoryRouter><AppShell><h1>Today</h1></AppShell></MemoryRouter>);
+
+it("provides a skip link to the main workspace", () => {
+  renderShell();
+  const skip = screen.getByRole("link", { name: "Skip to content" });
+  expect(skip).toHaveAttribute("href", "#main-content");
+  expect(document.getElementById("main-content")).toBe(screen.getByRole("main"));
+});
+
+it("dismisses mobile navigation with Escape and restores its trigger", async () => {
+  renderShell();
+  const trigger = screen.getByRole("button", { name: "Open menu" });
+  trigger.focus();
+  fireEvent.click(trigger);
+  expect(await screen.findByRole("dialog", { name: "Navigation" })).toBeVisible();
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(trigger).toHaveFocus();
+});
+
+it("restores a persistent opener after a warmed Companion is opened from mobile navigation", async () => {
+  renderShell();
+  const topbar = screen.getByTestId("mobile-ai-btn");
+  topbar.focus(); fireEvent.click(topbar);
+  await screen.findByRole("dialog", { name: "Study Companion" });
+  fireEvent.click(screen.getByRole("button", { name: "Close Study Companion" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  const menu = screen.getByRole("button", { name: "Open menu" });
+  menu.focus(); fireEvent.click(menu);
+  const navigation = screen.getByRole("dialog", { name: "Navigation" });
+  const opener = within(navigation).getByRole("button", { name: "Study Companion" });
+  opener.focus(); fireEvent.click(opener);
+  const companion = await screen.findByRole("dialog", { name: "Study Companion" });
+  await waitFor(() => expect(companion).toContainElement(document.activeElement));
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(menu).toHaveFocus();
+});
+
+it("restores the menu trigger after warmed Search is opened from mobile navigation", async () => {
+  renderShell();
+  const topbar = screen.getByTestId("mobile-search-btn");
+  topbar.focus(); fireEvent.click(topbar);
+  await screen.findByRole("dialog", { name: "Search" });
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  const menu = screen.getByRole("button", { name: "Open menu" });
+  menu.focus(); fireEvent.click(menu);
+  const navigation = screen.getByRole("dialog", { name: "Navigation" });
+  const opener = within(navigation).getByTestId("sidebar-search-btn");
+  opener.focus(); fireEvent.click(opener);
+  const search = await screen.findByRole("dialog", { name: "Search" });
+  await waitFor(() => expect(search).toContainElement(document.activeElement));
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(menu).toHaveFocus();
+});
 
 describe("circle invitation notice", () => {
   beforeEach(() => sessionStorage.clear());

@@ -21,6 +21,13 @@ it("saves title and content together instead of dropping a pending title", async
   await act(async () => vi.advanceTimersByTime(1000));
   expect(http.patch).toHaveBeenCalledWith("/notebooks/nb", expect.objectContaining({ title: "Limits", content: "Limit definition" }));
 });
+it("gives notebook title and content accessible editor names", async () => {
+  const notebook = { notebook_id: "n", title: "Limits", content: "Definition", subject_id: null };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  expect(await screen.findByRole("textbox", { name: "Notebook title" })).toHaveValue("Limits");
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Definition");
+});
 it("keeps the latest selected notebook when fetches arrive out of order", async () => {
   const a = { notebook_id: "a", title: "Alpha", content: "A" }, b = { notebook_id: "b", title: "Beta", content: "B" }, c = { notebook_id: "c", title: "Gamma", content: "C" };
   let resolveB;

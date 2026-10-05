@@ -62,11 +62,11 @@ export default function Onboarding() {
         <button className="btn btn-outline w-full" disabled={busy} onClick={skip}>Skip for now</button>
         {err && <p role="alert" className="text-destructive">{err}</p>}
         {step === 0 && (
-          <div className="card p-8">
-            <h1 className="font-serif text-3xl tracking-tight mb-2">Welcome to Syllo</h1>
+          <div className="card p-5 sm:p-8">
+            <h1 className="page-title mb-2">Welcome to Syllo</h1>
             <p className="text-muted-foreground mb-6">A quiet place to study. Let's set up in a minute.</p>
-            <label className="text-xs text-muted-foreground">Your name</label>
-            <input
+            <label className="text-xs text-muted-foreground" htmlFor="onboarding-field-1">Your name</label>
+            <input id="onboarding-field-1"
               className="input mt-1"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -83,7 +83,7 @@ export default function Onboarding() {
         )}
 
         {step === 1 && (
-          <div className="card p-8">
+          <div className="card p-5 sm:p-8">
             <h2 className="font-serif text-2xl tracking-tight mb-1">Pick a few subjects</h2>
             <p className="text-muted-foreground text-sm mb-4">You can always add more later.</p>
             <div className="grid grid-cols-2 gap-2">
@@ -93,6 +93,7 @@ export default function Onboarding() {
                   <button
                     key={s.name}
                     onClick={() => togglePick(i)}
+                    aria-pressed={on}
                     data-testid={`onboarding-subject-${i}`}
                     className={`flex items-center gap-2 p-3 rounded-lg border text-left text-sm transition-colors ${on ? "border-ring bg-accent" : "border-border hover:bg-accent/60"}`}
                   >
@@ -111,12 +112,13 @@ export default function Onboarding() {
         )}
 
         {step === 2 && (
-          <div className="card p-8">
+          <div className="card p-5 sm:p-8">
             <h2 className="font-serif text-2xl tracking-tight mb-1">A gentle daily goal</h2>
             <p className="text-muted-foreground text-sm mb-4">A time you can meet on most days. Small is fine.</p>
             <div className="flex items-center gap-3">
               <input
                 type="range" min={15} max={240} step={15}
+                aria-label="Daily study goal in minutes"
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 className="flex-1"

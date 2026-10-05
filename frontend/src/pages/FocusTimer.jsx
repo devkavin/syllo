@@ -283,18 +283,19 @@ export default function FocusTimer() {
   const view = (
     <div className="max-w-2xl w-full mx-auto text-center space-y-6" data-testid="focus-timer-page">
       <div>
-          <h1 className="font-serif text-3xl tracking-tight">Focus</h1>
+          <h1 className="page-title">Focus</h1>
           {eventTopic && <div className="mt-2"><p className="font-medium">{eventTopic}</p><button className="btn btn-ghost text-sm" disabled={locked} onClick={reset}>Study on my own</button></div>}
           {eventLoading && <p role="status">Checking your Circle session…</p>}
           {lessonLoading && <p role="status">Opening your lesson…</p>}
         <p className="text-muted-foreground mt-1">A calm block of time. That's all it needs to be.</p>
         {lessonTitle && <p className="font-medium mt-2">{lessonTitle}</p>}
       </div>
-      <div className="flex justify-center flex-wrap gap-1 p-1 rounded-lg bg-accent w-fit mx-auto">
+      <div hidden={running} className="space-y-4">
+      <div className="segmented-control mx-auto" role="group" aria-label="Focus mode">
         {Object.entries(MODES).map(([id, m]) => (
           <button key={id} onClick={() => changeMode(id)} disabled={locked} aria-pressed={mode === id}
             data-testid={`mode-${id}`}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${mode === id ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
+            className="segment">
             {m.label}
           </button>
         ))}
@@ -325,11 +326,13 @@ export default function FocusTimer() {
               "Choose 1–240 minutes. Your custom time is remembered for this mode."}
           </p>
           {baselinePending && subjectsFailed && <button className="btn btn-outline" onClick={() => retrySubjects?.()}>Retry subject preset</button>}
-          {customDurations[mode] && <button className="text-xs text-primary underline underline-offset-4" disabled={locked}
+          {customDurations[mode] && <button className="text-xs text-primary action-link" disabled={locked}
             onClick={usePreset}>{subjectPreset ? "Use subject preset" : "Use default time"}</button>}
           {timeError && <p id="timer-time-error" role="alert" className="text-xs text-destructive">{timeError}</p>}
         </div>
       )}
+      </div>
+      {running && <p className="text-sm text-muted-foreground">{activeSubject?.name || "Personal study"}{lessonTitle ? ` · ${lessonTitle}` : ""}</p>}
       <div className="mx-auto w-56 h-56 sm:w-64 sm:h-64 rounded-full grid place-items-center border border-border relative">
         <div className="font-mono text-5xl sm:text-6xl tabular-nums font-semibold tracking-wider" data-testid="timer-display">
           {formatTimer(seconds)}
@@ -341,7 +344,7 @@ export default function FocusTimer() {
           <button className="btn btn-primary !px-6" onClick={start} disabled={eventLoading || lessonLoading || !!pendingRecording || saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
             data-testid="timer-start"><Play className="w-4 h-4" /> {startedAt && seconds > 0 ? "Resume" : "Start"}</button>
         ) : (
-          <button className="btn btn-outline !px-6" onClick={() => setRunning(false)} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
+          <button className="btn btn-primary !px-6" onClick={() => setRunning(false)} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
         )}
         <button className="btn btn-ghost" onClick={() => { if ((!pendingRecording && !startedAt) || window.confirm("Discard this unsaved session and start a new timer?")) reset(); }} disabled={saving || baselinePending} data-testid="timer-reset"><RotateCcw className="w-4 h-4" /> Reset</button>
         <button className="btn btn-outline" onClick={() => tryLogSession(false)} disabled={saving || baselinePending || eventLoading || lessonLoading} data-testid="timer-save">
@@ -353,6 +356,7 @@ export default function FocusTimer() {
         </button>
       </div>
       {fullscreen && <p className="text-xs text-muted-foreground">Press Esc to exit fullscreen.</p>}
+      <div hidden={running}>
       <div className="max-w-xs mx-auto">
         <label htmlFor="timer-subject" className="text-xs text-muted-foreground">Working on</label>
         <select id="timer-subject" className="input mt-1" value={subjectId} disabled={locked}
@@ -362,6 +366,7 @@ export default function FocusTimer() {
         </select>
       </div>
       {subjectId && <AcademicSelector hideSubject subjects={subjects} value={{ subject_id: subjectId, unit_id: unitId, lesson_id: lessonId }} disabled={locked} onChange={v => { setUnitId(v.unit_id); setLessonId(v.lesson_id); setLessonTitle(""); }} />}
+      </div>
       {msg && <div role="status" className="text-sm text-primary" data-testid="timer-message">{msg}</div>}
       {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
     </div>

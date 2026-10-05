@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useUsage } from "@/lib/usage";
-import { BookOpen, X, Send, Loader2 } from "lucide-react";
+import { BookOpen, Send, Loader2 } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 import AiPrivacyNote from "@/components/AiPrivacyNote";
 import { recentChatContext } from "@/lib/chatContext";
@@ -9,7 +10,7 @@ import HelpUsage from "@/components/HelpUsage";
 import StudyResponse from "@/components/StudyResponse";
 import { TODAY_STARTER } from "@/lib/studyPrompts";
 
-export default function AiCompanion({ open, onClose, contextLabel }) {
+export default function AiCompanion({ open, onClose, contextLabel, fallbackFocusRef }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -17,6 +18,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
   const { usage, setRemaining, refresh } = useUsage();
   const scroller = useRef(null);
   const composer = useRef(null);
+  const returnFocus = useRef(document.activeElement);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -27,15 +29,8 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
   }, [open, contextLabel, messages.length]);
 
   useEffect(() => {
-    scroller.current?.scrollTo?.({ top: scroller.current.scrollHeight, behavior: "smooth" });
+    scroller.current?.scrollTo?.({ top: scroller.current.scrollHeight, behavior: "auto" });
   }, [messages]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
 
   const send = async () => {
     const text = input.trim();
@@ -65,25 +60,30 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
   const outOfCredits = usage && usage.credits_remaining <= 0;
 
   return (
-    <div className="fixed inset-0 z-50" data-testid="ai-companion">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <aside className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-card border-l border-border shadow-xl flex flex-col fade-in">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+    <Sheet open={open} onOpenChange={value => { if (!value) onClose(); }}>
+      <SheetContent className="w-full sm:w-[440px] sm:max-w-[440px] bg-card flex flex-col p-0 gap-0" data-testid="ai-companion" closeLabel="Close Study Companion" closeTestId="ai-close" aria-describedby={undefined}
+        onOpenAutoFocus={event => { if (composer.current) { event.preventDefault(); composer.current.focus(); } }}
+        onCloseAutoFocus={event => {
+          event.preventDefault();
+          const opener = returnFocus.current;
+          const target = opener?.isConnected && opener !== document.body && opener !== document.documentElement ? opener : fallbackFocusRef?.current;
+          target?.focus();
+        }}>
+        <div className="flex items-center justify-between px-5 py-4 pr-16 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg grid place-items-center" style={{ background: "hsl(267 30% 92%)", color: "hsl(267 40% 32%)" }}>
+            <div className="w-9 h-9 rounded-lg grid place-items-center bg-secondary text-primary">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-serif text-lg leading-none">Study Companion</div>
+              <SheetTitle className="font-display text-lg">Study Companion</SheetTitle>
               <div className="text-xs text-muted-foreground mt-0.5">
                 {usage ? `${usage.credits_remaining} helps left` : "..."}
               </div>
             </div>
           </div>
-          <button aria-label="Close Study Companion" className="btn btn-ghost !p-1.5" onClick={onClose} data-testid="ai-close"><X className="w-4 h-4" /></button>
         </div>
 
-        <div ref={scroller} className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-4">
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
@@ -105,7 +105,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
           )}
         </div>
 
-        {err && <div className="px-4 pb-2 text-destructive text-xs">{err}</div>}
+        {err && <div role="alert" className="px-4 pb-2 text-destructive text-sm">{err}</div>}
         <HelpUsage usage={usage} className="px-4 py-3 border-t border-border" />
         <AiPrivacyNote className="px-4 py-2 border-t border-border" />
         {outOfCredits ? (
@@ -116,7 +116,7 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
         ) : (
           <div className="p-3 border-t border-border flex items-end gap-2">
             <textarea
-              className="input resize-none min-h-[44px] max-h-32"
+              className="input resize-none !min-h-11 max-h-32"
               ref={composer}
               rows={1}
               maxLength={3000}
@@ -127,12 +127,12 @@ export default function AiCompanion({ open, onClose, contextLabel }) {
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
               data-testid="ai-input"
             />
-            <button aria-label="Send question" className="btn btn-primary" onClick={send} disabled={busy || !input.trim()} data-testid="ai-send">
+            <button aria-label="Send question" className="btn btn-primary btn-icon" onClick={send} disabled={busy || !input.trim()} data-testid="ai-send">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>
           </div>
         )}
-      </aside>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

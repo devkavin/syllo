@@ -30,12 +30,12 @@ export default function Login() {
           <p className="text-muted-foreground text-sm mt-1">Sign in to your study space.</p>
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Email</label>
-          <input className="input mt-1" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required data-testid="login-email" />
+          <label className="text-xs text-muted-foreground" htmlFor="login-field-1">Email</label>
+          <input id="login-field-1" autoComplete="email" className="input mt-1" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required data-testid="login-email" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Password</label>
-          <input className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" required data-testid="login-password" />
+          <label className="text-xs text-muted-foreground" htmlFor="login-field-2">Password</label>
+          <input id="login-field-2" autoComplete="current-password" className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" required data-testid="login-password" />
         </div>
         {err && <div className="text-destructive text-sm">{err}</div>}
         <button className="btn btn-primary w-full" disabled={busy} data-testid="login-submit">
@@ -49,14 +49,14 @@ export default function Login() {
           Continue with Google
         </a>
         <div className="text-center text-sm text-muted-foreground">
-          New here? <Link to="/register" className="text-foreground underline" data-testid="link-register">Create an account</Link>
+          New here? <Link to="/register" className="text-foreground action-link" data-testid="link-register">Create an account</Link>
         </div>
         <div className="text-center text-xs text-muted-foreground">
-          <Link to="/pricing" className="hover:text-foreground underline">Pricing</Link>
+          <Link to="/pricing" className="hover:text-foreground action-link">Pricing</Link>
           <span aria-hidden="true"> · </span>
-          <Link to="/privacy" className="hover:text-foreground underline">Privacy</Link>
+          <Link to="/privacy" className="hover:text-foreground action-link">Privacy</Link>
           <span aria-hidden="true"> · </span>
-          <Link to="/terms" className="hover:text-foreground underline">Terms</Link>
+          <Link to="/terms" className="hover:text-foreground action-link">Terms</Link>
         </div>
       </form>
     </div>

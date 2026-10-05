@@ -8,21 +8,22 @@ export default function Admin() {
   const [tab, setTab] = useState("overview");
   return (
     <div className="space-y-6" data-testid="admin-page">
-      <div className="hero-glow relative rise flex items-end justify-between">
+      <div className="page-header">
         <div>
           <div className="section-title mb-2 flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5" /> Admin</div>
-          <h1 className="font-serif text-4xl tracking-tight">Control room</h1>
+          <h1 className="page-title">Control room</h1>
           <p className="text-muted-foreground mt-2">Users, revenue, AI usage, and app settings.</p>
         </div>
       </div>
 
-      <div className="flex gap-1 p-1 rounded-lg bg-accent w-fit">
+      <div className="segmented-control" role="group" aria-label="Admin section">
         {["overview", "users", "transactions", "settings"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
+            aria-pressed={tab === t}
             data-testid={`admin-tab-${t}`}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors capitalize ${tab === t ? "bg-card shadow-sm" : "text-muted-foreground"}`}
+            className="segment capitalize"
           >{t}</button>
         ))}
       </div>
@@ -81,7 +82,6 @@ function Overview() {
 function StatCard({ label, value, icon: Icon, accent }) {
   return (
     <div className="card-elevated p-5 relative overflow-hidden">
-      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-20" style={{ background: `radial-gradient(circle, hsl(${accent}) 0%, transparent 70%)` }} />
       <div className="flex items-start justify-between">
         <div>
           <div className="section-title">{label}</div>
@@ -134,6 +134,7 @@ function UserManager() {
                 </td>
                 <td className="py-2 pr-2">
                   <select
+                    aria-label={`Plan for ${u.name}`}
                     className="input !py-1 !w-auto text-xs"
                     defaultValue={u.plan || "freshman"}
                     onChange={(e) => update(u.user_id, { plan: e.target.value })}
@@ -147,6 +148,7 @@ function UserManager() {
                 <td className="py-2 pr-2 font-mono">{u.ai_credits_remaining ?? 0}</td>
                 <td className="py-2 pr-2">
                   <select
+                    aria-label={`Role for ${u.name}`}
                     className="input !py-1 !w-auto text-xs"
                     defaultValue={u.role || "user"}
                     onChange={(e) => update(u.user_id, { role: e.target.value })}
@@ -272,20 +274,20 @@ function PlansEditor({ initialPlans, onSaved }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {plans.map((p, i) => (
           <div key={p.id} className="border border-border rounded-lg p-4 space-y-2" data-testid={`plan-editor-${p.id}`}>
-            <label className="text-xs text-muted-foreground">Name</label>
-            <input className="input" value={p.name} onChange={(e) => update(i, { name: e.target.value })} data-testid={`plan-name-${p.id}`} />
+            <label htmlFor={`plan-name-${p.id}`} className="field-label">Name</label>
+            <input id={`plan-name-${p.id}`} className="input" value={p.name} onChange={(e) => update(i, { name: e.target.value })} data-testid={`plan-name-${p.id}`} />
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs text-muted-foreground">Price ($/mo)</label>
-                <input type="number" min={0} step="0.01" className="input"
+                <label htmlFor={`plan-price-${p.id}`} className="field-label">Price ($/mo)</label>
+                <input id={`plan-price-${p.id}`} type="number" min={0} step="0.01" className="input"
                   value={(p.price_cents / 100).toString()}
                   onChange={(e) => update(i, { price_cents: Math.max(0, Math.round(parseFloat(e.target.value || "0") * 100)) })}
                   data-testid={`plan-price-${p.id}`}
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Credits/mo</label>
-                <input type="number" min={0} className="input"
+                <label htmlFor={`plan-credits-${p.id}`} className="field-label">Credits/mo</label>
+                <input id={`plan-credits-${p.id}`} type="number" min={0} className="input"
                   value={p.credits}
                   onChange={(e) => update(i, { credits: Math.max(0, parseInt(e.target.value || "0", 10)) })}
                   data-testid={`plan-credits-${p.id}`}
@@ -296,13 +298,13 @@ function PlansEditor({ initialPlans, onSaved }) {
             <div className="space-y-1.5">
               {(p.features || []).map((f, fi) => (
                 <div key={fi} className="flex gap-1">
-                  <input className="input !py-1 text-xs" value={f} onChange={(e) => setFeature(i, fi, e.target.value)} data-testid={`plan-feature-${p.id}-${fi}`} />
-                  <button className="btn btn-ghost !p-1" type="button" onClick={() => removeFeature(i, fi)} title="Remove"><X className="w-3.5 h-3.5" /></button>
+                  <input aria-label={`${p.name} feature ${fi + 1}`} className="input" value={f} onChange={(e) => setFeature(i, fi, e.target.value)} data-testid={`plan-feature-${p.id}-${fi}`} />
+                  <button aria-label={`Remove feature ${fi + 1} from ${p.name}`} className="btn btn-ghost btn-icon" type="button" onClick={() => removeFeature(i, fi)} title="Remove"><X className="w-3.5 h-3.5" /></button>
                 </div>
               ))}
               <button className="btn btn-ghost text-xs" type="button" onClick={() => addFeature(i)} data-testid={`plan-feature-add-${p.id}`}>+ Add feature</button>
             </div>
-            <div className="text-[10px] text-muted-foreground mt-1">id: {p.id}</div>
+            <div className="text-xs text-muted-foreground mt-1">id: {p.id}</div>
           </div>
         ))}
       </div>

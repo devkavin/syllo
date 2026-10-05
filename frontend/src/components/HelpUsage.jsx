@@ -15,7 +15,7 @@ export default function HelpUsage({ usage, className = "", compact = false }) {
   const isLow = remaining > 0 && remaining / allowance <= 0.25;
   return (
     <section className={`text-xs text-muted-foreground space-y-1.5 ${className}`} aria-label="Study Companion usage">
-      <div className="flex justify-between gap-3">
+      <div className="flex flex-wrap justify-between gap-x-3 gap-y-1">
         <span>This week: {usage.used_this_week ?? 0} used</span>
         <span>{remaining} left this month</span>
       </div>
@@ -23,7 +23,7 @@ export default function HelpUsage({ usage, className = "", compact = false }) {
       <div className="h-1.5 rounded-full bg-accent overflow-hidden" role="progressbar" aria-label="Monthly helps remaining" aria-valuenow={remaining} aria-valuemin={0} aria-valuemax={allowance}>
         <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min(100, Math.max(0, remaining / allowance * 100))}%` }} />
       </div>
-      <div className="flex justify-between gap-3">
+      <div className="flex flex-wrap justify-between gap-x-3 gap-y-1">
         <span>Typical pace: about {Math.round(usage.weekly_pace ?? 0)} / week</span>
         {refill && <span>Monthly refill {refill}</span>}
       </div>

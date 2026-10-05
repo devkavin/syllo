@@ -7,6 +7,15 @@ import { http } from "@/lib/api";
 vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), patch: vi.fn().mockResolvedValue({}), post: vi.fn() }, formatError: String }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 afterEach(() => vi.clearAllMocks());
+it("labels class fields and dismisses the setup dialog with Escape", async () => {
+  http.get.mockResolvedValue({ data: [] });
+  render(<MemoryRouter initialEntries={["/timetable?new=1"]}><Timetable /></MemoryRouter>);
+  expect(await screen.findByRole("dialog", { name: "New block" })).toBeVisible();
+  expect(screen.getByLabelText("Title")).toHaveFocus();
+  expect(screen.getByLabelText("Start")).toHaveAttribute("type", "time");
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+});
 it("fixes a legacy one-off block with an actual date", async () => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : [{ timetable_id: "e", title: "Exam", day_of_week: 0, start_time: "09:00", end_time: "10:00", kind: "exam", recurrence: "none", needs_date: true }] }));
   render(<MemoryRouter initialEntries={["/timetable?edit=e"]}><Timetable /></MemoryRouter>);

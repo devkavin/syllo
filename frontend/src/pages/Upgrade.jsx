@@ -58,10 +58,10 @@ export default function Upgrade() {
 
   return (
     <div className="space-y-8" data-testid="upgrade-page">
-      <div className="hero-glow relative rise">
+      <div className="space-y-2">
         <button onClick={() => nav(-1)} className="btn btn-ghost !px-2 !py-1 -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
         <div className="section-title mb-2">Your plan</div>
-        <h1 className="font-serif text-4xl tracking-tight">Study plans that fit your routine</h1>
+        <h1 className="page-title">Study plans that fit your routine</h1>
         <p className="text-muted-foreground mt-2 max-w-lg">
           Every plan includes subjects, notes, a timetable, tasks, focus sessions, and progress.
         </p>
@@ -73,7 +73,7 @@ export default function Upgrade() {
       </div>
 
       {err && <div className="text-destructive text-sm">{err}</div>}
-      {sandbox && <p className="text-sm border border-border p-3" role="status">Paddle sandbox · Admin tests only. No real payments. <a className="underline" href="/checkout">Resume unfinished checkout</a> · <button className="underline" onClick={async () => { try { window.location.href = (await http.post("/billing/portal", {})).data.url; } catch (e) { setErr(formatError(e)); } }}>Manage test subscription</button></p>}
+      {sandbox && <p className="text-sm border border-border p-3" role="status">Paddle sandbox · Admin tests only. No real payments. <a className="action-link" href="/checkout">Resume unfinished checkout</a> · <button className="action-link" onClick={async () => { try { window.location.href = (await http.post("/billing/portal", {})).data.url; } catch (e) { setErr(formatError(e)); } }}>Manage test subscription</button></p>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {plans.map((p) => {

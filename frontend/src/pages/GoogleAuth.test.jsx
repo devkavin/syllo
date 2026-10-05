@@ -14,6 +14,11 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/api", () => ({ formatError: () => "Request failed" }));
 
 describe("Google sign-in links", () => {
+  it.each([["login", <Login />], ["register", <Register />]])("labels the credentials and enables password managers on %s", (_name, page) => {
+    render(<MemoryRouter><ThemeProvider>{page}</ThemeProvider></MemoryRouter>);
+    expect(screen.getByLabelText("Email")).toHaveAttribute("autocomplete", "email");
+    expect(screen.getByLabelText("Password")).toHaveAttribute("autocomplete", _name === "login" ? "current-password" : "new-password");
+  });
   it.each([
     ["login", <Login />],
     ["register", <Register />],

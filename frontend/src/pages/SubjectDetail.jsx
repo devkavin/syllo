@@ -6,6 +6,7 @@ import { subjectClasses } from "@/lib/palette";
 import { Plus, ChevronDown, ChevronRight, Timer, Check, StickyNote } from "lucide-react";
 import ExplainPopover from "@/components/ExplainPopover";
 import { useResourceAutosave } from "@/hooks/useResourceAutosave";
+import Modal from "@/components/Modal";
 
 export default function SubjectDetail() {
   const { id } = useParams();
@@ -15,6 +16,10 @@ export default function SubjectDetail() {
   const [openUnits, setOpenUnits] = useState({});
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(null);
+  const [newName, setNewName] = useState("");
+  const [creatingBusy, setCreatingBusy] = useState(false);
+  const [createError, setCreateError] = useState("");
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -35,18 +40,19 @@ export default function SubjectDetail() {
   };
   useEffect(() => { load(); }, [id]);
 
-  const addUnit = async () => {
-    const name = prompt("Unit name");
-    if (!name) return;
-    await http.post("/units", { subject_id: id, name, order: units.length });
-    load();
-  };
-  const addLesson = async (unitId) => {
-    const title = prompt("Lesson title");
-    if (!title) return;
-    const l = lessonsByUnit[unitId] || [];
-    await http.post("/lessons", { unit_id: unitId, title, order: l.length });
-    load();
+  const openCreate = value => { setNewName(""); setCreateError(""); setCreating(value); };
+  const addUnit = () => openCreate({ kind: "unit" });
+  const addLesson = unitId => openCreate({ kind: "lesson", unitId });
+  const submitCreate = async event => {
+    event.preventDefault();
+    if (!newName.trim() || creatingBusy) return;
+    setCreatingBusy(true); setCreateError("");
+    try {
+      if (creating.kind === "unit") await http.post("/units", { subject_id: id, name: newName.trim(), order: units.length });
+      else await http.post("/lessons", { unit_id: creating.unitId, title: newName.trim(), order: (lessonsByUnit[creating.unitId] || []).length });
+      setCreating(null); await load();
+    } catch (error) { setCreateError(formatError(error)); }
+    finally { setCreatingBusy(false); }
   };
   const cycleStatus = async (lesson) => {
     const next = lesson.status === "not_started" ? "in_progress" : lesson.status === "in_progress" ? "done" : "not_started";
@@ -61,7 +67,7 @@ export default function SubjectDetail() {
   };
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-64 bg-muted rounded" /><div className="h-64 bg-muted rounded-xl" /></div>;
-  if (!subject) return <div>Subject not found. <Link to="/subjects" className="underline">Go back</Link></div>;
+  if (!subject) return <div>Subject not found. <Link to="/subjects" className="action-link">Go back</Link></div>;
 
   const c = subjectClasses(subject.color, isDark);
 
@@ -71,7 +77,7 @@ export default function SubjectDetail() {
         <Link to="/subjects" className="text-sm text-muted-foreground hover:text-foreground">Subjects</Link>
         <div className="flex items-center gap-3 mt-2">
           <span className="subject-dot !w-3 !h-3" style={{ background: c.dot }} />
-          <h1 className="font-serif text-3xl tracking-tight">{subject.name}</h1>
+          <h1 className="page-title">{subject.name}</h1>
         </div>
         {subject.description && <p className="text-muted-foreground mt-1">{subject.description}</p>}
       </div>
@@ -97,7 +103,8 @@ export default function SubjectDetail() {
             return (
               <div key={u.unit_id} className="card" data-testid={`unit-${u.unit_id}`}>
                 <button
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                  className="w-full flex items-center gap-3 px-4 py-4 text-left rounded-lg hover:bg-accent/40"
+                  aria-expanded={open}
                   onClick={() => setOpenUnits((o) => ({ ...o, [u.unit_id]: !open }))}
                   data-testid={`unit-toggle-${u.unit_id}`}
                 >
@@ -113,8 +120,8 @@ export default function SubjectDetail() {
                       <div className="text-sm text-muted-foreground py-2">No lessons yet.</div>
                     ) : lessons.map((l) => {
                       const statusMeta =
-                        l.status === "done"      ? { label: "Done",        color: "hsl(133 30% 40%)" } :
-                        l.status === "in_progress" ? { label: "In progress", color: "hsl(30 60% 45%)" } :
+                        l.status === "done"      ? { label: "Done",        color: "hsl(var(--primary))" } :
+                        l.status === "in_progress" ? { label: "In progress", color: "hsl(var(--foreground))" } :
                                                      { label: "Not started", color: "hsl(var(--muted-foreground))" };
                       return (
                       <LessonRow
@@ -136,6 +143,13 @@ export default function SubjectDetail() {
           })}
         </div>
       )}
+      {creating && <Modal title={creating.kind === "unit" ? "New unit" : "New lesson"} onClose={() => setCreating(null)}>
+        <form onSubmit={submitCreate} className="space-y-4">
+          <label className="block text-sm font-medium">{creating.kind === "unit" ? "Unit name" : "Lesson title"}<input className="input mt-2" required autoFocus maxLength={200} value={newName} onChange={e => setNewName(e.target.value)} /></label>
+          {createError && <p role="alert" className="text-destructive text-sm">{createError}</p>}
+          <button className="btn btn-primary w-full" disabled={creatingBusy}>{creatingBusy ? "Saving…" : creating.kind === "unit" ? "Add unit" : "Add lesson"}</button>
+        </form>
+      </Modal>}
     </div>
   );
 }
@@ -184,14 +198,14 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
           onClick={onStatus}
           data-testid={`lesson-status-${lesson.lesson_id}`}
           title={`Status: ${statusMeta.label}. Click to change.`}
-          className="text-muted-foreground hover:text-foreground transition-colors"
+          className="btn btn-ghost btn-icon text-muted-foreground"
           style={{ color: statusMeta.color }}
           aria-label={`Status: ${statusMeta.label}`}
         >
           <StatusIcon status={lesson.status} />
         </button>
         <div className={`text-sm flex-1 min-w-0 flex items-center gap-2 ${lesson.status === "done" ? "text-muted-foreground line-through" : ""}`}>
-          <Link className="truncate hover:underline" to={`/lessons/${lesson.lesson_id}`}>{lesson.title}</Link>
+          <Link className="action-link min-w-0" to={`/lessons/${lesson.lesson_id}`}>{lesson.title}</Link>
           {lesson.status !== "not_started" && (
             <span
               className="badge shrink-0"
@@ -209,8 +223,10 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
         <button
           onClick={() => setOpen((o) => !o)}
           data-testid={`lesson-notes-toggle-${lesson.lesson_id}`}
-          className={`btn btn-ghost !p-1.5 ${(lesson.notes && lesson.notes.trim()) ? "text-primary" : "text-muted-foreground"}`}
+          className={`btn btn-ghost btn-icon ${(lesson.notes && lesson.notes.trim()) ? "text-primary" : "text-muted-foreground"}`}
           title={open ? "Hide notes" : "Open notes"}
+          aria-label={open ? "Hide notes" : "Open notes"}
+          aria-expanded={open}
         >
           <StickyNote className="w-3.5 h-3.5" />
         </button>
@@ -220,13 +236,14 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
         <div ref={containerRef} className="ml-7 mt-1 mb-3 p-3 rounded-lg border border-border bg-accent/20 relative" data-testid={`lesson-notes-panel-${lesson.lesson_id}`}>
           <textarea
             ref={textareaRef}
-            className="w-full resize-y min-h-[80px] bg-transparent outline-none text-sm font-serif leading-relaxed placeholder:text-muted-foreground/60"
+            aria-label={`Notes for ${lesson.title}`}
+            className="w-full resize-y min-h-[80px] bg-transparent text-base leading-relaxed placeholder:text-muted-foreground rounded-md p-2"
             placeholder="Notes for this lesson. Select text to explain it."
             value={notes}
             onChange={onChange}
             data-testid={`lesson-notes-textarea-${lesson.lesson_id}`}
           />
-          <div className="text-[10px] text-muted-foreground mt-1">
+          <div role="status" className="text-xs text-muted-foreground mt-1">
             {saveState === "saving" ? "Saving..." : saveState === "saved" ? "Saved" : ""}
             {saveState === "failed" && <button onClick={autosave.retry}>Not saved · Retry</button>}
           </div>
@@ -256,7 +273,7 @@ function PresetCard({ subject, onSave }) {
   return (
     <div className="card-elevated p-5" data-testid="preset-card">
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(133 24% 92%)", color: "hsl(133 30% 24%)" }}>
+        <div className="w-8 h-8 rounded-md grid place-items-center bg-secondary text-primary">
           <Timer className="w-4 h-4" />
         </div>
         <span className="section-title">Focus preset</span>
@@ -284,6 +301,7 @@ function PresetSlider({ label, value, onChange, min, max, step, testid }) {
         <span className="font-mono text-base">{value}m</span>
       </div>
       <input
+        aria-label={`${label} duration`}
         type="range"
         min={min} max={max} step={step}
         value={value}

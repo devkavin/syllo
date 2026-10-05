@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Plus, Trash2, X, Clock } from "lucide-react";
+import { Plus, Trash2, Clock } from "lucide-react";
+import Modal from "@/components/Modal";
 import { Link, useSearchParams } from "react-router-dom";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -44,27 +45,27 @@ export default function Timetable() {
 
   return (
     <div className="space-y-8" data-testid="timetable-page">
-      <div className="hero-glow relative rise flex items-end justify-between">
+      <div className="page-header">
         <div>
           <div className="section-title mb-2">Your week</div>
-          <h1 className="font-serif text-4xl tracking-tight">Timetable</h1>
+          <h1 className="page-title">Timetable</h1>
           <p className="text-muted-foreground mt-2">A weekly rhythm for classes and study.</p>
         </div>
         <button className="btn btn-primary" onClick={() => { setEditing(null); setShowNew(true); }} data-testid="new-block-btn"><Plus className="w-4 h-4" /> New block</button>
       </div>
 
       {err && <div className="text-destructive text-sm">{err}</div>}
-      <Link to="/planner" className="text-sm underline">View dated Planner</Link>
+      <Link to="/planner" className="text-sm action-link">View dated Planner</Link>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {DAYS.map((d) => <div key={d} className="h-64 bg-muted rounded-xl animate-pulse" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {DAYS.map((label, dow) => (
-            <div key={label} className="card p-3 min-h-[240px]" data-testid={`day-column-${dow}`}>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{label}</div>
+            <div key={label} className="card p-4" data-testid={`day-column-${dow}`}>
+              <h2 className="font-semibold text-sm mb-3">{label}</h2>
               <div className="space-y-2">
                 {byDay[dow].length === 0 ? (
                   <div className="text-xs text-muted-foreground italic">Nothing scheduled.</div>
@@ -74,14 +75,15 @@ export default function Timetable() {
                   return (
                     <div
                       key={b.timetable_id}
-                      className="rounded-lg p-2 text-xs border border-border group"
-                      style={{ background: c?.bg, color: c?.text }}
+                      className="border-l-2 pl-3 py-2 text-sm"
+                      style={{ borderLeftColor: c?.dot }}
                       data-testid={`block-${b.timetable_id}`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <button className="font-medium text-left hover:underline" onClick={() => { setEditing(b); setShowNew(true); }}>{b.title}</button>
+                        <button className="action-link text-left" onClick={() => { setEditing(b); setShowNew(true); }}>{b.title}</button>
                         <button
-                          className="p-1"
+                          className="btn btn-ghost btn-icon text-muted-foreground"
+                          aria-label={`Delete ${b.title}`}
                           onClick={() => remove(b.timetable_id)}
                           data-testid={`block-delete-${b.timetable_id}`}
                           title="Delete"
@@ -138,40 +140,37 @@ function NewBlockModal({ subjects, block, onClose, onCreated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <form onSubmit={submit} role="dialog" aria-modal="true" aria-label={block ? "Edit block" : "New block"} className="relative card p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" data-testid="new-block-modal">
-        <button type="button" className="btn btn-ghost !p-1 absolute right-2 top-2" onClick={onClose}><X className="w-4 h-4" /></button>
-        <h2 className="font-serif text-xl mb-4">{block ? "Edit block" : "New block"}</h2>
+    <Modal title={block ? "Edit block" : "New block"} onClose={onClose}>
+      <form onSubmit={submit} data-testid="new-block-modal">
         <label className="text-xs">Repeats<select className="input mt-1 mb-3" value={recurrence} onChange={e => setRecurrence(e.target.value)}><option value="weekly">Every week</option><option value="none">Once, on a date</option></select></label>
         {recurrence === "none" && <label className="text-xs">Date<input type="date" required className="input mt-1 mb-3" value={date} onChange={e => setDate(e.target.value)} /></label>}
         {recurrence === "none" && block?.end_date && block.end_date !== block.date && <p className="text-xs text-muted-foreground mb-3">This saved activity ends on {block.end_date} in your timezone. Renaming keeps its time; split it into two blocks if changing the overnight times.</p>}
-        <label className="text-xs text-muted-foreground">Title</label>
-        <input className="input mt-1 mb-3" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Math class" autoFocus data-testid="new-block-title" />
-        <label className="text-xs text-muted-foreground">Subject</label>
-        <select className="input mt-1 mb-3" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} data-testid="new-block-subject">
+        <label className="text-xs text-muted-foreground" htmlFor="timetable-field-1">Title</label>
+        <input id="timetable-field-1" className="input mt-1 mb-3" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Math class" autoFocus data-testid="new-block-title" />
+        <label className="text-xs text-muted-foreground" htmlFor="timetable-field-2">Subject</label>
+        <select id="timetable-field-2" className="input mt-1 mb-3" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} data-testid="new-block-subject">
           <option value="">No subject</option>
           {subjects.map((s) => <option key={s.subject_id} value={s.subject_id}>{s.name}</option>)}
         </select>
-        <label className="text-xs text-muted-foreground">Day</label>
-        <select className="input mt-1 mb-3" value={dow} onChange={(e) => setDow(e.target.value)} data-testid="new-block-day">
+        <label className="text-xs text-muted-foreground" htmlFor="timetable-field-3">Day</label>
+        <select id="timetable-field-3" className="input mt-1 mb-3" value={dow} onChange={(e) => setDow(e.target.value)} data-testid="new-block-day">
           {DAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}
         </select>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-muted-foreground">Start</label>
-            <input type="time" className="input mt-1" value={start} onChange={(e) => setStart(e.target.value)} data-testid="new-block-start" />
+            <label className="text-xs text-muted-foreground" htmlFor="timetable-field-4">Start</label>
+            <input id="timetable-field-4" type="time" className="input mt-1" value={start} onChange={(e) => setStart(e.target.value)} data-testid="new-block-start" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">End</label>
-            <input type="time" className="input mt-1" value={end} onChange={(e) => setEnd(e.target.value)} data-testid="new-block-end" />
+            <label className="text-xs text-muted-foreground" htmlFor="timetable-field-5">End</label>
+            <input id="timetable-field-5" type="time" className="input mt-1" value={end} onChange={(e) => setEnd(e.target.value)} data-testid="new-block-end" />
           </div>
         </div>
         <div className="mt-3">
-          <label className="text-xs text-muted-foreground">Kind</label>
-          <div className="flex gap-2 mt-1">
+          <div className="field-label" id="activity-kind">Kind</div>
+          <div className="segmented-control" role="group" aria-labelledby="activity-kind">
             {["class", "study", "exam", "deadline"].map((k) => (
-              <button key={k} type="button" onClick={() => setKind(k)} className={`btn text-xs ${kind === k ? "btn-primary" : "btn-outline"}`} data-testid={`new-block-kind-${k}`}>
+              <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k} className="segment" data-testid={`new-block-kind-${k}`}>
                 {k[0].toUpperCase() + k.slice(1)}
               </button>
             ))}
@@ -183,6 +182,6 @@ function NewBlockModal({ subjects, block, onClose, onCreated }) {
           {busy ? "Saving…" : block ? "Save block" : "Add block"}
         </button>
       </form>
-    </div>
+    </Modal>
   );
 }

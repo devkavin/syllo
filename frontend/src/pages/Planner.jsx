@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import AgendaList from "@/components/AgendaList";
+import { ChevronLeft, ChevronRight, Plus, Settings2 } from "lucide-react";
 import { browserTimezone, dateInZone, localInstant, shiftDate } from "@/lib/studyTime";
 export default function Planner() {
   const { user } = useAuth(); const timezone = user?.timezone || browserTimezone();
@@ -16,16 +17,25 @@ export default function Planner() {
     } catch (e) { setError(e.message); }
     return () => { live = false; };
   }, [day, view, timezone, retry]);
-  return <div className="max-w-3xl space-y-8">
-    <header><h1 className="font-serif text-4xl">Planner</h1><p className="mt-2 text-muted-foreground">Classes, study and due work, together.</p></header>
-    <div className="flex flex-wrap gap-3 items-center">
-      {["Day", "Week"].map(v => <button key={v} aria-pressed={v === view} className={`btn ${view === v ? "btn-primary" : "btn-outline"}`} onClick={() => setView(v)}>{v}</button>)}
-      <label className="text-sm">Starting date <input type="date" className="input mt-1" value={day} onChange={e => e.target.value && setDay(e.target.value)} /></label>
-      <Link className="btn btn-outline" to="/timetable?new=1">Add activity</Link><Link className="text-sm underline" to="/timetable">Weekly timetable</Link>
+  return <div className="max-w-4xl space-y-6" data-testid="planner-page">
+    <header className="page-header"><div><h1 className="page-title">Planner</h1><p className="mt-2 text-muted-foreground">Classes, study and due work, together.</p></div><Link className="btn btn-primary" to="/timetable?new=1"><Plus className="h-4 w-4" />Add activity</Link></header>
+    <div className="page-toolbar border-b border-border pb-5">
+      <div className="segmented-control" role="group" aria-label="Planner view">
+        {["Day", "Week"].map(v => <button key={v} aria-pressed={v === view} className="segment" onClick={() => setView(v)}>{v}</button>)}
+      </div>
+      <div className="basis-full min-w-0 sm:basis-auto">
+        <label htmlFor="planner-date" className="field-label">Starting date</label>
+        <div className="flex gap-1 items-center">
+          <button className="btn btn-ghost btn-icon" aria-label={`Previous ${view.toLowerCase()}`} onClick={() => setDay(d => shiftDate(d, view === "Week" ? -7 : -1))}><ChevronLeft className="h-4 w-4" /></button>
+          <input id="planner-date" type="date" className="input w-full sm:w-44" value={day} onChange={e => e.target.value && setDay(e.target.value)} />
+          <button className="btn btn-ghost btn-icon" aria-label={`Next ${view.toLowerCase()}`} onClick={() => setDay(d => shiftDate(d, view === "Week" ? 7 : 1))}><ChevronRight className="h-4 w-4" /></button>
+        </div>
+      </div>
+      <Link className="btn btn-outline sm:ml-auto" to="/timetable">Weekly timetable</Link>
     </div>
-    <p className="text-xs text-muted-foreground">Times in {timezone}. <Link to="/settings" className="underline">Change timezone</Link></p>
-    {error && <div role="alert">{error} <button className="btn btn-outline" onClick={() => setRetry(n => n + 1)}>Retry</button></div>}
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>Times in {timezone}</span><Link to="/settings" className="action-link"><Settings2 className="h-4 w-4" />Change timezone</Link></div>
+    {error && <div role="alert" className="notice">{error} <button className="btn btn-outline" onClick={() => setRetry(n => n + 1)}>Retry</button></div>}
     {!data && !error && <p role="status">Loading your agenda…</p>}
-    {data && <><AgendaList items={data.items} timezone={timezone} withDate={view === "Week"} />{data.warnings?.map(w => <p key={w.id} role="status" className="text-sm text-muted-foreground">{w.message} <Link className="underline" to={w.href || "/timetable"}>Check timetable</Link></p>)}</>}
+    {data && <>{data.items.length ? <AgendaList items={data.items} timezone={timezone} withDate={view === "Week"} /> : <section className="empty-state space-y-3"><h2>A little room in your {view.toLowerCase()}</h2><p>No activities planned. Add a class or make time to study.</p><Link className="btn btn-outline" to="/timetable?new=1">Plan an activity</Link></section>}{data.warnings?.map(w => <p key={w.id} role="status" className="notice">{w.message} <Link className="action-link" to={w.href || "/timetable"}>Check timetable</Link></p>)}</>}
   </div>;
 }

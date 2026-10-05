@@ -41,18 +41,21 @@ export default function Settings() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8" data-testid="settings-page">
-      <div className="hero-glow relative rise">
+      <div className="page-header">
+        <div>
         <div className="section-title mb-2">Your preferences</div>
-        <h1 className="font-serif text-4xl tracking-tight">Settings</h1>
+        <h1 className="page-title">Settings</h1>
         <p className="text-muted-foreground mt-2">Small preferences that make Syllo yours.</p>
+        </div>
+        <button className="btn btn-primary" onClick={save} data-testid="settings-save">Save changes</button>
       </div>
 
       <section className="card p-5 space-y-3">
         <h2 className="font-serif text-xl">Profile</h2>
-        <label className="text-xs text-muted-foreground">Name</label>
-        <input className="input" value={name} onChange={(e) => setName(e.target.value)} data-testid="settings-name" />
-        <label className="text-xs text-muted-foreground">Email</label>
-        <input className="input" value={user?.email || ""} disabled />
+        <label className="text-xs text-muted-foreground" htmlFor="settings-field-1">Name</label>
+        <input id="settings-field-1" className="input" value={name} onChange={(e) => setName(e.target.value)} data-testid="settings-name" />
+        <label className="text-xs text-muted-foreground" htmlFor="settings-field-2">Email</label>
+        <input id="settings-field-2" className="input" value={user?.email || ""} disabled />
       </section>
 
       <section className="card p-5 space-y-3">
@@ -63,6 +66,7 @@ export default function Settings() {
             <button
               key={t}
               onClick={() => setTheme(t)}
+              aria-pressed={theme === t}
               data-testid={`theme-${t}`}
               className={`btn ${theme === t ? "btn-primary" : "btn-outline"}`}
             >{t === "light" ? "Light" : "Dark"}</button>
@@ -76,6 +80,7 @@ export default function Settings() {
         <div className="flex items-center gap-3">
           <input
             type="range" min={15} max={240} step={15}
+            aria-label="Daily study goal in minutes"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
             className="flex-1"
@@ -119,14 +124,13 @@ export default function Settings() {
         <h2 className="font-serif text-xl">Legal and privacy</h2>
         <p className="text-sm text-muted-foreground">Read how Syllo handles your information and the rules that apply to the service.</p>
         <div className="flex gap-4 text-sm">
-          <Link to="/privacy" className="text-foreground underline">Privacy Policy</Link>
-          <Link to="/terms" className="text-foreground underline">Terms of Service</Link>
+          <Link to="/privacy" className="text-foreground action-link">Privacy Policy</Link>
+          <Link to="/terms" className="text-foreground action-link">Terms of Service</Link>
         </div>
       </section>
 
-      {msg && <div className="text-primary text-sm" data-testid="settings-msg">{msg}</div>}
-      {err && <div className="text-destructive text-sm">{err}</div>}
-      <button className="btn btn-primary" onClick={save} data-testid="settings-save">Save changes</button>
+      {msg && <div role="status" className="notice text-primary" data-testid="settings-msg">{msg}</div>}
+      {err && <div role="alert" className="notice text-destructive">{err}</div>}
     </div>
   );
 }
@@ -145,7 +149,7 @@ function InviteCard() {
   return (
     <section className="card p-5 space-y-3" data-testid="settings-invite">
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-md grid place-items-center" style={{ background: "hsl(30 60% 92%)", color: "hsl(30 60% 32%)" }}>
+        <div className="w-8 h-8 rounded-md grid place-items-center bg-secondary text-primary">
           <Gift className="w-4 h-4" />
         </div>
         <h2 className="font-serif text-xl !mb-0">Study with a friend</h2>
@@ -158,7 +162,7 @@ function InviteCard() {
           <label className="text-xs text-muted-foreground">Your code</label>
           <div className="flex gap-2 mt-1">
             <input className="input font-mono uppercase" readOnly value={data.referral_code} data-testid="invite-code" />
-            <button className="btn btn-outline" onClick={() => copy(data.referral_code, "code")} data-testid="invite-copy-code">
+            <button aria-label="Copy friend code" className="btn btn-outline btn-icon" onClick={() => copy(data.referral_code, "code")} data-testid="invite-copy-code">
               {copied === "code" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
@@ -167,13 +171,13 @@ function InviteCard() {
           <label className="text-xs text-muted-foreground">Or share the link</label>
           <div className="flex gap-2 mt-1">
             <input className="input text-xs" readOnly value={link} data-testid="invite-link" />
-            <button className="btn btn-outline" onClick={() => copy(link, "link")} data-testid="invite-copy-link">
+            <button aria-label="Copy invite link" className="btn btn-outline btn-icon" onClick={() => copy(link, "link")} data-testid="invite-copy-link">
               {copied === "link" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>
       </div>
-      <div className="text-xs text-muted-foreground flex items-center gap-4 pt-1">
+      <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-3 pt-1">
         <span><span className="font-mono text-foreground">{data.count}</span> friend{data.count === 1 ? "" : "s"} joined</span>
         <span><span className="font-mono text-foreground">{data.credits_earned}</span> extra helps earned</span>
         <span>{data.monthly_rewarded_count} / {data.monthly_reward_limit} rewarded this month</span>

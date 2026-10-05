@@ -34,20 +34,21 @@ export default function Register() {
           <p className="text-muted-foreground text-sm mt-1">A quiet space to study. Just for you.</p>
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Name</label>
-          <input className="input mt-1" value={name} onChange={(e) => setName(e.target.value)} required data-testid="register-name" />
+          <label className="text-xs text-muted-foreground" htmlFor="register-field-1">Name</label>
+          <input id="register-field-1" autoComplete="name" className="input mt-1" value={name} onChange={(e) => setName(e.target.value)} required data-testid="register-name" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Email</label>
-          <input className="input mt-1" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required data-testid="register-email" />
+          <label className="text-xs text-muted-foreground" htmlFor="register-field-2">Email</label>
+          <input id="register-field-2" autoComplete="email" className="input mt-1" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required data-testid="register-email" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground">Password</label>
-          <input className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={8} required data-testid="register-password" />
+          <label className="text-xs text-muted-foreground" htmlFor="register-field-3">Password</label>
+          <input id="register-field-3" autoComplete="new-password" className="input mt-1" value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={8} required data-testid="register-password" />
         </div>
         <div>
-          <label className="text-xs text-muted-foreground inline-flex items-center gap-1"><Gift className="w-3 h-3" /> Friend code (optional)</label>
+          <label htmlFor="register-referral" className="field-label inline-flex items-center gap-1"><Gift className="w-4 h-4" /> Friend code (optional)</label>
           <input
+            id="register-referral"
             className="input mt-1 !uppercase"
             value={referral}
             onChange={(e) => setReferral(e.target.value)}
@@ -72,10 +73,10 @@ export default function Register() {
           Continue with Google
         </a>
         <div className="text-center text-sm text-muted-foreground">
-          Already have an account? <Link to="/login" className="text-foreground underline" data-testid="link-login">Sign in</Link>
+          Already have an account? <Link to="/login" className="text-foreground action-link" data-testid="link-login">Sign in</Link>
         </div>
         <div className="text-center text-xs text-muted-foreground">
-          <Link to="/pricing" className="hover:text-foreground underline">View plans</Link>
+          <Link to="/pricing" className="hover:text-foreground action-link">View plans</Link>
         </div>
       </form>
     </div>
