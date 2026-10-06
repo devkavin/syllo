@@ -111,3 +111,30 @@ quiet-to-populated transition, quick-add menu/dialog focus handoff, Library
 expansion and the account menu on short screens. No app server or build was run.
 Final automated verification for this redesign: 140 tests passed across 34
 frontend test files; ESLint and `git diff --check` passed.
+
+## Today study desk — October 6, 2026
+
+- The oversized generic panel is replaced by a compact priority area. Desktop
+  uses a work column with a narrower schedule column; smaller screens stack
+  content without horizontal overflow or changing keyboard reading order.
+- Recent lesson notes and three recently edited notebooks remain accessible on
+  busy days, not just empty days. Note bodies are not downloaded for Today.
+  Empty workspaces offer actual subject shortcuts and a New note action.
+- Work on task opens instructions, subject context, related notebooks, lesson
+  notes, linked Focus and completion. Editing is an explicit secondary action.
+  Classes and study activities similarly open study context, not an edit form.
+- New note creates an optionally linked notebook and opens the exact saved
+  notebook. Failed drafts stay open. Optional context has separate loading,
+  failure and retry states and is not re-fetched on every task completion.
+- Subject-only Focus deep links use the owned subject's preset, wait for loading
+  and permit retry/unlinked focus after errors. Running, paused and pending-save
+  sessions are preserved; lesson and Circle links retain precedence.
+
+Browser QA remains required: both themes, small/large screens, long titles,
+busy/empty days, note creation and task/class context dialogs. Confirm retained
+drafts and focus restoration, and inspect the new two-column composition after
+the user starts the app. No build or app startup was run for this change.
+Final automated verification: 156 tests passed across 34 frontend files;
+ESLint and git diff --check passed. Independent review's two failure-path
+findings (stale unlinked Focus context and late note-save navigation) were
+reproduced and fixed with regression tests.

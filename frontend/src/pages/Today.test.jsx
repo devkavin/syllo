@@ -1,6 +1,6 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, afterEach, expect, it, vi } from "vitest";
 import Today from "./Today";
 import { http } from "@/lib/api";
@@ -21,7 +21,8 @@ it("makes focus and due work visible without analytics cards", async () => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? { today: "2026-10-05", agenda: [], tasks: [{ task_id: "t", title: "Physics worksheet", due_date: "2026-10-05" }], reviews_due: [] } : [] }));
   render(<MemoryRouter><Today /></MemoryRouter>);
   expect(await screen.findByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer");
-  expect(screen.getAllByRole("link", { name: "Physics worksheet" })[0]).toHaveAttribute("href", "/tasks?task=t");
+  expect(screen.getByRole("heading", { name: "Physics worksheet" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Work on task" })).toBeVisible();
   expect(screen.queryByTestId("streak-calendar")).not.toBeInTheDocument();
   expect(http.get).not.toHaveBeenCalledWith("/analytics");
 });
@@ -79,7 +80,7 @@ it("plans a one-off study session on the student's day without leaving Today", a
   fireEvent.change(screen.getByLabelText("End"), { target: { value: "19:00" } });
   fireEvent.click(screen.getByRole("button", { name: "Add study time" }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-  expect(await screen.findByText("Read chemistry")).toBeVisible();
+  expect(await screen.findByRole("heading", { name: "Read chemistry" })).toBeVisible();
   expect(http.post).toHaveBeenCalledWith("/timetable", expect.objectContaining({ kind: "study", recurrence: "none", date: "2026-10-06", start_time: "18:00", end_time: "19:00" }));
 });
 
@@ -89,7 +90,7 @@ it("does not mistake a quiet day for a missing timetable and resumes a real rece
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? day : url === "/timetable" ? timetable : url === "/sessions?limit=10" ? sessions : url === "/lessons/limits" ? { lesson_id: "limits", title: "Limits", subject_id: "math", unit_id: "calc" } : [] }));
   render(<MemoryRouter><Today /></MemoryRouter>);
   expect(await screen.findByRole("link", { name: "Continue studying" })).toHaveAttribute("href", "/timer?lesson=limits");
-  expect(screen.getByText("Limits")).toBeVisible();
+  expect(screen.getByRole("heading", { name: "Limits" })).toBeVisible();
   expect(screen.queryByRole("link", { name: "Add your timetable" })).not.toBeInTheDocument();
 });
 
@@ -156,4 +157,112 @@ it("explains a failed subject load and lets the student retry without losing the
   failed = false; fireEvent.click(retry);
   expect(await screen.findByRole("option", { name: "Mathematics" })).toHaveValue("math");
   expect(screen.getByLabelText("Title")).toHaveValue("Math practice");
+});
+
+const notes = [{ notebook_id: "notes", title: "Limits revision", subject_id: "math", lesson_id: "limits", updated_at: "2026-10-06T04:00:00Z" }];
+function deskResponses(url) {
+  return { data: url === "/today" ? day : url === "/subjects" ? [{ subject_id: "math", name: "Mathematics" }] : url === "/notebooks" ? notes : url === "/sessions?limit=10" ? [{ lesson_id: "limits", duration_seconds: 1500, mode: "pomodoro" }] : url === "/lessons/limits" ? { lesson_id: "limits", title: "Limits", subject_id: "math" } : [] };
+}
+it("keeps real recent work visible alongside a busy day's schedule", async () => {
+  day = { ...emptyDay, agenda: [{ id: "c", source: "timetable", kind: "class", title: "Math class", subject_id: "math", starts_at: "2026-10-06T05:30:00Z", ends_at: "2026-10-06T06:30:00Z", href: "/timetable?edit=c" }] };
+  http.get.mockImplementation(url => Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const work = await screen.findByRole("region", { name: "Continue working" });
+  expect(await within(work).findByRole("link", { name: /Limits revision/ })).toHaveAttribute("href", "/notebooks?notebook=notes");
+  expect(await within(work).findByRole("link", { name: /Limits Lesson notes/ })).toHaveAttribute("href", "/lessons/limits");
+  expect(screen.getByRole("region", { name: "Your schedule" })).toBeVisible();
+  expect(http.get).not.toHaveBeenCalledWith("/notebooks/notes");
+});
+it("opens task instructions and related study material instead of the task editor", async () => {
+  day = { ...emptyDay, tasks: [{ task_id: "t", title: "Practice limits", notes: "Solve exercises 1–4", subject_id: "math", lesson_id: "limits", due_date: "2026-10-06" }] };
+  http.get.mockImplementation(url => Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Work on task" }));
+  const dialog = screen.getByRole("dialog", { name: "Practice limits" });
+  expect(within(dialog).getByText("Solve exercises 1–4")).toBeVisible();
+  expect(within(dialog).getByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer?lesson=limits");
+  expect(within(dialog).getByRole("link", { name: "Open lesson notes" })).toHaveAttribute("href", "/lessons/limits");
+  expect(await within(dialog).findByRole("link", { name: "Limits revision" })).toHaveAttribute("href", "/notebooks?notebook=notes");
+  expect(within(dialog).getByRole("link", { name: "Edit task" })).toHaveAttribute("href", "/tasks?task=t");
+});
+it("opens useful subject context for a class with editing kept secondary", async () => {
+  day = { ...emptyDay, agenda: [{ id: "c", source: "timetable", kind: "class", title: "Math class", subject_id: "math", starts_at: "2026-10-06T05:30:00Z", ends_at: "2026-10-06T06:30:00Z", href: "/timetable?edit=c" }] };
+  http.get.mockImplementation(url => Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Open class" }));
+  const dialog = screen.getByRole("dialog", { name: "Math class" });
+  expect(within(dialog).getByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer?subject=math");
+  expect(within(dialog).getByRole("link", { name: "Open subject" })).toHaveAttribute("href", "/subjects/math");
+  expect(within(dialog).getByRole("link", { name: "Edit schedule" })).toHaveAttribute("href", "/timetable?edit=c");
+});
+it("distinguishes failed recent-work loading from empty work and retries", async () => {
+  let failed = true;
+  http.get.mockImplementation(url => url === "/notebooks" && failed ? Promise.reject(new Error("Offline")) : Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const retry = await screen.findByRole("button", { name: "Retry notes" });
+  expect(screen.getByText("Your notes couldn't load.")).toBeVisible();
+  failed = false; fireEvent.click(retry);
+  expect(await screen.findByRole("link", { name: /Limits revision/ })).toBeVisible();
+});
+function Location() { return <p data-testid="location">{useLocation().pathname}{useLocation().search}</p>; }
+it("creates an optionally unlinked note and opens that exact notebook", async () => {
+  http.post.mockResolvedValue({ data: { notebook_id: "new-note" } });
+  render(<MemoryRouter><Today /><Location /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "New note" }));
+  const dialog = screen.getByRole("dialog", { name: "New note" });
+  fireEvent.change(within(dialog).getByLabelText("Title"), { target: { value: "My revision" } });
+  fireEvent.click(within(dialog).getByRole("button", { name: "Create note" }));
+  await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("/notebooks?notebook=new-note"));
+  expect(http.post).toHaveBeenCalledWith("/notebooks", { title: "My revision", content: "", subject_id: null, lesson_id: null });
+});
+it("keeps a failed new-note draft for retry", async () => {
+  http.post.mockRejectedValue(new Error("Couldn't save"));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "New note" }));
+  const dialog = screen.getByRole("dialog", { name: "New note" });
+  fireEvent.change(within(dialog).getByLabelText("Title"), { target: { value: "Keep this note" } });
+  fireEvent.click(within(dialog).getByRole("button", { name: "Create note" }));
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent("Couldn't save");
+  expect(within(dialog).getByLabelText("Title")).toHaveValue("Keep this note");
+});
+it("does not let a late note creation close a new draft or redirect after dismissal", async () => {
+  let finishCreation;
+  http.post.mockImplementation(() => new Promise(resolve => { finishCreation = resolve; }));
+  render(<MemoryRouter><Today /><Location /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "New note" }));
+  const first = screen.getByRole("dialog", { name: "New note" });
+  fireEvent.change(within(first).getByLabelText("Title"), { target: { value: "First note" } });
+  fireEvent.click(within(first).getByRole("button", { name: "Create note" }));
+  fireEvent.click(within(first).getByRole("button", { name: "Close dialog" }));
+  fireEvent.click(screen.getByRole("button", { name: "New note" }));
+  const second = screen.getByRole("dialog", { name: "New note" });
+  fireEvent.change(within(second).getByLabelText("Title"), { target: { value: "New draft" } });
+  await act(async () => finishCreation({ data: { notebook_id: "late-note" } }));
+  expect(screen.getByRole("dialog", { name: "New note" })).toBeVisible();
+  expect(screen.getByLabelText("Title")).toHaveValue("New draft");
+  expect(screen.getByTestId("location")).toHaveTextContent(/^\/$/);
+});
+it("shows failed task completion inside the work dialog and supports retry", async () => {
+  day = { ...emptyDay, tasks: [{ task_id: "t", title: "Practice limits", due_date: "2026-10-06" }] };
+  http.patch.mockRejectedValueOnce(new Error("Couldn't complete task")).mockImplementation(() => { day = { ...emptyDay }; return Promise.resolve({ data: {} }); });
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Work on task" }));
+  const dialog = screen.getByRole("dialog", { name: "Practice limits" });
+  fireEvent.click(within(dialog).getByRole("button", { name: "Mark complete" }));
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent("Couldn't complete task");
+  fireEvent.click(within(dialog).getByRole("button", { name: "Mark complete" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(screen.getByRole("status")).toHaveTextContent("Task completed");
+});
+it("offers real subjects when there is no recent work yet", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? day : url === "/subjects" ? [{ subject_id: "math", name: "Mathematics" }] : [] }));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const work = await screen.findByRole("region", { name: "Continue working" });
+  expect(await within(work).findByRole("link", { name: /Mathematics/ })).toHaveAttribute("href", "/subjects/math");
+});
+it("preserves circle context when starting an accepted study session", async () => {
+  day = { ...emptyDay, agenda: [{ id: "circle-session", source: "circle", kind: "circle_study", title: "Revision together", starts_at: "2026-10-06T05:30:00Z", ends_at: "2026-10-06T06:30:00Z", href: "/timer?event=circle-session" }] };
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  expect(await screen.findByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer?event=circle-session");
+  expect(screen.getByRole("link", { name: "Start session" })).toHaveAttribute("href", "/timer?event=circle-session");
 });

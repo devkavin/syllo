@@ -88,7 +88,22 @@ export default function FocusTimer() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const activeSubject = subjects.find((s) => s.subject_id === subjectId);
-  const locked = running || !!startedAt || saving || baselinePending || eventLoading || lessonLoading || !!pendingRecording;
+  const [subjectLinkPending, setSubjectLinkPending] = useState(!!params.get("subject") && !params.get("lesson") && !params.get("event") && !initial.running && !initial.startedAt && !initial.pendingRecording);
+  const appliedSubjectLink = useRef(null);
+  const locked = running || !!startedAt || saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending || !!pendingRecording;
+
+  useEffect(() => {
+    const id = params.get("subject");
+    if (!id || params.get("lesson") || params.get("event") || running || startedAt || pendingRecording || appliedSubjectLink.current === id) { setSubjectLinkPending(false); return; }
+    if (subjectsPending || subjectsFailed) { setSubjectLinkPending(true); return; }
+    appliedSubjectLink.current = id;
+    const subject = subjects.find(s => s.subject_id === id);
+    if (!subject) setErr("Could not open the subject. Choose another subject, or focus without one.");
+    const duration = modeSeconds(mode, subject, customDurations);
+    setSubjectId(subject ? id : ""); setUnitId(null); setLessonId(null); setLessonTitle("");
+    setSeconds(duration); setSessionSeconds(duration); setMinutes(String(duration / 60));
+    setSubjectLinkPending(false);
+  }, [params, subjects, subjectsPending, subjectsFailed, running, startedAt, pendingRecording, mode, customDurations]);
 
   useEffect(() => {
     const id = params.get("event");
@@ -249,7 +264,7 @@ export default function FocusTimer() {
     prepareTimer(modeSeconds(mode, activeSubject, next));
   };
   const start = () => {
-    if (pendingRecording || saving || baselinePending || eventLoading || lessonLoading || (mode !== "stopwatch" && seconds === 0)) return;
+    if (pendingRecording || saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending || (mode !== "stopwatch" && seconds === 0)) return;
     if (!startedAt) setStartedAt(new Date().toISOString());
     setRunning(true);
     setMsg("");
@@ -341,13 +356,13 @@ export default function FocusTimer() {
       </div>
       <div className="flex justify-center flex-wrap gap-2">
         {!running ? (
-          <button className="btn btn-primary !px-6" onClick={start} disabled={eventLoading || lessonLoading || !!pendingRecording || saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
+          <button className="btn btn-primary !px-6" onClick={start} disabled={eventLoading || lessonLoading || subjectLinkPending || !!pendingRecording || saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
             data-testid="timer-start"><Play className="w-4 h-4" /> {startedAt && seconds > 0 ? "Resume" : "Start"}</button>
         ) : (
           <button className="btn btn-primary !px-6" onClick={() => setRunning(false)} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
         )}
         <button className="btn btn-ghost" onClick={() => { if ((!pendingRecording && !startedAt) || window.confirm("Discard this unsaved session and start a new timer?")) reset(); }} disabled={saving || baselinePending} data-testid="timer-reset"><RotateCcw className="w-4 h-4" /> Reset</button>
-        <button className="btn btn-outline" onClick={() => tryLogSession(false)} disabled={saving || baselinePending || eventLoading || lessonLoading} data-testid="timer-save">
+        <button className="btn btn-outline" onClick={() => tryLogSession(false)} disabled={saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending} data-testid="timer-save">
           <Save className="w-4 h-4" /> {saving ? "Saving…" : pendingRecording ? "Retry save" : "Log session"}
         </button>
         <button ref={fullscreenButton} className="btn btn-ghost" onClick={toggleFullscreen} data-testid="timer-fullscreen" aria-pressed={fullscreen}>
@@ -368,6 +383,11 @@ export default function FocusTimer() {
       {subjectId && <AcademicSelector hideSubject subjects={subjects} value={{ subject_id: subjectId, unit_id: unitId, lesson_id: lessonId }} disabled={locked} onChange={v => { setUnitId(v.unit_id); setLessonId(v.lesson_id); setLessonTitle(""); }} />}
       </div>
       {msg && <div role="status" className="text-sm text-primary" data-testid="timer-message">{msg}</div>}
+      {subjectLinkPending && <div className="space-y-2 text-sm"><p role="status" className="text-muted-foreground">{subjectsFailed ? "Your linked subject couldn't load." : "Loading your linked subject…"}</p>{subjectsFailed && <div className="flex flex-wrap justify-center gap-2"><button className="btn btn-outline" onClick={() => retrySubjects?.()}>Retry linked subject</button><button className="btn btn-ghost" onClick={() => {
+        if (running || startedAt || pendingRecording) return;
+        onPickSubject("");
+        setParams(previous => { const next = new URLSearchParams(previous); next.delete("subject"); return next; }, { replace: true });
+      }}>Focus without a subject</button></div>}</div>}
       {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
     </div>
   );

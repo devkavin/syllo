@@ -4,10 +4,10 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { http } from "@/lib/api";
 
-const queryState = vi.hoisted(() => ({ pending: false, failed: false, subjects: [] }));
+const queryState = vi.hoisted(() => ({ pending: false, failed: false, subjects: [], refetch: vi.fn() }));
 vi.mock("@/lib/api", () => ({ http: { post: vi.fn(), get: vi.fn(), patch: vi.fn(), put: vi.fn() }, formatError: String }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
-vi.mock("@/hooks/useAcademicQueries", () => ({ useSubjectsQuery: () => ({ data: queryState.subjects, isPending: queryState.pending, isError: queryState.failed }) }));
+vi.mock("@/hooks/useAcademicQueries", () => ({ useSubjectsQuery: () => ({ data: queryState.subjects, isPending: queryState.pending, isError: queryState.failed, refetch: queryState.refetch }) }));
 import FocusTimer from "./FocusTimer";
 const render = ui => rtlRender(ui, { wrapper: MemoryRouter });
 
@@ -34,6 +34,58 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("focus duration", () => {
+  it("prefills a subject-linked focus session and uses its duration", async () => {
+    rtlRender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {});
+    expect(screen.getByTestId("timer-subject-select")).toHaveValue("math");
+    expect(screen.getByLabelText("Duration (minutes)")).toHaveValue(45);
+  });
+  it("waits for a linked subject before starting and offers retry on load failure", async () => {
+    queryState.pending = true; queryState.subjects = [];
+    const view = rtlRender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    expect(screen.getByTestId("timer-start")).toBeDisabled();
+    queryState.pending = false; queryState.failed = true;
+    view.rerender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    fireEvent.click(screen.getByRole("button", { name: "Retry linked subject" }));
+    expect(queryState.refetch).toHaveBeenCalled();
+    queryState.failed = false; queryState.subjects = [{ subject_id: "math", name: "Math", focus_minutes: 45 }];
+    view.rerender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {});
+    expect(screen.getByTestId("timer-start")).toBeEnabled();
+    expect(screen.getByTestId("timer-subject-select")).toHaveValue("math");
+  });
+  it("explains an unavailable subject and allows unlinked focus", async () => {
+    localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", subjectId: "math", unitId: "old-unit", lessonId: "old-lesson", seconds: 2700, sessionSeconds: 2700, running: false }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?subject=deleted"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {});
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not open the subject");
+    expect(screen.getByTestId("timer-start")).toBeEnabled();
+    expect(JSON.parse(localStorage.getItem("syllo.timer.v1"))).toMatchObject({ subjectId: "", lessonId: null, unitId: null, sessionSeconds: 1500 });
+  });
+  it("clears restored academic context when explicitly choosing unlinked focus after a load failure", async () => {
+    queryState.failed = true; queryState.subjects = [];
+    localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", subjectId: "previous", unitId: "unit", lessonId: "old-lesson", lessonTitle: "Old lesson", seconds: 2700, sessionSeconds: 2700, running: false }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    fireEvent.click(screen.getByRole("button", { name: "Focus without a subject" }));
+    await act(async () => {});
+    const saved = JSON.parse(localStorage.getItem("syllo.timer.v1"));
+    expect(saved).toMatchObject({ subjectId: "", unitId: null, lessonId: null, lessonTitle: "", sessionSeconds: 1500 });
+    expect(screen.getByTestId("timer-start")).toBeEnabled();
+  });
+  it("does not overwrite a paused session with a subject link", async () => {
+    localStorage.setItem("syllo.timer.v1", JSON.stringify({ mode: "pomodoro", subjectId: "", seconds: 1200, sessionSeconds: 1500, startedAt: "2026-10-06T05:00:00Z", running: false }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {});
+    expect(screen.getByTestId("timer-subject-select")).toHaveValue("");
+    expect(screen.getByLabelText("Duration (minutes)")).toHaveValue(25);
+  });
+  it("lets lesson context take precedence over a subject-only link", async () => {
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/lessons/limits" ? { lesson_id: "limits", title: "Limits", subject_id: "math", unit_id: "calc" } : [] }));
+    rtlRender(<MemoryRouter initialEntries={["/timer?subject=other&lesson=limits"]}><FocusTimer /></MemoryRouter>);
+    await act(async () => {});
+    expect(screen.getByTestId("timer-subject-select")).toHaveValue("math");
+    expect(screen.queryByText(/Could not open the subject/)).not.toBeInTheDocument();
+  });
   it("hides setup controls during focus and restores them when paused", () => {
     render(<FocusTimer />);
     fireEvent.click(screen.getByTestId("timer-start"));
