@@ -43,6 +43,10 @@ it("opens the free slash menu without any AI service", async () => {
   render(<NotebookEditor notebook={{ content: "" }} theme="light" editorRef={editorRef} onChange={vi.fn()} />);
   await act(async () => editorRef.current.getExtension(SuggestionMenu).openSuggestionMenu("/"));
   const heading = await screen.findByText("Heading 1");
+  for (const mediaOption of ["Image", "Video", "Audio", "File"]) {
+    expect(screen.queryByText(mediaOption, { exact: true })).not.toBeInTheDocument();
+  }
+  expect(screen.getByText("Table", { exact: true })).toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveAttribute("aria-expanded", "true");
   fireEvent.click(heading);
   expect(editorRef.current.document[0]).toMatchObject({ type: "heading", props: { level: 1 } });
