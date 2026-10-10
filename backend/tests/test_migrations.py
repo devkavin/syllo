@@ -4,7 +4,9 @@ from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, text
+
+from backend.app.models import User
 
 
 def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
@@ -65,4 +67,27 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
 
     command.upgrade(config, "head")
     assert "users" in inspect(engine).get_table_names()
+    engine.dispose()
+
+
+def test_rich_notebook_migration_preserves_existing_notes(tmp_path: Path) -> None:
+    database_path = tmp_path / "notebook-upgrade.db"
+    config = Config(str(Path("backend/alembic.ini").resolve()))
+    config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path.as_posix()}")
+    command.upgrade(config, "20261005_0009")
+    engine = create_engine(f"sqlite:///{database_path.as_posix()}")
+    with engine.begin() as connection:
+        connection.execute(User.__table__.insert().values(user_id="legacy-owner", email="legacy@example.com", normalized_email="legacy@example.com", name="Legacy"))
+        connection.execute(text("INSERT INTO notebooks (notebook_id, user_id, title, content, created_at, updated_at) VALUES ('legacy-note', 'legacy-owner', 'Legacy title', :content, '2026-10-01 00:00:00', '2026-10-02 00:00:00')"), {"content": "Literal <text>\n\nLast line"})
+    command.upgrade(config, "head")
+    with engine.connect() as connection:
+        note = connection.execute(text("SELECT content, rich_content, paper_style, font_style, user_id FROM notebooks")).one()
+        assert tuple(note) == ("Literal <text>\n\nLast line", None, "plain", "sans", "legacy-owner")
+    command.downgrade(config, "20261005_0009")
+    assert {column["name"] for column in inspect(engine).get_columns("notebooks")}.isdisjoint({"rich_content", "paper_style", "font_style"})
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT title, content, user_id FROM notebooks")).one() == ("Legacy title", "Literal <text>\n\nLast line", "legacy-owner")
+    command.upgrade(config, "head")
+    command.check(config)
     engine.dispose()

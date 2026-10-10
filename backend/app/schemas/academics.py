@@ -1,9 +1,23 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+import json
+from typing import Literal
 from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, Field, field_validator, model_validator
+
+
+# Match the default schema used by the pinned BlockNote 0.55 editor.
+NOTEBOOK_BLOCK_TYPES = frozenset({
+    "audio", "bulletListItem", "checkListItem", "codeBlock", "divider", "file",
+    "heading", "image", "numberedListItem", "paragraph", "quote", "table",
+    "toggleListItem", "video",
+})
+NOTEBOOK_INLINE_TYPES = frozenset({"text", "link"})
+NOTEBOOK_STYLE_TYPES = frozenset({
+    "bold", "italic", "underline", "strike", "code", "textColor", "backgroundColor",
+})
 
 
 class SubjectCreate(BaseModel):
@@ -52,18 +66,99 @@ class LessonPatch(BaseModel):
     order: int | None = None
 
 
-class NotebookCreate(BaseModel):
+class NotebookDocument(BaseModel):
+    rich_content: list[dict] | None = None
+
+    @field_validator("rich_content")
+    @classmethod
+    def validate_document(cls, value: list[dict] | None) -> list[dict] | None:
+        if value is None:
+            return value
+        if not value or len(json.dumps(value, allow_nan=False).encode("utf-8")) > 2_000_000:
+            raise ValueError("Notebook document must contain blocks and be under 2 MB")
+        pending = [(block, 0) for block in value]
+        count = 0
+        while pending:
+            block, depth = pending.pop()
+            count += 1
+            if count > 10_000 or depth > 64:
+                raise ValueError("Notebook document is too complex")
+            if not isinstance(block, dict) or not isinstance(block.get("type"), str) or not block["type"].strip():
+                raise ValueError("Notebook blocks require a type")
+            if block["type"] not in NOTEBOOK_BLOCK_TYPES:
+                raise ValueError("Notebook block type is not supported")
+            if "id" in block and (not isinstance(block["id"], str) or not block["id"]):
+                raise ValueError("Block ids must be nonempty strings")
+            if "props" in block and not isinstance(block["props"], dict):
+                raise ValueError("Block props must be an object")
+            children = block.get("children", [])
+            if not isinstance(children, list):
+                raise ValueError("Block children must be a list")
+            pending.extend((child, depth + 1) for child in children)
+            content = block.get("content")
+            if content is None:
+                continue
+            if isinstance(content, list):
+                cls.validate_inline_content(content)
+            elif isinstance(content, dict):
+                if content.get("type") != "tableContent" or not isinstance(content.get("rows"), list):
+                    raise ValueError("Structured content must be a table")
+                if any(not isinstance(row, dict) or not isinstance(row.get("cells"), list) for row in content["rows"]):
+                    raise ValueError("Table rows require cells")
+                for row in content["rows"]:
+                    for cell in row["cells"]:
+                        if isinstance(cell, dict) and cell.get("type") == "tableCell":
+                            cell = cell.get("content")
+                        cls.validate_inline_content(cell)
+            else:
+                raise ValueError("Block content must be inline content or a table")
+        return value
+
+    @staticmethod
+    def validate_inline_content(content: list) -> None:
+        if not isinstance(content, list):
+            raise ValueError("Inline content must be a list")
+        pending = [(item, 0) for item in content]
+        while pending:
+            item, depth = pending.pop()
+            if depth > 64 or not isinstance(item, dict) or not isinstance(item.get("type"), str):
+                raise ValueError("Inline content must contain typed objects")
+            if item["type"] not in NOTEBOOK_INLINE_TYPES:
+                raise ValueError("Notebook inline content type is not supported")
+            if item["type"] == "text":
+                if not isinstance(item.get("text"), str) or not isinstance(item.get("styles", {}), dict):
+                    raise ValueError("Text requires a string and an object of styles")
+                if item.get("styles", {}).keys() - NOTEBOOK_STYLE_TYPES:
+                    raise ValueError("Notebook text style is not supported")
+            elif item["type"] == "link":
+                if not isinstance(item.get("href"), str) or not isinstance(item.get("content"), list):
+                    raise ValueError("Links require a URL string and inline content")
+                pending.extend((child, depth + 1) for child in item["content"])
+
+
+class NotebookCreate(NotebookDocument):
     title: str = Field(min_length=1, max_length=240)
     subject_id: str | None = None
     lesson_id: str | None = None
     content: str = ""
+    paper_style: Literal["plain", "ruled", "dotted"] = "plain"
+    font_style: Literal["sans", "serif", "mono"] = "sans"
 
 
-class NotebookPatch(BaseModel):
+class NotebookPatch(NotebookDocument):
     title: str | None = Field(default=None, min_length=1, max_length=240)
     subject_id: str | None = None
     lesson_id: str | None = None
     content: str | None = None
+    paper_style: Literal["plain", "ruled", "dotted"] | None = None
+    font_style: Literal["sans", "serif", "mono"] | None = None
+
+    @field_validator("paper_style", "font_style")
+    @classmethod
+    def nonnull_preference(cls, value: str | None) -> str:
+        if value is None:
+            raise ValueError("Notebook preferences cannot be null")
+        return value
 
 
 class TaskCreate(BaseModel):

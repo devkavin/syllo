@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig } from "vitest/config";
 import { transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { prerenderHome } from "./scripts/prerender-home.js";
 
 export default defineConfig({
@@ -17,6 +18,7 @@ export default defineConfig({
       },
     },
     react(),
+    tailwindcss(),
     prerenderHome(),
   ],
   esbuild: {

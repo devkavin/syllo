@@ -19,6 +19,16 @@ const MODES = {
 const STORAGE = "syllo.timer.v1";
 const validMinutes = (value) => Number.isInteger(value) && value >= 1 && value <= 240;
 
+// Callbacks only refresh the display; the clock keeps time even while suspended.
+function clockValue(mode, clock) {
+  const elapsed = clock.startedAt === null ? 0 : Math.max(0, Date.now() - clock.startedAt) / 1000;
+  return mode === "stopwatch" ? clock.seconds + elapsed : Math.max(0, clock.seconds - elapsed);
+}
+
+function clockDisplay(mode, value) {
+  return mode === "stopwatch" ? Math.floor(value) : Math.ceil(value);
+}
+
 function modeSeconds(mode, subject, customDurations = {}) {
   if (customDurations[mode]) return customDurations[mode] * 60;
   if (mode === "pomodoro" && subject?.focus_minutes) return subject.focus_minutes * 60;
@@ -41,10 +51,18 @@ function loadTimer(subjects) {
       Number.isInteger(saved.sessionSeconds) && saved.sessionSeconds >= saved.seconds && saved.sessionSeconds >= 60 && saved.sessionSeconds <= 14400
         ? saved.sessionSeconds : preset;
     if (!needsBaseline && saved.mode !== "stopwatch" && saved.seconds > sessionSeconds) return defaults;
-    return { mode: saved.mode, subjectId, seconds: saved.seconds, sessionSeconds, needsBaseline,
+    const running = saved.running === true && (saved.mode === "stopwatch" || saved.seconds > 0);
+    const hasClock = Number.isFinite(saved.clockSeconds) && saved.clockSeconds >= 0
+      && (saved.mode === "stopwatch" || needsBaseline || saved.clockSeconds <= sessionSeconds);
+    // Legacy snapshots have no pause-aware timestamp; preserve their known time.
+    const clock = {
+      seconds: hasClock ? saved.clockSeconds : saved.seconds,
+      startedAt: running ? (hasClock && Number.isFinite(saved.clockStartedAt) ? saved.clockStartedAt : Date.now()) : null,
+    };
+    return { mode: saved.mode, subjectId, seconds: clockDisplay(saved.mode, clockValue(saved.mode, clock)), clock, sessionSeconds, needsBaseline,
       unitId: saved.unitId || null, lessonId: saved.lessonId || null, lessonTitle: saved.lessonTitle || "", pendingRecording: saved.pendingRecording || null,
       eventId: saved.eventId || null, eventTopic: saved.eventTopic || "",
-      customDurations, running: saved.running === true && (saved.mode === "stopwatch" || saved.seconds > 0),
+      customDurations, running,
       startedAt: typeof saved.startedAt === "string" ? saved.startedAt : null };
   } catch { return defaults; }
 }
@@ -54,6 +72,7 @@ export default function FocusTimer() {
   const [params, setParams] = useSearchParams();
   const { data: subjects = [], isPending: subjectsPending, isError: subjectsFailed, refetch: retrySubjects } = useSubjectsQuery();
   const [initial] = useState(() => loadTimer(subjects));
+  const clockRef = useRef(initial.clock || { seconds: initial.seconds, startedAt: null });
   const [baselinePending, setBaselinePending] = useState(!!initial.needsBaseline);
   const [mode, setMode] = useState(initial.mode);
   const [subjectId, setSubjectId] = useState(initial.subjectId);
@@ -100,6 +119,7 @@ export default function FocusTimer() {
     const subject = subjects.find(s => s.subject_id === id);
     if (!subject) setErr("Could not open the subject. Choose another subject, or focus without one.");
     const duration = modeSeconds(mode, subject, customDurations);
+    clockRef.current = { seconds: duration, startedAt: null };
     setSubjectId(subject ? id : ""); setUnitId(null); setLessonId(null); setLessonTitle("");
     setSeconds(duration); setSessionSeconds(duration); setMinutes(String(duration / 60));
     setSubjectLinkPending(false);
@@ -139,14 +159,25 @@ export default function FocusTimer() {
   useEffect(() => {
     if (baselinePending) return;
     try {
-      localStorage.setItem(STORAGE, JSON.stringify({ mode, subjectId, unitId, lessonId, lessonTitle, eventId, eventTopic, pendingRecording, seconds, sessionSeconds, customDurations, startedAt, running }));
+      localStorage.setItem(STORAGE, JSON.stringify({ mode, subjectId, unitId, lessonId, lessonTitle, eventId, eventTopic, pendingRecording, seconds, sessionSeconds, customDurations, startedAt, running,
+        clockSeconds: clockRef.current.seconds, clockStartedAt: clockRef.current.startedAt }));
     } catch {}
   }, [mode, subjectId, unitId, lessonId, lessonTitle, eventId, eventTopic, pendingRecording, seconds, sessionSeconds, customDurations, startedAt, running, baselinePending]);
 
   useEffect(() => {
     if (!running || baselinePending) return;
-    const tick = setInterval(() => setSeconds((s) => mode === "stopwatch" ? s + 1 : Math.max(0, s - 1)), 1000);
-    return () => clearInterval(tick);
+    const sync = () => setSeconds(clockDisplay(mode, clockValue(mode, clockRef.current)));
+    sync();
+    const tick = setInterval(sync, 1000);
+    document.addEventListener("visibilitychange", sync);
+    window.addEventListener("focus", sync);
+    window.addEventListener("pageshow", sync);
+    return () => {
+      clearInterval(tick);
+      document.removeEventListener("visibilitychange", sync);
+      window.removeEventListener("focus", sync);
+      window.removeEventListener("pageshow", sync);
+    };
   }, [running, mode, baselinePending]);
 
   // Log outside the state updater so StrictMode cannot submit a session twice.
@@ -223,6 +254,7 @@ export default function FocusTimer() {
   };
 
   const prepareTimer = (duration) => {
+    clockRef.current = { seconds: duration, startedAt: null };
     recordingRef.current = null;
     setPendingRecording(null);
     setRunning(false);
@@ -264,23 +296,31 @@ export default function FocusTimer() {
     prepareTimer(modeSeconds(mode, activeSubject, next));
   };
   const start = () => {
-    if (pendingRecording || saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending || (mode !== "stopwatch" && seconds === 0)) return;
+    if (running || pendingRecording || saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending || (mode !== "stopwatch" && seconds === 0)) return;
     if (!startedAt) setStartedAt(new Date().toISOString());
+    clockRef.current.startedAt = Date.now();
     setRunning(true);
     setMsg("");
     setErr("");
   };
+  const pause = () => {
+    const value = clockValue(mode, clockRef.current);
+    clockRef.current = { seconds: value, startedAt: null };
+    setSeconds(clockDisplay(mode, value));
+    setRunning(false);
+  };
   const tryLogSession = async (auto = false) => {
     if (savingRef.current || baselinePending) return;
     if (["short", "long"].includes(mode)) { reset(); setMsg("Break finished. Breaks don't count toward study time."); return; }
-    const duration = mode === "stopwatch" ? seconds : sessionSeconds - seconds;
+    const currentSeconds = clockDisplay(mode, clockValue(mode, clockRef.current));
+    const duration = mode === "stopwatch" ? currentSeconds : sessionSeconds - currentSeconds;
     if (duration < 10) {
       if (!auto) setMsg("A session needs at least 10 seconds.");
       return;
     }
     savingRef.current = true;
     setSaving(true);
-    setRunning(false);
+    pause();
     setErr("");
     try {
       const body = recordingRef.current || { request_id: crypto.randomUUID(), circle_event_id: eventId, subject_id: subjectId || null, lesson_id: lessonId || null, duration_seconds: duration, mode: ["short", "long"].includes(mode) ? "pomodoro" : mode, started_at: startedAt || new Date().toISOString(), note: "" };
@@ -329,7 +369,7 @@ export default function FocusTimer() {
           </form>
           <div className="flex flex-wrap gap-2" aria-label="Quick durations">
             {MODES[mode].presets.map((value) => (
-              <button key={value} className="btn btn-ghost !px-3 !py-1 text-xs" disabled={locked}
+              <button key={value} className="btn btn-ghost px-3! py-1! text-xs" disabled={locked}
                 aria-pressed={sessionSeconds === value * 60} onClick={() => applyMinutes(value)}>{value} min</button>
             ))}
           </div>
@@ -352,14 +392,14 @@ export default function FocusTimer() {
         <div className="font-mono text-5xl sm:text-6xl tabular-nums font-semibold tracking-wider" data-testid="timer-display">
           {formatTimer(seconds)}
         </div>
-        <span className="absolute bottom-6 subject-dot !w-2 !h-2" style={{ background: dot }} />
+        <span className="absolute bottom-6 subject-dot w-2! h-2!" style={{ background: dot }} />
       </div>
       <div className="flex justify-center flex-wrap gap-2">
         {!running ? (
-          <button className="btn btn-primary !px-6" onClick={start} disabled={eventLoading || lessonLoading || subjectLinkPending || !!pendingRecording || saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
+          <button className="btn btn-primary px-6!" onClick={start} disabled={eventLoading || lessonLoading || subjectLinkPending || !!pendingRecording || saving || baselinePending || (mode !== "stopwatch" && seconds === 0)}
             data-testid="timer-start"><Play className="w-4 h-4" /> {startedAt && seconds > 0 ? "Resume" : "Start"}</button>
         ) : (
-          <button className="btn btn-primary !px-6" onClick={() => setRunning(false)} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
+          <button className="btn btn-primary px-6!" onClick={pause} data-testid="timer-pause"><Pause className="w-4 h-4" /> Pause</button>
         )}
         <button className="btn btn-ghost" onClick={() => { if ((!pendingRecording && !startedAt) || window.confirm("Discard this unsaved session and start a new timer?")) reset(); }} disabled={saving || baselinePending} data-testid="timer-reset"><RotateCcw className="w-4 h-4" /> Reset</button>
         <button className="btn btn-outline" onClick={() => tryLogSession(false)} disabled={saving || baselinePending || eventLoading || lessonLoading || subjectLinkPending} data-testid="timer-save">

@@ -19,11 +19,14 @@ def notebook_dict(notebook: Notebook, include_content: bool = True) -> dict:
         "subject_id": notebook.subject_id,
         "lesson_id": notebook.lesson_id,
         "title": notebook.title,
+        "paper_style": notebook.paper_style,
+        "font_style": notebook.font_style,
         "created_at": notebook.created_at.isoformat(),
         "updated_at": notebook.updated_at.isoformat(),
     }
     if include_content:
         result["content"] = notebook.content
+        result["rich_content"] = notebook.rich_content
     return result
 
 
@@ -88,6 +91,9 @@ async def create_notebook(
         lesson_id=body.lesson_id,
         title=body.title,
         content=body.content,
+        rich_content=body.rich_content,
+        paper_style=body.paper_style,
+        font_style=body.font_style,
     )
     session.add(notebook)
     await session.commit()
@@ -104,6 +110,8 @@ async def patch_notebook(
 ) -> dict:
     notebook = await owned_notebook(session, user.user_id, notebook_id)
     data = body.model_dump(exclude_unset=True)
+    if "content" in data and "rich_content" not in data:
+        data["rich_content"] = None
     if "subject_id" in data or "lesson_id" in data:
         data["subject_id"] = await validate_links(
             session,

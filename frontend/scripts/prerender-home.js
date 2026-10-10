@@ -15,7 +15,8 @@ export function prerenderHome(dependencies = {}) {
       const original = await readFile(filename, "utf8");
       // App routes get an empty shell, not a flash of homepage content.
       await writeFile(path.join(path.dirname(filename), "app.html"), original.replace(/<link rel="canonical"[^>]*>/, ""));
-      const server = await createServer({ root: config.root, server: { middlewareMode: true }, appType: "custom" });
+      // This server only renders HTML; client dependency scanning can outlive it.
+      const server = await createServer({ root: config.root, server: { middlewareMode: true }, appType: "custom", optimizeDeps: { noDiscovery: true, include: [] } });
       try {
         const { default: Home } = await server.ssrLoadModule("/src/pages/Home.jsx");
         const html = renderToStaticMarkup(React.createElement(Home));

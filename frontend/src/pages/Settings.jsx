@@ -152,7 +152,7 @@ function InviteCard() {
         <div className="w-8 h-8 rounded-md grid place-items-center bg-secondary text-primary">
           <Gift className="w-4 h-4" />
         </div>
-        <h2 className="font-serif text-xl !mb-0">Study with a friend</h2>
+        <h2 className="font-serif text-xl mb-0!">Study with a friend</h2>
       </div>
       <p className="text-sm text-muted-foreground">
         Share Syllo. When a new student signs up with your code, you both get {data.per_signup_credits} extra helps. You can earn rewards from up to {data.monthly_reward_limit} new signups each month; the new student receives their signup bonus once.

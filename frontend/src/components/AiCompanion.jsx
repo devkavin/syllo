@@ -116,7 +116,7 @@ export default function AiCompanion({ open, onClose, contextLabel, fallbackFocus
         ) : (
           <div className="p-3 border-t border-border flex items-end gap-2">
             <textarea
-              className="input resize-none !min-h-11 max-h-32"
+              className="input resize-none min-h-11! max-h-32"
               ref={composer}
               rows={1}
               maxLength={3000}

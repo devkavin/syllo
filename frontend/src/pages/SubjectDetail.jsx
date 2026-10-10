@@ -66,7 +66,7 @@ export default function SubjectDetail() {
     catch (e) { setErr(formatError(e)); }
   };
 
-  if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-64 bg-muted rounded" /><div className="h-64 bg-muted rounded-xl" /></div>;
+  if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-64 bg-muted rounded-sm" /><div className="h-64 bg-muted rounded-xl" /></div>;
   if (!subject) return <div>Subject not found. <Link to="/subjects" className="action-link">Go back</Link></div>;
 
   const c = subjectClasses(subject.color, isDark);
@@ -76,7 +76,7 @@ export default function SubjectDetail() {
       <div>
         <Link to="/subjects" className="text-sm text-muted-foreground hover:text-foreground">Subjects</Link>
         <div className="flex items-center gap-3 mt-2">
-          <span className="subject-dot !w-3 !h-3" style={{ background: c.dot }} />
+          <span className="subject-dot w-3! h-3!" style={{ background: c.dot }} />
           <h1 className="page-title">{subject.name}</h1>
         </div>
         {subject.description && <p className="text-muted-foreground mt-1">{subject.description}</p>}

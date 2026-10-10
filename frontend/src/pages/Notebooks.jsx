@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { Plus, FileText, Trash2, Loader2, Check, Sparkles, X } from "lucide-react";
 import { useTheme } from "@/lib/theme";
@@ -9,6 +9,7 @@ import AiPrivacyNote from "@/components/AiPrivacyNote";
 import StudyResponse from "@/components/StudyResponse";
 import { useResourceAutosave } from "@/hooks/useResourceAutosave";
 import AcademicSelector from "@/components/AcademicSelector";
+import NotebookEditor from "@/components/NotebookEditor";
 import { Link, useSearchParams } from "react-router-dom";
 
 export default function Notebooks() {
@@ -24,7 +25,9 @@ export default function Notebooks() {
   const isDark = theme === "dark";
   const { setRemaining } = useUsage();
   const editorRef = useRef(null);
-  const textareaRef = useRef(null);
+  const notesRef = useRef(null);
+  const richEditorRef = useRef(null);
+  const getSelectedText = useCallback(() => richEditorRef.current?.getSelectedText() || "", []);
   const selectionRequest = useRef(0);
   const autosave = useResourceAutosave({ resourceKey: activeId ? `notebook.${activeId}` : null, initialValue: loadedNotebook, save: async patch => {
     const { data } = await http.patch(`/notebooks/${activeId}`, patch);
@@ -71,8 +74,6 @@ export default function Notebooks() {
   const subjectMap = useMemo(() => Object.fromEntries(subjects.map((s) => [s.subject_id, s])), [subjects]);
 
   const onTitleChange = (e) => autosave.update({ title: e.target.value });
-  const onContentChange = (e) => autosave.update({ content: e.target.value });
-
   const newNotebook = async () => {
     const { data } = await http.post("/notebooks", { title: "Untitled", content: "" });
     setList((l) => [data, ...l]);
@@ -110,7 +111,7 @@ export default function Notebooks() {
                 <div className="flex-1 min-w-0">
                   <div className="truncate font-medium">{nb.title || "Untitled"}</div>
                   <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                    {sub && <span className="subject-dot !w-1.5 !h-1.5" style={{ background: c.dot }} />}
+                    {sub && <span className="subject-dot w-1.5! h-1.5!" style={{ background: c.dot }} />}
                     <span className="truncate">{sub?.name || "No subject"}</span>
                   </div>
                 </div>
@@ -129,14 +130,14 @@ export default function Notebooks() {
             </div>
           </div>
         ) : (
-          <div className="paper card p-4 sm:p-6 lg:p-8 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" ref={editorRef}>
+          <div className="notebook-paper paper card p-4 sm:p-6 lg:p-8 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" data-paper-style={notebook.paper_style || "plain"} data-font-style={notebook.font_style || "sans"} ref={editorRef}>
             <div className="flex flex-wrap gap-3 items-start justify-between mb-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3">
                 <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button
-                  className="btn btn-outline !py-1 !px-2 text-xs"
+                  className="btn btn-outline py-1! px-2! text-xs"
                   onClick={summarize}
                   disabled={summarizing}
                   data-testid="notebook-summarize-btn"
@@ -156,6 +157,25 @@ export default function Notebooks() {
               </div>
             </div>
             <AiPrivacyNote className="mb-3 text-right" />
+            <div className="flex flex-wrap gap-3 items-center mb-4 text-xs text-muted-foreground">
+              <label className="flex items-center gap-2 whitespace-nowrap">
+                Paper
+                <select aria-label="Notebook paper" className="input w-auto! py-1! text-xs" value={notebook.paper_style || "plain"} onChange={e => autosave.update({ paper_style: e.target.value })}>
+                  <option value="plain">Plain</option>
+                  <option value="ruled">Ruled</option>
+                  <option value="dotted">Dotted</option>
+                </select>
+              </label>
+              <label className="flex items-center gap-2 whitespace-nowrap">
+                Font
+                <select aria-label="Notebook font" className="input w-auto! py-1! text-xs" value={notebook.font_style || "sans"} onChange={e => autosave.update({ font_style: e.target.value })}>
+                  <option value="sans">Sans</option>
+                  <option value="serif">Serif</option>
+                  <option value="mono">Mono</option>
+                </select>
+              </label>
+              <span>Type / to add a block · Select text to format it</span>
+            </div>
             <input
               aria-label="Notebook title"
               className="bg-transparent w-full font-display text-2xl sm:text-3xl border-none placeholder:text-muted-foreground mb-4 rounded-md p-1"
@@ -164,24 +184,20 @@ export default function Notebooks() {
               onChange={onTitleChange}
               data-testid="notebook-title-input"
             />
-            <textarea
-              aria-label="Notebook notes"
-              className="bg-transparent w-full flex-1 min-h-64 resize-y border-none text-base leading-8 placeholder:text-muted-foreground rounded-md p-1"
-              placeholder="Begin here. Autosave will keep up. Select any text to explain it."
-              value={notebook.content || ""}
-              onChange={onContentChange}
-              data-testid="notebook-content-textarea"
-              ref={textareaRef}
-            />
+            <div className="flex-1 min-w-0" ref={notesRef}>
+              <NotebookEditor key={activeId} notebook={notebook} theme={theme} editorRef={richEditorRef} onChange={autosave.update} />
+            </div>
             <ExplainPopover
-              textareaRef={textareaRef}
+              key={activeId}
+              textareaRef={notesRef}
+              getSelectedText={getSelectedText}
               containerRef={editorRef}
               subjectName={notebook.subject_id ? subjectMap[notebook.subject_id]?.name : null}
             />
             {summary && (
               <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40" data-testid="notebook-summary">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="inline-flex items-center gap-1.5 text-xs section-title !mb-0"><Sparkles className="w-3.5 h-3.5" /> Study Companion</div>
+                  <div className="inline-flex items-center gap-1.5 text-xs section-title mb-0!"><Sparkles className="w-3.5 h-3.5" /> Study Companion</div>
                   <button aria-label="Close summary" className="btn btn-ghost btn-icon" onClick={() => setSummary(null)}><X className="w-3.5 h-3.5" /></button>
                 </div>
                 <StudyResponse text={summary} />

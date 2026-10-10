@@ -1,0 +1,41 @@
+.notebook-paper {
+  box-shadow: 0 2px 8px hsl(var(--foreground) / .04), 0 16px 48px hsl(var(--foreground) / .03);
+}
+.notebook-writing {
+  flex: 1;
+  min-height: 20rem;
+  margin-top: .75rem;
+}
+.notebook-writing.bn-container {
+  --bn-colors-editor-background: transparent;
+  --bn-colors-editor-text: hsl(var(--foreground));
+  --bn-font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  background: transparent;
+}
+.notebook-writing .bn-editor {
+  min-height: 20rem;
+  padding: .5rem .5rem 3rem 2rem;
+  background: transparent;
+  color: hsl(var(--foreground));
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  line-height: 2rem;
+}
+.notebook-writing .bn-block-content { line-height: 2rem; }
+.notebook-paper[data-paper-style="ruled"] .bn-editor {
+  background-image: repeating-linear-gradient(transparent 0, transparent calc(2rem - 1px), hsl(var(--border) / .5) calc(2rem - 1px), hsl(var(--border) / .5) 2rem);
+  background-position: 0 .5rem;
+}
+.notebook-paper[data-paper-style="dotted"] .bn-editor {
+  background-image: radial-gradient(hsl(var(--muted-foreground) / .22) .7px, transparent .7px);
+  background-size: 1rem 1rem;
+}
+.notebook-paper[data-font-style="serif"] .bn-editor {
+  font-family: Georgia, "Times New Roman", serif;
+}
+.notebook-paper[data-font-style="mono"] .bn-editor {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.notebook-writing .bn-editor [data-content-type="codeBlock"] { line-height: 1.6; }
+.bn-shadcn { --radius: .625rem; }
+.bn-shadcn button { cursor: pointer; }
+.bn-shadcn [role="menuitem"] { min-height: 2.5rem; }

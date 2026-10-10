@@ -59,7 +59,7 @@ export default function Upgrade() {
   return (
     <div className="space-y-8" data-testid="upgrade-page">
       <div className="space-y-2">
-        <button onClick={() => nav(-1)} className="btn btn-ghost !px-2 !py-1 -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
+        <button onClick={() => nav(-1)} className="btn btn-ghost px-2! py-1! -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
         <div className="section-title mb-2">Your plan</div>
         <h1 className="page-title">Study plans that fit your routine</h1>
         <p className="text-muted-foreground mt-2 max-w-lg">

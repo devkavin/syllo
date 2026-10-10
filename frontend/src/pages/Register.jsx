@@ -49,7 +49,7 @@ export default function Register() {
           <label htmlFor="register-referral" className="field-label inline-flex items-center gap-1"><Gift className="w-4 h-4" /> Friend code (optional)</label>
           <input
             id="register-referral"
-            className="input mt-1 !uppercase"
+            className="input mt-1 uppercase!"
             value={referral}
             onChange={(e) => setReferral(e.target.value)}
             placeholder="8 characters"

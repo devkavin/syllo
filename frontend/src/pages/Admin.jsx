@@ -135,7 +135,7 @@ function UserManager() {
                 <td className="py-2 pr-2">
                   <select
                     aria-label={`Plan for ${u.name}`}
-                    className="input !py-1 !w-auto text-xs"
+                    className="input py-1! w-auto! text-xs"
                     defaultValue={u.plan || "freshman"}
                     onChange={(e) => update(u.user_id, { plan: e.target.value })}
                     data-testid={`admin-user-plan-${u.user_id}`}
@@ -149,7 +149,7 @@ function UserManager() {
                 <td className="py-2 pr-2">
                   <select
                     aria-label={`Role for ${u.name}`}
-                    className="input !py-1 !w-auto text-xs"
+                    className="input py-1! w-auto! text-xs"
                     defaultValue={u.role || "user"}
                     onChange={(e) => update(u.user_id, { role: e.target.value })}
                     data-testid={`admin-user-role-${u.user_id}`}

@@ -3,7 +3,7 @@ import React from "react";
 function inline(text) {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^\s)]+\))/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-medium">{part.slice(2, -2)}</strong>;
-    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} className="rounded bg-accent px-1 font-mono text-xs">{part.slice(1, -1)}</code>;
+    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} className="rounded-sm bg-accent px-1 font-mono text-xs">{part.slice(1, -1)}</code>;
     const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (link) return /^https?:\/\//i.test(link[2]) ? <a key={i} href={link[2]} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{link[1]}</a> : link[1];
     return part;

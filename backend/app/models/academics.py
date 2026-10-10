@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -103,6 +104,13 @@ class Notebook(TimestampMixin, Base):
     )
     title: Mapped[str] = mapped_column(String(240), nullable=False)
     content: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    rich_content: Mapped[list[dict] | None] = mapped_column(JSON(none_as_null=True))
+    paper_style: Mapped[str] = mapped_column(
+        String(16), default="plain", server_default="plain", nullable=False
+    )
+    font_style: Mapped[str] = mapped_column(
+        String(16), default="sans", server_default="sans", nullable=False
+    )
 
 
 class Task(TimestampMixin, Base):

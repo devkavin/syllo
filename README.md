@@ -5,7 +5,7 @@ focus sessions, reviews, planning, and study progress.
 
 ## Architecture
 
-- `frontend/`: React 19 + Vite single-page application, served by Nginx in production
+- `frontend/`: React 19 + Vite + Tailwind CSS 4.3.3, served by Nginx in production
 - `backend/`: FastAPI + SQLAlchemy + Alembic API
 - `mobile/`: Expo application, versioned here but excluded from production Docker contexts
 - Database: externally hosted MySQL
@@ -15,6 +15,16 @@ focus sessions, reviews, planning, and study progress.
 
 Production traffic enters through the web container. Nginx serves the application
 and proxies `/api/` to the private API container, so browsers use one origin.
+
+Notebooks use BlockNote's free community editor with local slash commands, headings,
+lists, text colors, and highlights. These editor features need no API key or AI
+service. Rich blocks are stored alongside plain text for search and summaries;
+existing text notes open as literal paragraphs. Paper and font preferences are
+saved per notebook. Deploy the backend migration `20261010_0010` with the web update.
+
+The web frontend uses Tailwind 4's Vite plugin and CSS theme configuration.
+Browser requirements follow the [Tailwind 4 compatibility guide](https://tailwindcss.com/docs/upgrade-guide#browser-requirements).
+The separate Expo app keeps NativeWind 4's supported Tailwind 3 dependency.
 
 ## Local development
 

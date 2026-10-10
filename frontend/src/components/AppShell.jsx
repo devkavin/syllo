@@ -51,13 +51,13 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
     </div>
     <div className="px-3 pb-4 space-y-1 shrink-0">
       <button className="btn btn-outline w-full justify-start text-muted-foreground" onClick={() => { onOpenSearch?.(); onNavigate?.(); }} data-testid="sidebar-search-btn">
-        <SearchIcon className="w-4 h-4" /><span>Search</span><kbd className="ml-auto text-xs font-mono border border-border rounded px-1.5 py-0.5">{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K"}</kbd>
+        <SearchIcon className="w-4 h-4" /><span>Search</span><kbd className="ml-auto text-xs font-mono border border-border rounded-sm px-1.5 py-0.5">{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K"}</kbd>
       </button>
       <button className="btn btn-ghost w-full justify-start" onClick={() => { onOpenAi?.(); onNavigate?.(); }} data-testid="sidebar-ai-btn"><Sparkles className="w-4 h-4" /><span>Study Companion</span></button>
     </div>
     <nav aria-label="Workspace" className="px-3 flex-1 space-y-0.5">
       {primaryItems.map(navItem)}
-      <div className="border-t border-border !mt-4 pt-3">
+      <div className="border-t border-border mt-4! pt-3">
         <button className={`btn btn-ghost w-full justify-start ${libraryActive ? "font-semibold" : "text-muted-foreground"}`} aria-expanded={libraryOpen} aria-controls={libraryId} onClick={() => setLibraryExpanded(value => !value)}>
           <NotebookPen className="w-4 h-4" /><span>Library</span><ChevronDown className={`ml-auto h-4 w-4 transition-transform ${libraryOpen ? "rotate-180" : ""}`} />
         </button>

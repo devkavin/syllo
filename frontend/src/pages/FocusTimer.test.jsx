@@ -34,6 +34,78 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("focus duration", () => {
+  it("catches up after a delayed browser callback instead of counting ticks", () => {
+    vi.useFakeTimers();
+    render(<FocusTimer />);
+    setMinutes("40");
+    fireEvent.click(screen.getByTestId("timer-start"));
+    vi.setSystemTime(Date.now() + 30 * 60 * 1000);
+    act(() => vi.advanceTimersByTime(1000));
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("09:59");
+  });
+
+  it.each(["visibilitychange", "focus", "pageshow"])("refreshes elapsed time on %s without waiting for a tick", (event) => {
+    vi.useFakeTimers();
+    render(<FocusTimer />);
+    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    fireEvent.click(screen.getByTestId("timer-start"));
+    vi.setSystemTime(Date.now() + 30 * 60 * 1000);
+    fireEvent(event === "visibilitychange" ? document : window, new Event(event));
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("30:00");
+  });
+
+  it("logs current elapsed time even when no timer callback has run", async () => {
+    vi.useFakeTimers();
+    render(<FocusTimer />);
+    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    fireEvent.click(screen.getByTestId("timer-start"));
+    vi.setSystemTime(Date.now() + 30 * 60 * 1000);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ duration_seconds: 1800 }));
+  });
+
+  it.each(["pomodoro", "stopwatch"])("restores elapsed %s time after leaving Focus or reloading", (mode) => {
+    vi.useFakeTimers();
+    const view = render(<FocusTimer />);
+    fireEvent.click(screen.getByTestId(`mode-${mode}`));
+    fireEvent.click(screen.getByTestId("timer-start"));
+    view.unmount();
+    vi.setSystemTime(Date.now() + 12 * 60 * 1000);
+    render(<FocusTimer />);
+    expect(screen.getByTestId("timer-display")).toHaveTextContent(mode === "pomodoro" ? "13:00" : "12:00");
+  });
+
+  it("excludes paused time and retains partial seconds across resume and reload", async () => {
+    vi.useFakeTimers();
+    const view = render(<FocusTimer />);
+    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    fireEvent.click(screen.getByTestId("timer-start"));
+    vi.setSystemTime(Date.now() + 10750);
+    fireEvent.click(screen.getByTestId("timer-pause"));
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("00:10");
+    view.unmount();
+    vi.setSystemTime(Date.now() + 60 * 60 * 1000);
+    render(<FocusTimer />);
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("00:10");
+    fireEvent.click(screen.getByTestId("timer-start"));
+    vi.setSystemTime(Date.now() + 10250);
+    await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ duration_seconds: 21 }));
+  });
+
+  it("completes an expired restored countdown once and caps the recorded duration", async () => {
+    vi.useFakeTimers();
+    const view = render(<FocusTimer />);
+    setMinutes("1");
+    fireEvent.click(screen.getByTestId("timer-start"));
+    view.unmount();
+    vi.setSystemTime(Date.now() + 30 * 60 * 1000);
+    render(<React.StrictMode><FocusTimer /></React.StrictMode>);
+    await act(async () => {});
+    expect(http.post).toHaveBeenCalledTimes(1);
+    expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ duration_seconds: 60 }));
+  });
+
   it("prefills a subject-linked focus session and uses its duration", async () => {
     rtlRender(<MemoryRouter initialEntries={["/timer?subject=math"]}><FocusTimer /></MemoryRouter>);
     await act(async () => {});
