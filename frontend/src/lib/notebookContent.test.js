@@ -23,4 +23,11 @@ describe("notebook content", () => {
     expect(notebookBlocks({ content: "" })).toEqual([{ type: "paragraph", content: [] }]);
     expect(notebookText(notebookBlocks({ content: "" }))).toBe("");
   });
+  it("keeps equation and diagram source readable in plain-text saves", () => {
+    expect(notebookText([
+      { type: "mathBlock", content: [{ type: "text", text: "x^2", styles: {} }] },
+      { type: "paragraph", content: [{ type: "text", text: "Energy: " }, { type: "math", content: [{ type: "text", text: "E=mc^2", styles: {} }] }] },
+      { type: "diagram", content: [{ type: "text", text: "graph TD\n A --> B", styles: {} }] },
+    ])).toBe("x^2\nEnergy: E=mc^2\ngraph TD\n A --> B");
+  });
 });

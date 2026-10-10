@@ -34,6 +34,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.js"],
+    server: { deps: { inline: ["@blocknote/math-block", "@blocknote/diagram-block"] } },
   },
   server: {
     proxy: {

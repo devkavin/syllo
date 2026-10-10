@@ -51,3 +51,27 @@ it("opens the free slash menu without any AI service", async () => {
   fireEvent.click(heading);
   expect(editorRef.current.document[0]).toMatchObject({ type: "heading", props: { level: 1 } });
 });
+
+it("restores equations, scientific text and editable callouts", async () => {
+  const editorRef = createRef();
+  render(<NotebookEditor notebook={{ rich_content: [
+    { type: "mathBlock", content: "x^2 + y^2 = z^2" },
+    { type: "paragraph", content: [{ type: "text", text: "2", styles: { superscript: true } }, { type: "math", content: "E=mc^2" }] },
+    { type: "callout", props: { kind: "definition" }, content: "A cell is the basic unit of life." },
+  ] }} theme="light" editorRef={editorRef} onChange={vi.fn()} />);
+  expect(editorRef.current.document[0]).toMatchObject({ type: "mathBlock", content: [{ type: "text", text: "x^2 + y^2 = z^2", styles: {} }] });
+  expect(screen.getByText("2", { selector: "sup" })).toBeInTheDocument();
+  expect(screen.getByText("A cell is the basic unit of life.")).toBeVisible();
+  expect(await screen.findByLabelText("Callout type")).toHaveValue("definition");
+});
+
+it("offers equation, diagram and subject callout slash commands", async () => {
+  const editorRef = createRef();
+  render(<NotebookEditor notebook={{ content: "" }} theme="light" editorRef={editorRef} onChange={vi.fn()} />);
+  await act(async () => editorRef.current.getExtension(SuggestionMenu).openSuggestionMenu("/"));
+  expect(await screen.findByText("Definition", { exact: true })).toBeInTheDocument();
+  expect(screen.getByText("Diagram", { exact: true })).toBeInTheDocument();
+  expect(screen.getByText("Block Equation", { exact: true })).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Definition", { exact: true }));
+  expect(editorRef.current.document[0]).toMatchObject({ type: "callout", props: { kind: "definition" } });
+});

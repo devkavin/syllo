@@ -39,3 +39,16 @@
 .bn-shadcn { --radius: .625rem; }
 .bn-shadcn button { cursor: pointer; }
 .bn-shadcn [role="menuitem"] { min-height: 2.5rem; }
+/* Academic callouts retain editable rich text while giving notes a clear label. */
+.notebook-writing .notebook-callout {
+  width: 100%; border-left: 3px solid #6366f1; border-radius: 6px;
+  padding: 12px 16px; background: color-mix(in srgb, #6366f1 9%, transparent);
+}
+.notebook-writing .notebook-callout[data-kind="definition"] { border-color: #14b8a6; background: color-mix(in srgb, #14b8a6 9%, transparent); }
+.notebook-writing .notebook-callout[data-kind="formula"] { border-color: #8b5cf6; }
+.notebook-writing .notebook-callout[data-kind="example"] { border-color: #3b82f6; }
+.notebook-writing .notebook-callout[data-kind="warning"] { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 9%, transparent); }
+.notebook-writing .notebook-callout select { font: inherit; font-size: 12px; font-weight: 600; background: transparent; color: inherit; margin-bottom: 6px; cursor: pointer; }
+.notebook-writing .notebook-callout-content { min-height: 1.5em; }
+.notebook-writing sup { vertical-align: super; font-size: .75em; }
+.notebook-writing sub { vertical-align: sub; font-size: .75em; }

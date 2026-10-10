@@ -8,16 +8,18 @@ from uuid import UUID
 from pydantic import AwareDatetime, BaseModel, Field, field_validator, model_validator
 
 
-# Match the default schema used by the pinned BlockNote 0.55 editor.
+# Match the pinned BlockNote 0.55 defaults and notebook academic extensions.
 NOTEBOOK_BLOCK_TYPES = frozenset({
     "audio", "bulletListItem", "checkListItem", "codeBlock", "divider", "file",
     "heading", "image", "numberedListItem", "paragraph", "quote", "table",
-    "toggleListItem", "video",
+    "toggleListItem", "video", "mathBlock", "diagram", "callout",
 })
-NOTEBOOK_INLINE_TYPES = frozenset({"text", "link"})
+NOTEBOOK_INLINE_TYPES = frozenset({"text", "link", "math"})
 NOTEBOOK_STYLE_TYPES = frozenset({
     "bold", "italic", "underline", "strike", "code", "textColor", "backgroundColor",
+    "superscript", "subscript",
 })
+NOTEBOOK_CALLOUT_KINDS = frozenset({"note", "definition", "formula", "example", "warning"})
 
 
 class SubjectCreate(BaseModel):
@@ -96,6 +98,15 @@ class NotebookDocument(BaseModel):
                 raise ValueError("Block children must be a list")
             pending.extend((child, depth + 1) for child in children)
             content = block.get("content")
+            if block["type"] in {"mathBlock", "diagram"}:
+                cls.validate_source_content(content)
+                continue
+            if block["type"] == "callout":
+                kind = block.get("props", {}).get("kind")
+                if not isinstance(kind, str) or kind not in NOTEBOOK_CALLOUT_KINDS:
+                    raise ValueError("Callout kind is not supported")
+                if not isinstance(content, list):
+                    raise ValueError("Callouts require inline content")
             if content is None:
                 continue
             if isinstance(content, list):
@@ -115,6 +126,21 @@ class NotebookDocument(BaseModel):
         return value
 
     @staticmethod
+    def validate_source_content(content: str | list) -> None:
+        if isinstance(content, str):
+            return
+        if not isinstance(content, list):
+            raise ValueError("Math and diagram content requires source text")
+        for item in content:
+            if (
+                not isinstance(item, dict)
+                or item.get("type") != "text"
+                or not isinstance(item.get("text"), str)
+                or item.get("styles", {}) != {}
+            ):
+                raise ValueError("Math and diagram source requires unstyled text items")
+
+    @staticmethod
     def validate_inline_content(content: list) -> None:
         if not isinstance(content, list):
             raise ValueError("Inline content must be a list")
@@ -130,10 +156,15 @@ class NotebookDocument(BaseModel):
                     raise ValueError("Text requires a string and an object of styles")
                 if item.get("styles", {}).keys() - NOTEBOOK_STYLE_TYPES:
                     raise ValueError("Notebook text style is not supported")
+                for style, enabled in item.get("styles", {}).items():
+                    if style in {"superscript", "subscript"} and not isinstance(enabled, bool):
+                        raise ValueError("Superscript and subscript styles require booleans")
             elif item["type"] == "link":
                 if not isinstance(item.get("href"), str) or not isinstance(item.get("content"), list):
                     raise ValueError("Links require a URL string and inline content")
                 pending.extend((child, depth + 1) for child in item["content"])
+            elif item["type"] == "math":
+                NotebookDocument.validate_source_content(item.get("content"))
 
 
 class NotebookCreate(NotebookDocument):

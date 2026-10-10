@@ -30,6 +30,65 @@ def test_notebook_rejects_malformed_editor_content(block):
         NotebookCreate(title="Malformed", rich_content=[block])
 
 
+@pytest.mark.parametrize("block", [
+    {"type": "mathBlock", "content": [{"type": "link", "href": "https://example.com", "content": []}]},
+    {"type": "diagram", "content": [{"type": "text", "text": "graph LR", "styles": {"bold": True}}]},
+    {"type": "paragraph", "content": [{"type": "math", "content": [{"type": "math", "content": "x"}]}]},
+    {"type": "mathBlock", "content": None},
+    {"type": "diagram", "content": {"type": "tableContent", "rows": []}},
+    {"type": "paragraph", "content": [{"type": "math", "content": 42}]},
+    {"type": "callout", "props": {"kind": "unknown"}, "content": []},
+    {"type": "callout", "props": {"kind": None}, "content": []},
+    {"type": "callout", "props": {"kind": "note"}, "content": "Plain"},
+    {"type": "paragraph", "content": [{"type": "text", "text": "x", "styles": {"superscript": "true"}}]},
+    {"type": "paragraph", "content": [{"type": "text", "text": "x", "styles": {"subscript": 1}}]},
+])
+def test_notebook_rejects_malformed_academic_content(block):
+    with pytest.raises(ValidationError):
+        NotebookCreate(title="Malformed academic", rich_content=[block])
+
+
+@pytest.mark.parametrize("block", [
+    {"type": "mathBlock", "content": [{"type": "text", "text": "x^2", "styles": {}}]},
+    {"type": "diagram", "content": [{"type": "text", "text": "graph LR\nA --> B", "styles": {}}]},
+    {"type": "paragraph", "content": [{"type": "math", "content": [{"type": "text", "text": "x^2", "styles": {}}]}]},
+    {"type": "mathBlock", "content": []},
+    {"type": "diagram", "content": []},
+    {"type": "paragraph", "content": [{"type": "math", "content": []}]},
+])
+def test_notebook_accepts_serialized_academic_plain_content(block):
+    assert NotebookCreate(title="Academic source", rich_content=[block]).rich_content == [block]
+
+
+@pytest.mark.asyncio
+async def test_academic_notebook_content_survives_create_patch_and_reopen(sql_app):
+    app, _ = sql_app
+    document = [
+        {"type": "mathBlock", "content": r"E = mc^2"},
+        {"type": "diagram", "content": "flowchart LR\nA[Input] --> B[Output]"},
+        {"type": "paragraph", "content": [{"type": "text", "text": "Mass ", "styles": {}}, {"type": "math", "content": r"m = \\frac{E}{c^2}"}, {"type": "text", "text": "2", "styles": {"superscript": True, "subscript": False}}]},
+        *[{"type": "callout", "props": {"kind": kind}, "content": [{"type": "text", "text": kind.title(), "styles": {"subscript": True}}]} for kind in ("note", "definition", "formula", "example", "warning")],
+    ]
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as client:
+        await register(client, "academic-notes@example.com")
+        created = await client.post("/api/notebooks", json={"title": "Physics", "rich_content": document, "content": "E = mc^2"})
+        assert created.status_code == 200
+        url = f"/api/notebooks/{created.json()['notebook_id']}"
+        assert (await client.get(url)).json()["rich_content"] == document
+        serialized = [
+            {"type": "mathBlock", "content": [{"type": "text", "text": r"x^2 + y^2", "styles": {}}]},
+            {"type": "diagram", "content": [{"type": "text", "text": "flowchart LR\nA --> B", "styles": {}}]},
+            {"type": "paragraph", "content": [{"type": "math", "content": [{"type": "text", "text": r"\\alpha + \\beta", "styles": {}}]}]},
+        ]
+        saved = await client.patch(url, json={"rich_content": serialized})
+        assert saved.status_code == 200
+        assert (await client.get(url)).json()["rich_content"] == serialized
+        document[0]["content"] = r"F = ma"
+        updated = await client.patch(url, json={"rich_content": document, "content": "F = ma"})
+        assert updated.status_code == 200
+        assert (await client.get(url)).json()["rich_content"] == document
+
+
 @pytest.mark.asyncio
 async def test_rich_notebook_round_trip_and_legacy_updates(sql_app):
     app, _ = sql_app
