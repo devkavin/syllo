@@ -44,6 +44,7 @@ async def search(
             select(Notebook)
             .where(
                 Notebook.user_id == user.user_id,
+                Notebook.deleted_at.is_(None),
                 or_(Notebook.title.ilike(pattern), Notebook.content.ilike(pattern)),
             )
             .limit(10)

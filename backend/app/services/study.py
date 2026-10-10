@@ -1,11 +1,16 @@
 """Shared serialized review writes; no automatic content copies."""
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, update
 from backend.app.models import Lesson, Review, User
 
 
 async def lock_student(session, user_id):
+    if session.get_bind().dialect.name == "sqlite":
+        # SQLite ignores FOR UPDATE. Acquire its write lock before the read so
+        # first creation and overlapping retries serialize just as on MySQL.
+        # Explicitly retain updated_at: obtaining a lock is not a profile edit.
+        await session.execute(update(User).where(User.user_id == user_id).values(updated_at=User.updated_at).execution_options(synchronize_session=False))
     await session.scalar(select(User).where(User.user_id == user_id).with_for_update().execution_options(populate_existing=True))
 
 

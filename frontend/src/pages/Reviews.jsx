@@ -4,6 +4,7 @@ import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import NotebookPractice from "@/components/NotebookPractice";
 
 export default function Reviews() {
   const [items, setItems] = useState([]);
@@ -54,17 +55,19 @@ export default function Reviews() {
       <div className="space-y-2">
         <div className="section-title mb-2">Spaced practice</div>
         <h1 className="page-title">Reviews</h1>
-        <p className="text-muted-foreground mt-2 max-w-md">A small daily loop that keeps what you've learned close.</p>
+        <p className="text-muted-foreground mt-2 max-w-md">A little recall practice, then a chance to revisit your lessons.</p>
       </div>
       {err && <div className="text-destructive text-sm">{err}</div>}
-
+      <NotebookPractice dueOnly />
+      <section className="border-t border-border pt-6 space-y-4" aria-label="Lesson reviews">
+      <h2 className="font-serif text-xl">Lesson reviews</h2>
       {loading ? (
         <div className="space-y-2">{[0,1,2].map((i) => <div key={i} className="h-16 bg-muted rounded-xl animate-pulse" />)}</div>
       ) : items.length === 0 ? (
         <div className="empty-state">
           <Sparkles className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
           <div className="font-serif text-lg mb-1">Nothing to review yet</div>
-          <div className="text-sm text-muted-foreground">Finish a lesson and Syllo will queue a gentle review here.</div>
+          <div className="text-sm text-muted-foreground">Schedule a review from a lesson or after a focus session.</div>
         </div>
       ) : (
         <>
@@ -82,6 +85,7 @@ export default function Reviews() {
           )}
         </>
       )}
+      </section>
     </div>
   );
 }

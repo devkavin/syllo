@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import AgendaList from "@/components/AgendaList";
 import { ChevronLeft, ChevronRight, Plus, Settings2 } from "lucide-react";
 import { browserTimezone, dateInZone, localInstant, shiftDate } from "@/lib/studyTime";
+import RevisionPlans from "./RevisionPlans";
 export default function Planner() {
   const { user } = useAuth(); const timezone = user?.timezone || browserTimezone();
   const [day, setDay] = useState(() => dateInZone(new Date(), timezone));
@@ -37,5 +38,6 @@ export default function Planner() {
     {error && <div role="alert" className="notice">{error} <button className="btn btn-outline" onClick={() => setRetry(n => n + 1)}>Retry</button></div>}
     {!data && !error && <p role="status">Loading your agenda…</p>}
     {data && <>{data.items.length ? <AgendaList items={data.items} timezone={timezone} withDate={view === "Week"} /> : <section className="empty-state space-y-3"><h2>A little room in your {view.toLowerCase()}</h2><p>No activities planned. Add a class or make time to study.</p><Link className="btn btn-outline" to="/timetable?new=1">Plan an activity</Link></section>}{data.warnings?.map(w => <p key={w.id} role="status" className="notice">{w.message} <Link className="action-link" to={w.href || "/timetable"}>Check timetable</Link></p>)}</>}
+    <RevisionPlans timezone={timezone} onChange={() => setRetry(value => value + 1)} />
   </div>;
 }

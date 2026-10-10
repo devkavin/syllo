@@ -111,6 +111,8 @@ class Notebook(TimestampMixin, Base):
     font_style: Mapped[str] = mapped_column(
         String(16), default="sans", server_default="sans", nullable=False
     )
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1", nullable=False)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Task(TimestampMixin, Base):

@@ -177,6 +177,7 @@ class NotebookCreate(NotebookDocument):
 
 
 class NotebookPatch(NotebookDocument):
+    expected_revision: int | None = Field(default=None, ge=1)
     title: str | None = Field(default=None, min_length=1, max_length=240)
     subject_id: str | None = None
     lesson_id: str | None = None

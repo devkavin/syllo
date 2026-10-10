@@ -5,22 +5,23 @@ import { useTheme } from "@/lib/theme";
 import { Flame, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import WeeklyReflection from "@/components/WeeklyReflection";
+import PracticeProgress from "./PracticeProgress";
 
 export default function Analytics() {
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
+  const [retry, setRetry] = useState(0);
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   useEffect(() => {
-    http.get("/analytics").then((r) => setData(r.data)).catch((e) => setErr(formatError(e)));
-  }, []);
+    let live = true; setErr("");
+    http.get("/analytics").then((r) => { if (live) setData(r.data); }).catch((e) => { if (live) setErr(formatError(e)); });
+    return () => { live = false; };
+  }, [retry]);
 
-  if (err) return <div className="text-destructive">{err}</div>;
-  if (!data) return <div className="animate-pulse h-96 bg-muted rounded-xl" data-testid="analytics-loading" />;
-
-  const maxDay = Math.max(1, ...data.daily.map((d) => d.seconds));
-  const totalSubject = Math.max(1, data.by_subject.reduce((a, s) => a + s.seconds, 0));
+  const maxDay = Math.max(1, ...(data?.daily || []).map((d) => d.seconds));
+  const totalSubject = Math.max(1, (data?.by_subject || []).reduce((a, s) => a + s.seconds, 0));
 
   return (
     <div className="space-y-8" data-testid="analytics-page">
@@ -30,7 +31,10 @@ export default function Analytics() {
         <p className="text-muted-foreground mt-2">A calm look at how you've been studying.</p>
       </div>
 
-      {data.total_seconds === 0 ? <section className="empty-state space-y-3"><h2>Your study story starts here</h2><p>Record a focus session to see your study time and progress.</p><Link className="btn btn-primary" to="/timer">Start Focus</Link></section> : <>
+      <PracticeProgress />
+      {err && <div role="alert" className="notice flex flex-wrap items-center gap-3">{err}<button className="btn btn-outline" onClick={() => setRetry(value => value + 1)}>Retry study time</button></div>}
+      {!data && !err && <div className="animate-pulse h-48 bg-muted rounded-xl" data-testid="analytics-loading" role="status" aria-label="Loading study time" />}
+      {data && (data.total_seconds === 0 ? <section className="empty-state space-y-3"><h2>Your study time starts here</h2><p>Record a focus session to see your study time and consistency.</p><Link className="btn btn-primary" to="/timer">Start Focus</Link></section> : <>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <Stat icon={Clock} label="Total study time" value={formatSeconds(data.total_seconds)} />
@@ -83,8 +87,8 @@ export default function Analytics() {
           </div>
         )}
       </section>
-      </>}
-      {data.total_seconds > 0 && <WeeklyReflection />}
+      </>)}
+      {data?.total_seconds > 0 && <WeeklyReflection />}
     </div>
   );
 }

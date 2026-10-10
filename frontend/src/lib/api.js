@@ -18,5 +18,6 @@ export function formatError(err) {
   if (typeof d === "string") return d;
   if (Array.isArray(d)) return d.map((e) => e?.msg || JSON.stringify(e)).join(" ");
   if (d?.msg) return d.msg;
+  if (d?.message) return d.message;
   return String(d);
 }

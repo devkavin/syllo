@@ -111,8 +111,13 @@ async def patch_task(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    from backend.app.api.routes.revision_plans import validate_generated_task_edit
+    from backend.app.services.study import lock_student
+
+    await lock_student(session, user.user_id)
     task = await owned_task(session, user.user_id, task_id)
     data = body.model_dump(exclude_unset=True)
+    await validate_generated_task_edit(session, user, task, data)
     link_fields = {"subject_id", "unit_id", "lesson_id"}
     if link_fields.intersection(data):
         subject_id, unit_id, lesson_id = await resolve_links(

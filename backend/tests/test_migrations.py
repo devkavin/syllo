@@ -113,3 +113,30 @@ def test_focus_timer_migration_is_additive_and_preserves_study_logs(tmp_path: Pa
     with engine.connect() as connection:
         assert connection.execute(text("SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'")).scalar_one() == 120
     engine.dispose()
+
+
+def test_study_workflow_migration_preserves_notes_tasks_and_timer(tmp_path: Path) -> None:
+    database_path = tmp_path / "study-workflow.db"
+    config = Config(str(Path("backend/alembic.ini").resolve()))
+    config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path.as_posix()}")
+    command.upgrade(config, "20261010_0011")
+    engine = create_engine(f"sqlite:///{database_path.as_posix()}")
+    with engine.begin() as connection:
+        connection.execute(User.__table__.insert().values(user_id="workflow-owner", email="workflow@example.com", normalized_email="workflow@example.com", name="Workflow"))
+        connection.execute(text("INSERT INTO notebooks (notebook_id, user_id, title, content, rich_content, created_at, updated_at) VALUES ('old-note', 'workflow-owner', 'Keep', :content, :rich, '2026-10-01', '2026-10-01')"), {"content": "Literal <notes>\n\nEnd", "rich": '[{"type":"paragraph","content":"Rich"}]'})
+        connection.execute(text("INSERT INTO tasks (task_id, user_id, title, priority, notes, completed, created_at, updated_at) VALUES ('old-task', 'workflow-owner', 'Existing Today work', 'normal', '', 0, '2026-10-01', '2026-10-01')"))
+        connection.execute(text("INSERT INTO focus_timers (user_id, revision, timer, created_at, updated_at) VALUES ('workflow-owner', 5, :timer, '2026-10-01', '2026-10-01')"), {"timer": '{"timer_id":"keep-timer","status":"paused"}'})
+    command.upgrade(config, "head")
+    assert {"notebook_versions", "study_questions", "study_attempts", "revision_plans", "revision_plan_items"}.issubset(inspect(engine).get_table_names())
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT content, rich_content, revision, deleted_at FROM notebooks")).one() == ('Literal <notes>\n\nEnd', '[{"type":"paragraph","content":"Rich"}]', 1, None)
+        assert connection.execute(text("SELECT title FROM tasks")).scalar_one() == "Existing Today work"
+        assert connection.execute(text("SELECT revision, timer FROM focus_timers")).one() == (5, '{"timer_id":"keep-timer","status":"paused"}')
+    command.check(config)
+    command.downgrade(config, "20261010_0011")
+    assert "study_attempts" not in inspect(engine).get_table_names()
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT content FROM notebooks")).scalar_one() == "Literal <notes>\n\nEnd"
+        assert connection.execute(text("SELECT COUNT(*) FROM tasks")).scalar_one() == 1
+    engine.dispose()

@@ -32,6 +32,28 @@ duplicate study logs. Deploy migration `20261010_0011` before serving the update
 frontend (the production API entrypoint applies it automatically). Older unsaved
 local sessions can be logged or reset before switching to the shared timer.
 
+The web study workflow connects notebooks, Focus, Reviews, Planner and Progress:
+
+- Notebooks retain account-scoped browser drafts, detect conflicting edits, keep
+  the last 30 saved versions, and support Trash/restore and rich JSON export.
+  Unsaved recovery drafts stay on that browser; saved notes sync through the API.
+- A compact notebook focus bar controls the same server timer as the Focus page.
+  Page appearance, academic links and recovery tools remain expandable.
+- Notebook Practice supports manually written recall questions and mistakes with
+  a corrected method. Answers stay hidden until revealed. Again, Hard and Good
+  schedule the next review; these are self-ratings, not automatically graded results.
+  Selected note text can become a question without calling an AI service.
+- Planner's Revision plans distribute chosen lessons across selected study days
+  before an exam, within the plan's daily capacity. Generated work uses ordinary
+  tasks, so it appears in Today, Tasks and the agenda. Dates can be rescheduled.
+- Progress shows recall attempts and topics to revisit separately from study time.
+  Lessons open their linked rich notebook and preserve the original lesson text.
+
+Apply migration `20261010_0012` before serving this frontend. The production API
+entrypoint upgrades automatically. These features introduce no paid package,
+AI/API key requirement, or media uploads. Existing Study Companion calls retain
+their existing Gemini configuration and metering.
+
 The web frontend uses Tailwind 4's Vite plugin and CSS theme configuration.
 Browser requirements follow the [Tailwind 4 compatibility guide](https://tailwindcss.com/docs/upgrade-guide#browser-requirements).
 The separate Expo app keeps NativeWind 4's supported Tailwind 3 dependency.

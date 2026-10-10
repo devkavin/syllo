@@ -308,3 +308,22 @@ async def delete_lesson(
     await session.delete(lesson)
     await session.commit()
     return {"ok": True}
+
+
+@router.get("/lessons/{lesson_id}/notebook")
+async def lesson_notebook(lesson_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    from backend.app.models import Notebook
+    from backend.app.api.routes.notebooks import notebook_dict
+
+    await lock_student(session, user.user_id)
+    lesson = await owned_lesson(session, user.user_id, lesson_id)
+    notebooks = (await session.scalars(select(Notebook).where(Notebook.user_id == user.user_id, Notebook.lesson_id == lesson_id).order_by(Notebook.created_at, Notebook.notebook_id).with_for_update())).all()
+    notebook = next((item for item in notebooks if item.deleted_at is None), None)
+    if notebook is None and notebooks:
+        raise HTTPException(409, {"message": "This lesson's notebook is in Trash. Restore it to continue writing.", "notebook_id": notebooks[0].notebook_id})
+    if notebook is None:
+        notebook = Notebook(user_id=user.user_id, subject_id=lesson.subject_id, lesson_id=lesson.lesson_id, title=lesson.title, content=lesson.notes, rich_content=None)
+        session.add(notebook)
+        await session.commit()
+        await session.refresh(notebook)
+    return notebook_dict(notebook)
