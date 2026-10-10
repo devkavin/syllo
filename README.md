@@ -22,6 +22,16 @@ service. Rich blocks are stored alongside plain text for search and summaries;
 existing text notes open as literal paragraphs. Paper and font preferences are
 saved per notebook. Deploy the backend migration `20261010_0010` with the web update.
 
+Web focus timers are saved per account on the server, using server timestamps and
+pause-aware elapsed time. The same signed-in account can start on a phone browser
+and pause, resume, reset, or log on another device. Closing the browser does not
+stop elapsed time. Countdowns cap study time at their configured duration and
+record completion when Focus next syncs; no background alarm runs while the
+browser is closed. Controls require a connection, and retrying a request does not
+duplicate study logs. Deploy migration `20261010_0011` before serving the updated
+frontend (the production API entrypoint applies it automatically). Older unsaved
+local sessions can be logged or reset before switching to the shared timer.
+
 The web frontend uses Tailwind 4's Vite plugin and CSS theme configuration.
 Browser requirements follow the [Tailwind 4 compatibility guide](https://tailwindcss.com/docs/upgrade-guide#browser-requirements).
 The separate Expo app keeps NativeWind 4's supported Tailwind 3 dependency.

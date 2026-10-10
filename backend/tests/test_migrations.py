@@ -91,3 +91,25 @@ def test_rich_notebook_migration_preserves_existing_notes(tmp_path: Path) -> Non
     command.upgrade(config, "head")
     command.check(config)
     engine.dispose()
+
+
+def test_focus_timer_migration_is_additive_and_preserves_study_logs(tmp_path: Path) -> None:
+    database_path = tmp_path / "focus-timer.db"
+    config = Config(str(Path("backend/alembic.ini").resolve()))
+    config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path.as_posix()}")
+    command.upgrade(config, "20261010_0010")
+    engine = create_engine(f"sqlite:///{database_path.as_posix()}")
+    with engine.begin() as connection:
+        connection.execute(User.__table__.insert().values(user_id="timer-migration-owner", email="timer-migration@example.com", normalized_email="timer-migration@example.com", name="Timer"))
+        connection.execute(text("INSERT INTO study_sessions (session_id, user_id, duration_seconds, mode, note, started_at, created_at, updated_at) VALUES ('old-study', 'timer-migration-owner', 120, 'pomodoro', '', '2026-10-01 08:00:00', '2026-10-01 08:00:00', '2026-10-01 08:00:00')"))
+    command.upgrade(config, "head")
+    assert {"focus_timers", "focus_timer_requests"}.issubset(inspect(engine).get_table_names())
+    command.check(config)
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'")).scalar_one() == 120
+    command.downgrade(config, "20261010_0010")
+    assert "focus_timers" not in inspect(engine).get_table_names()
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'")).scalar_one() == 120
+    engine.dispose()

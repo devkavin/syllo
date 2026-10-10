@@ -5,13 +5,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { http } from "@/lib/api";
 
 const queryState = vi.hoisted(() => ({ pending: false, failed: false, subjects: [], refetch: vi.fn() }));
+const sharedState = vi.hoisted(() => ({ user: null, snapshot: null, loading: false, busy: false, error: "", displaySeconds: 0, act: vi.fn(), refresh: vi.fn() }));
+vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: sharedState.user }) }));
+vi.mock("@/hooks/useSharedFocusTimer", () => ({ useSharedFocusTimer: () => sharedState }));
 vi.mock("@/lib/api", () => ({ http: { post: vi.fn(), get: vi.fn(), patch: vi.fn(), put: vi.fn() }, formatError: String }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 vi.mock("@/hooks/useAcademicQueries", () => ({ useSubjectsQuery: () => ({ data: queryState.subjects, isPending: queryState.pending, isError: queryState.failed, refetch: queryState.refetch }) }));
 import FocusTimer from "./FocusTimer";
 const render = ui => rtlRender(ui, { wrapper: MemoryRouter });
 
+function openSettings() {
+  const button = screen.getByRole("button", { name: "Focus settings" });
+  if (button.getAttribute("aria-expanded") !== "true") fireEvent.click(button);
+}
+function pickMode(mode) {
+  openSettings();
+  fireEvent.click(screen.getByTestId(`mode-${mode}`));
+}
 function setMinutes(value) {
+  openSettings();
   fireEvent.change(screen.getByLabelText("Duration (minutes)"), { target: { value } });
   fireEvent.click(screen.getByRole("button", { name: "Apply time" }));
 }
@@ -25,6 +37,7 @@ beforeEach(() => {
   queryState.failed = false;
   queryState.subjects = [{ subject_id: "math", name: "Math", color: "sage", focus_minutes: 45, break_minutes: 10 }];
   vi.clearAllMocks();
+  Object.assign(sharedState, { user: null, snapshot: null, loading: false, busy: false, error: "", displaySeconds: 0 });
   http.post.mockResolvedValue({ data: {} });
   http.get.mockResolvedValue({ data: [] });
   Object.defineProperty(document, "fullscreenElement", { configurable: true, writable: true, value: null });
@@ -32,6 +45,103 @@ beforeEach(() => {
   Object.defineProperty(document, "exitFullscreen", { configurable: true, writable: true, value: undefined });
 });
 afterEach(() => vi.useRealTimers());
+
+describe("focus layout", () => {
+  it("keeps configuration collapsed until the user opens Focus settings", () => {
+    render(<FocusTimer />);
+    expect(screen.getByRole("button", { name: "Focus settings" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("group", { name: "Focus mode" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("spinbutton", { name: "Duration (minutes)" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Working on" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Log session" })).not.toBeInTheDocument();
+    openSettings();
+    expect(screen.getByRole("group", { name: "Focus mode" })).toBeVisible();
+    expect(screen.getByRole("spinbutton", { name: "Duration (minutes)" })).toBeVisible();
+    expect(screen.getByRole("combobox", { name: "Working on" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.getByRole("button", { name: "Focus settings" })).toHaveFocus();
+    expect(screen.queryByRole("group", { name: "Focus mode" })).not.toBeInTheDocument();
+  });
+  it("closes settings on start and keeps paused settings locked until reset", () => {
+    render(<FocusTimer />);
+    openSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Start" }));
+    expect(screen.getByRole("button", { name: "Focus settings" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "Log session" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(screen.queryByRole("spinbutton", { name: "Duration (minutes)" })).not.toBeInTheDocument();
+    openSettings();
+    expect(screen.getByRole("spinbutton", { name: "Duration (minutes)" })).toBeDisabled();
+    expect(screen.getByText("Finish or reset this session to change its settings.")).toBeVisible();
+  });
+});
+
+describe("shared focus sessions", () => {
+  const timer = { timer_id: "phone-timer", status: "running", mode: "pomodoro", duration_seconds: 2700, elapsed_seconds: 600,
+    started_at: "2026-10-10T08:00:00Z", subject_id: "math", unit_id: null, lesson_id: null, lesson_title: "", circle_event_id: null, event_topic: "" };
+
+  it("never submits a local study log when the server completes an expired countdown", async () => {
+    sharedState.user = { user_id: "student" }; sharedState.snapshot = { revision: 1, timer };
+    sharedState.displaySeconds = 0;
+    const view = render(<FocusTimer />);
+    sharedState.snapshot = { revision: 2, timer: null, completed_timer_id: timer.timer_id, finished_duration_seconds: 2700,
+      last_session: { session_id: "expired", duration_seconds: 2700, started_at: timer.started_at, mode: "pomodoro" } };
+    await act(async () => view.rerender(<FocusTimer />));
+    expect(http.post).not.toHaveBeenCalled();
+    expect(sharedState.act).not.toHaveBeenCalled();
+    expect(screen.getByTestId("timer-message")).toHaveTextContent("45m logged");
+  });
+
+  it("blocks starting until the account's shared timer has loaded and offers recovery", () => {
+    sharedState.user = { user_id: "student" }; sharedState.loading = true;
+    const view = render(<FocusTimer />);
+    expect(screen.getByRole("button", { name: "Start" })).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent("Checking your synced timer");
+    sharedState.loading = false; sharedState.error = "Offline";
+    view.rerender(<FocusTimer />);
+    expect(screen.getByRole("button", { name: "Start" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry timer sync" }));
+    expect(sharedState.refresh).toHaveBeenCalled();
+  });
+
+  it("starts an account timer on the server using configuration rather than device timestamps", async () => {
+    sharedState.user = { user_id: "student" }; sharedState.snapshot = { revision: 0, timer: null };
+    sharedState.act.mockResolvedValue({ revision: 1, timer });
+    render(<FocusTimer />);
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "Start" })));
+    expect(sharedState.act).toHaveBeenCalledWith("start", { mode: "pomodoro", duration_seconds: 1500, subject_id: null, unit_id: null, lesson_id: null, circle_event_id: null });
+    expect(http.post).not.toHaveBeenCalled();
+  });
+
+  it("restores a phone timer and waits for a confirmed pause before showing Resume", async () => {
+    sharedState.user = { user_id: "student" }; sharedState.snapshot = { revision: 1, timer }; sharedState.displaySeconds = 2100;
+    sharedState.act.mockResolvedValue({ revision: 2, timer: { ...timer, status: "paused" } });
+    const view = render(<FocusTimer />);
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("35:00");
+    expect(screen.getByText("Math", { exact: true, selector: "span" })).toBeVisible();
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "Pause" })));
+    expect(sharedState.act).toHaveBeenCalledWith("pause");
+    expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
+    sharedState.snapshot = { revision: 2, timer: { ...timer, status: "paused" } };
+    view.rerender(<FocusTimer />);
+    expect(screen.getByRole("button", { name: "Resume" })).toBeVisible();
+  });
+
+  it("logs only through the shared timer and displays a completion received from another device", async () => {
+    sharedState.user = { user_id: "student" }; sharedState.snapshot = { revision: 1, timer }; sharedState.displaySeconds = 2100;
+    sharedState.act.mockResolvedValue({ revision: 2, timer: null });
+    const view = render(<FocusTimer />);
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "Log session" })));
+    expect(sharedState.act).toHaveBeenCalledWith("finish");
+    expect(http.post).not.toHaveBeenCalled();
+    sharedState.snapshot = { revision: 2, timer: null, completed_timer_id: timer.timer_id, finished_duration_seconds: 600,
+      last_session: { session_id: "recorded", duration_seconds: 600, started_at: timer.started_at, mode: "pomodoro" } };
+    view.rerender(<FocusTimer />);
+    expect(screen.getByRole("heading", { name: "Session complete" })).toBeVisible();
+    expect(screen.getByTestId("timer-message")).toHaveTextContent("10m logged");
+  });
+});
 
 describe("focus duration", () => {
   it("catches up after a delayed browser callback instead of counting ticks", () => {
@@ -47,7 +157,7 @@ describe("focus duration", () => {
   it.each(["visibilitychange", "focus", "pageshow"])("refreshes elapsed time on %s without waiting for a tick", (event) => {
     vi.useFakeTimers();
     render(<FocusTimer />);
-    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    pickMode("stopwatch");
     fireEvent.click(screen.getByTestId("timer-start"));
     vi.setSystemTime(Date.now() + 30 * 60 * 1000);
     fireEvent(event === "visibilitychange" ? document : window, new Event(event));
@@ -57,7 +167,7 @@ describe("focus duration", () => {
   it("logs current elapsed time even when no timer callback has run", async () => {
     vi.useFakeTimers();
     render(<FocusTimer />);
-    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    pickMode("stopwatch");
     fireEvent.click(screen.getByTestId("timer-start"));
     vi.setSystemTime(Date.now() + 30 * 60 * 1000);
     await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
@@ -67,7 +177,7 @@ describe("focus duration", () => {
   it.each(["pomodoro", "stopwatch"])("restores elapsed %s time after leaving Focus or reloading", (mode) => {
     vi.useFakeTimers();
     const view = render(<FocusTimer />);
-    fireEvent.click(screen.getByTestId(`mode-${mode}`));
+    pickMode(mode);
     fireEvent.click(screen.getByTestId("timer-start"));
     view.unmount();
     vi.setSystemTime(Date.now() + 12 * 60 * 1000);
@@ -78,7 +188,7 @@ describe("focus duration", () => {
   it("excludes paused time and retains partial seconds across resume and reload", async () => {
     vi.useFakeTimers();
     const view = render(<FocusTimer />);
-    fireEvent.click(screen.getByTestId("mode-stopwatch"));
+    pickMode("stopwatch");
     fireEvent.click(screen.getByTestId("timer-start"));
     vi.setSystemTime(Date.now() + 10750);
     fireEvent.click(screen.getByTestId("timer-pause"));
@@ -158,12 +268,13 @@ describe("focus duration", () => {
     expect(screen.getByTestId("timer-subject-select")).toHaveValue("math");
     expect(screen.queryByText(/Could not open the subject/)).not.toBeInTheDocument();
   });
-  it("hides setup controls during focus and restores them when paused", () => {
+  it("keeps setup controls collapsed during focus and exposes locked options on demand", () => {
     render(<FocusTimer />);
     fireEvent.click(screen.getByTestId("timer-start"));
     expect(screen.queryByRole("spinbutton", { name: "Duration (minutes)" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    openSettings();
     expect(screen.getByRole("spinbutton", { name: "Duration (minutes)" })).toBeDisabled();
   });
   it("waits for lesson prefill before allowing a session to start", async () => {
@@ -175,7 +286,7 @@ describe("focus duration", () => {
   });
   it("does not count breaks as focused study", async () => {
     render(<FocusTimer />); vi.useFakeTimers();
-    fireEvent.click(screen.getByTestId("mode-short"));
+    pickMode("short");
     fireEvent.click(screen.getByTestId("timer-start")); advance(20);
     await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
     expect(http.post).not.toHaveBeenCalled();
@@ -243,20 +354,21 @@ describe("focus duration", () => {
     const view = render(<FocusTimer />);
     setMinutes("40");
     expect(screen.getByTestId("timer-display")).toHaveTextContent("40:00");
-    fireEvent.click(screen.getByTestId("mode-short"));
+    pickMode("short");
     setMinutes("8");
-    fireEvent.click(screen.getByTestId("mode-pomodoro"));
+    pickMode("pomodoro");
     fireEvent.click(screen.getByTestId("timer-reset"));
     expect(screen.getByTestId("timer-display")).toHaveTextContent("40:00");
     view.unmount();
     render(<FocusTimer />);
     expect(screen.getByTestId("timer-display")).toHaveTextContent("40:00");
-    fireEvent.click(screen.getByTestId("mode-short"));
+    pickMode("short");
     expect(screen.getByTestId("timer-display")).toHaveTextContent("08:00");
   });
 
   it("offers quick presets and can return to the subject preset", () => {
     render(<FocusTimer />);
+    openSettings();
     fireEvent.change(screen.getByTestId("timer-subject-select"), { target: { value: "math" } });
     expect(screen.getByTestId("timer-display")).toHaveTextContent("45:00");
     fireEvent.click(screen.getByRole("button", { name: "50 min" }));
@@ -352,7 +464,8 @@ describe("focus fullscreen", () => {
     const view = render(<><button>Background control</button><FocusTimer /></>);
     await act(async () => fireEvent.click(screen.getByTestId("timer-fullscreen")));
     const overlay = screen.getByTestId("fullscreen-timer");
-    const controls = [...overlay.querySelectorAll("button:not(:disabled), input:not(:disabled), select:not(:disabled)")];
+    const controls = [...overlay.querySelectorAll("button:not(:disabled), input:not(:disabled), select:not(:disabled)")]
+      .filter(element => !element.closest("[hidden]"));
     const first = controls[0];
     const last = controls[controls.length - 1];
     expect(view.container.closest("[inert]")).not.toBeNull();

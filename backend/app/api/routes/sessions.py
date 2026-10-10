@@ -86,6 +86,7 @@ async def record_study_session(
     session: AsyncSession,
     user: User,
     body: StudySessionCreate,
+    *, commit: bool = True,
 ) -> StudySession:
     await lock_student(session, user.user_id)
     if body.request_id:
@@ -147,8 +148,11 @@ async def record_study_session(
         streak.longest = max(streak.longest, streak.current)
         streak.last_day = local_day
 
-    await session.commit()
-    await session.refresh(item)
+    if commit:
+        await session.commit()
+        await session.refresh(item)
+    else:
+        await session.flush()
     return item
 
 

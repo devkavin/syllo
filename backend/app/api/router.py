@@ -20,6 +20,7 @@ from backend.app.api.routes.progress import router as progress_router
 from backend.app.api.routes.referrals import router as referrals_router
 from backend.app.api.routes.search import router as search_router
 from backend.app.api.routes.sessions import router as sessions_router
+from backend.app.api.routes.focus_timer import router as focus_timer_router
 from backend.app.api.routes.tasks import router as tasks_router
 from backend.app.api.routes.stripe_webhooks import router as stripe_webhook_router
 
@@ -38,6 +39,7 @@ api_router.include_router(notebooks_router)
 api_router.include_router(tasks_router)
 api_router.include_router(planner_router)
 api_router.include_router(sessions_router)
+api_router.include_router(focus_timer_router)
 api_router.include_router(search_router)
 api_router.include_router(progress_router)
 api_router.include_router(ai_router)
