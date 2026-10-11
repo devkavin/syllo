@@ -164,7 +164,7 @@ export function installOfflineNotes(client, cache, online = () => navigator.onLi
   }, async error => {
     const config = error.config;
     const status = error.response?.status;
-    if (status === 401 || (status === 403 && ["/auth/me", "/notebooks", "/subjects"].includes(config?.url))) cache.clearOwner();
+    if (cache.sameIdentity(config?.offlineIdentity) && (status === 401 || (status === 403 && ["/auth/me", "/notebooks", "/subjects"].includes(config?.url)))) cache.clearOwner();
     if ([403, 404].includes(status) && config?.method === "get" && notePath.test(config.url)) await cache.removeNotebook(config.url, config.offlineIdentity);
     if (!online() && !error.response && config?.method === "get" && !config.params && readable(config.url)) {
       const data = await cache.get(config.url, config.offlineIdentity);

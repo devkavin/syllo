@@ -91,7 +91,7 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false, on
           <DropdownMenuItem asChild className="min-h-11"><Link to="/privacy" onClick={onNavigate}>Privacy</Link></DropdownMenuItem>
           <DropdownMenuItem asChild className="min-h-11"><Link to="/terms" onClick={onNavigate}>Terms</Link></DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="min-h-11" data-testid="sign-out-button" onSelect={async () => { await logout(); onNavigate?.(); nav("/login"); }}><LogOut />Sign out</DropdownMenuItem>
+          <DropdownMenuItem className="min-h-11" data-testid="sign-out-button" onSelect={async () => { await logout(); onNavigate?.(); nav("/login", { replace: true }); }}><LogOut />Sign out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

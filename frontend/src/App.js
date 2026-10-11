@@ -42,6 +42,13 @@ function RouteLoading() {
   );
 }
 
+function HomeRoute() {
+  const { user } = useAuth();
+  if (user === undefined) return <RouteLoading />;
+  if (user) return <Navigate to={user.onboarded === false ? "/onboarding" : "/today"} replace />;
+  return <Home />;
+}
+
 function Protected({ children }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -76,7 +83,7 @@ export function AppRoutes() {
     <Suspense fallback={<RouteLoading />}>
       <RouteMetadata />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/join/:token" element={<CircleInvite />} />

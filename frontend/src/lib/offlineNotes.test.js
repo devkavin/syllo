@@ -13,6 +13,18 @@ function repository() {
 const profile = id => ({ user_id: id, name: id, timezone: "Asia/Colombo" });
 
 describe("offline recent notes", () => {
+  it("does not clear a new account when an old request returns an authentication rejection", async () => {
+    const cache = createOfflineNotes({ repository: repository(), namespace: "late-rejection", storage: localStorage });
+    await cache.rememberProfile(profile("one"));
+    const handlers = {};
+    const client = { interceptors: { request: { use: fn => { handlers.request = fn; } }, response: { use: (ok, error) => { handlers.error = error; } } } };
+    installOfflineNotes(client, cache);
+    const config = handlers.request({ method: "get", url: "/notebooks" });
+    await cache.rememberProfile(profile("two"));
+    const error = { config, response: { status: 401 } };
+    await expect(handlers.error(error)).rejects.toBe(error);
+    expect(await cache.offlineProfile()).toMatchObject({ user_id: "two" });
+  });
   it("keeps cached notes separate by account, and logout removes the current copy", async () => {
     const cache = createOfflineNotes({ repository: repository(), namespace: "test", storage: localStorage });
     await cache.rememberProfile(profile("one"));

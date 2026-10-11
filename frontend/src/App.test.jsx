@@ -32,10 +32,30 @@ vi.mock("@/lib/api", () => ({
   formatError: (error) => String(error),
 }));
 vi.mock("@/components/AppShell", () => ({ default: ({ children }) => children }));
+vi.mock("@/pages/Today", () => ({ default: () => <h1>Your study day</h1> }));
 
 import { AppRoutes } from "./App";
 
 describe("application routing", () => {
+  it("opens Today from the root for an authenticated student", async () => {
+    auth.user = { user_id: "one", onboarded: true };
+    render(<MemoryRouter initialEntries={["/"]}><AppRoutes /></MemoryRouter>);
+    expect(await screen.findByText("Your study day")).toBeInTheDocument();
+    expect(screen.queryByText("Sign in")).not.toBeInTheDocument();
+  });
+
+  it("waits for authentication before choosing the homepage", () => {
+    auth.user = undefined;
+    render(<MemoryRouter initialEntries={["/"]}><AppRoutes /></MemoryRouter>);
+    expect(screen.getByRole("status")).toHaveTextContent("Loading Syllo");
+    expect(screen.queryByText("Sign in")).not.toBeInTheDocument();
+  });
+
+  it("keeps the public homepage for signed-out visitors", () => {
+    auth.user = null;
+    render(<MemoryRouter initialEntries={["/"]}><AppRoutes /></MemoryRouter>);
+    expect(screen.getByRole("link", { name: "Sign in" })).toBeInTheDocument();
+  });
   it("redirects a signed-out user away from protected routes", async () => {
     auth.user = null;
     render(
