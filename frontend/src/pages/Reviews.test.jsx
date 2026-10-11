@@ -33,14 +33,84 @@ it("clears the prior account's question while the next account loads", async () 
   expect(screen.queryByRole("button", { name: "Practise: Recall the formula" })).not.toBeInTheDocument();
   expect(screen.queryByText("Newton's laws")).not.toBeInTheDocument();
 });
-it("offers due recall practice alongside existing lesson review links", async () => {
+it("offers due recall practice alongside guided lesson review links", async () => {
   render(<MemoryRouter><Reviews /></MemoryRouter>);
-  expect(await screen.findByRole("link", { name: "Open lesson to review" })).toHaveAttribute("href", "/lessons/l");
+  expect(await screen.findByRole("link", { name: "Start review: Newton's laws" })).toHaveAttribute("href", "/reviews?review=r");
   expect(http.get).toHaveBeenCalledWith("/study/questions", { params: { due: true } });
   fireEvent.click(await screen.findByRole("button", { name: "Practise: Recall the formula" }));
   expect(screen.queryByText("F = ma")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
   expect(screen.getByText("F = ma")).toBeVisible();
+});
+
+it.each(["good", "again"])("guides recall before notes and records the next lesson review (%s)", async quality => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/reviews" ? [{ review_id: "r", lesson_id: "l", lesson_title: "Newton's laws", next_review_at: "2020-01-01", interval_days: 1 }] : url === "/lessons/l/notebook" ? { notebook_id: "n", content: "Force equals mass times acceleration" } : [] }));
+  http.post.mockResolvedValue({ data: { review_id: "r", lesson_id: "l", lesson_title: "Newton's laws", next_review_at: "2099-01-01T10:00:00Z", interval_days: quality === "good" ? 3 : 1 } });
+  render(<MemoryRouter initialEntries={["/reviews?review=r"]}><Reviews /></MemoryRouter>);
+  expect(await screen.findByRole("heading", { name: "Review Newton's laws" })).toBeVisible();
+  expect(http.get).not.toHaveBeenCalledWith("/lessons/l/notebook");
+  expect(screen.queryByRole("button", { name: "Recalled it" })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText(/What can you remember/), { target: { value: "F = ma" } });
+  fireEvent.click(screen.getByRole("button", { name: "Check my recall" }));
+  expect(await screen.findByRole("link", { name: /Open lesson notebook/ })).toHaveAttribute("href", "/notebooks?notebook=n");
+  fireEvent.click(screen.getByRole("button", { name: quality === "good" ? "Recalled it" : "Review again tomorrow" }));
+  await waitFor(() => expect(http.post).toHaveBeenCalledWith("/reviews/r/mark", { quality, expected_next_review_at: "2020-01-01" }));
+  expect(await screen.findByRole("heading", { name: "Review saved" })).toBeVisible();
+  expect(screen.getByText(/Next review:/)).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Recalled it" })).not.toBeInTheDocument();
+});
+
+it("retains a recall attempt after a failed save and permits retry", async () => {
+  http.post.mockRejectedValueOnce(new Error("Connection lost")).mockResolvedValueOnce({ data: { review_id: "r", lesson_id: "l", lesson_title: "Newton's laws", next_review_at: "2099-01-01", interval_days: 3 } });
+  render(<MemoryRouter initialEntries={["/reviews?review=r"]}><Reviews /></MemoryRouter>);
+  fireEvent.change(await screen.findByLabelText(/What can you remember/), { target: { value: "My recall attempt" } });
+  fireEvent.click(screen.getByRole("button", { name: "Check my recall" }));
+  fireEvent.click(screen.getByRole("button", { name: "Recalled it" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("Connection lost");
+  expect(screen.getByLabelText(/What can you remember/)).toHaveValue("My recall attempt");
+  expect(screen.queryByRole("heading", { name: "Review saved" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Recalled it" }));
+  expect(await screen.findByRole("heading", { name: "Review saved" })).toBeVisible();
+});
+
+it("explains an unavailable linked review and offers the review list", async () => {
+  render(<MemoryRouter initialEntries={["/reviews?review=deleted"]}><Reviews /></MemoryRouter>);
+  expect(await screen.findByRole("alert")).toHaveTextContent("This review is no longer available");
+  expect(screen.getByRole("link", { name: "Back to reviews" })).toHaveAttribute("href", "/reviews");
+});
+
+it("permits early recall without advancing a review that is not due", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/reviews" ? [{ review_id: "r", lesson_id: "l", lesson_title: "Limits", next_review_at: "2099-01-01", interval_days: 3 }] : [] }));
+  render(<MemoryRouter initialEntries={["/reviews?review=r"]}><Reviews /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Check my recall" }));
+  expect(screen.getByText(/its review date stays the same/)).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Recalled it" })).not.toBeInTheDocument();
+  expect(http.post).not.toHaveBeenCalled();
+});
+
+it("keeps recall and retry available when notes fail to load", async () => {
+  const baseline = http.get.getMockImplementation();
+  http.get.mockImplementation(url => url === "/lessons/l/notebook" ? Promise.reject(new Error("Notes unavailable")) : baseline(url));
+  render(<MemoryRouter initialEntries={["/reviews?review=r"]}><Reviews /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Check my recall" }));
+  expect(await screen.findByText("Notes unavailable")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Recalled it" })).toBeEnabled();
+  http.get.mockImplementation(url => url === "/lessons/l/notebook" ? Promise.resolve({ data: { notebook_id: "n" } }) : baseline(url));
+  fireEvent.click(screen.getByRole("button", { name: "Retry notes" }));
+  expect(await screen.findByRole("link", { name: /Open lesson notebook/ })).toBeVisible();
+});
+
+it("keeps the saved schedule after a lost response without advancing it twice", async () => {
+  const current = { review_id: "r", lesson_id: "l", lesson_title: "Newton's laws", next_review_at: "2099-01-01", interval_days: 3 };
+  http.post.mockRejectedValueOnce(new Error("Connection lost")).mockRejectedValueOnce({ response: { status: 409, data: { detail: { message: "Schedule already updated", current } } } });
+  render(<MemoryRouter initialEntries={["/reviews?review=r"]}><Reviews /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Check my recall" }));
+  fireEvent.click(screen.getByRole("button", { name: "Recalled it" }));
+  await screen.findByRole("alert");
+  fireEvent.click(screen.getByRole("button", { name: "Recalled it" }));
+  expect(await screen.findByRole("heading", { name: "Review already updated" })).toBeVisible();
+  expect(http.post.mock.calls[0][1]).toEqual(http.post.mock.calls[1][1]);
+  expect(screen.getByText(/Next review:/)).toBeVisible();
 });
 
 it("opens a linked question even when it is scheduled for later", async () => {

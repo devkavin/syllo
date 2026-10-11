@@ -83,9 +83,13 @@ function LessonContent({ data }) {
     if (reviewBusy) return; setReviewBusy(true); setReviewError("");
     try {
       if (!(await autosave.flush())) return;
-      const { data: updated } = await http.post(`/reviews/${review.review_id}/mark`, { quality });
+      const { data: updated } = await http.post(`/reviews/${review.review_id}/mark`, { quality, expected_next_review_at: review.next_review_at });
       setReview(updated); setReviewMessage("Review complete. Your next review is scheduled.");
-    } catch (e) { setReviewError(formatError(e)); }
+    } catch (e) {
+      const current = e.response?.data?.detail?.current;
+      if (e.response?.status === 409 && current?.review_id === review.review_id) { setReview(current); setReviewMessage("This review was already updated. Its saved schedule has been kept."); }
+      else setReviewError(formatError(e));
+    }
     finally { setReviewBusy(false); }
   };
   return <div className="max-w-4xl mx-auto space-y-6">

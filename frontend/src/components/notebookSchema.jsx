@@ -12,7 +12,7 @@ const callout = createReactBlockSpec({
   content: "inline",
 }, {
   render: ({ block, editor, contentRef }) => <aside className="notebook-callout" data-kind={block.props.kind}>
-    <select aria-label="Callout type" contentEditable={false} value={block.props.kind}
+    <select aria-label="Callout type" contentEditable={false} disabled={!editor.isEditable} value={block.props.kind}
       onChange={event => editor.updateBlock(block, { props: { kind: event.target.value } })}>
       {calloutKinds.map(kind => <option key={kind} value={kind}>{kind === "warning" ? "Common mistake" : kind[0].toUpperCase() + kind.slice(1)}</option>)}
     </select>

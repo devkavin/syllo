@@ -270,6 +270,7 @@ class StudySessionCreate(BaseModel):
 
 class ReviewOutcome(BaseModel):
     quality: str = Field(pattern="^(good|again)$")
+    expected_next_review_at: AwareDatetime | None = None
 
 
 class SessionNotePatch(BaseModel):

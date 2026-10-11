@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
-import { Sparkles } from "lucide-react";
+import { Sparkles, CircleHelp, ChevronDown } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import NotebookPractice from "@/components/NotebookPractice";
 import { useAuth } from "@/lib/auth";
 import DeleteAction from "@/components/DeleteAction";
+import LessonReview from "@/components/LessonReview";
 
 export default function Reviews() {
   const accountId = useAuth()?.user?.user_id;
@@ -17,6 +18,7 @@ function ReviewWorkspace() {
   const [params] = useSearchParams();
   const lessonId = params.get("lesson");
   const questionId = params.get("question");
+  const reviewId = params.get("review");
   const [items, setItems] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [err, setErr] = useState("");
@@ -55,7 +57,7 @@ function ReviewWorkspace() {
           </div>
         </div>
         {dueSoon && r.lesson_id ? (
-          <Link className="btn btn-primary text-xs" to={`/lessons/${r.lesson_id}`}>Open lesson to review</Link>
+          <Link className="btn btn-primary text-xs" aria-label={`Start review: ${r.lesson_title || "Lesson"}`} to={`/reviews?review=${encodeURIComponent(r.review_id)}`}>Start review</Link>
         ) : (
           <div className="text-xs text-muted-foreground">Scheduled</div>
         )}
@@ -64,12 +66,21 @@ function ReviewWorkspace() {
     );
   };
 
+  if (reviewId) {
+    if (loading) return <p role="status">Opening review…</p>;
+    if (err) return <div className="space-y-3"><p role="alert" className="text-destructive">{err}</p><button className="btn btn-outline" onClick={() => setRetry(value => value + 1)}>Retry lesson reviews</button><Link className="btn btn-ghost" to="/reviews">Back to reviews</Link></div>;
+    const active = items.find(item => item.review_id === reviewId && item.lesson_id);
+    if (!active) return <div className="space-y-3"><p role="alert">This review is no longer available. Choose another lesson from your review list.</p><Link className="btn btn-outline" to="/reviews">Back to reviews</Link></div>;
+    return <LessonReview key={active.review_id} review={active} onSaved={updated => setItems(previous => previous.map(item => item.review_id === updated.review_id ? updated : item))} />;
+  }
+
   return (
     <div className="space-y-8" data-testid="reviews-page">
       <div className="space-y-2">
         <div className="section-title mb-2">Spaced practice</div>
         <h1 className="page-title">Reviews</h1>
-        <p className="text-muted-foreground mt-2 max-w-md">A little recall practice, then a chance to revisit your lessons.</p>
+        <p className="text-muted-foreground mt-2 max-w-md">Recall what you learned, check it, then choose when to revisit it.</p>
+        <details className="group text-sm max-w-2xl"><summary className="cursor-pointer action-link min-h-11 flex items-center gap-2 w-fit"><CircleHelp aria-hidden="true" className="w-4 h-4" />How reviews work<ChevronDown aria-hidden="true" className="w-4 h-4 transition-transform group-open:rotate-180" /></summary><div className="space-y-3 py-3 text-muted-foreground"><p><strong className="text-foreground">Lesson reviews:</strong> Choose Start review, recall the topic from memory, check your notes, then rate your recall. Syllo schedules the next review for you.</p><p><strong className="text-foreground">Question practice:</strong> Save questions and answers in a notebook’s Practice options. Here, choose Start practice, try each question, reveal its answer, then rate it.</p><p>These have separate schedules. Practising a question does not complete a whole lesson review. No AI is needed.</p><Link className="action-link" to="/notebooks">Make practice from your notes</Link></div></details>
       </div>
       {lessonId && <Link className="action-link" to={`/lessons/${encodeURIComponent(lessonId)}`}>Back to lesson</Link>}
       <NotebookPractice key={`${lessonId || "all"}.${questionId || "queue"}`} dueOnly={!lessonId && !questionId} lessonId={lessonId} initialQuestionId={questionId} />
@@ -82,6 +93,7 @@ function ReviewWorkspace() {
           <Sparkles className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
           <div className="font-serif text-lg mb-1">Nothing to review yet</div>
           <div className="text-sm text-muted-foreground">Schedule a review from a lesson or after a focus session.</div>
+          <Link className="btn btn-outline mt-3" to={lessonId ? `/lessons/${encodeURIComponent(lessonId)}` : "/subjects"}>Choose a lesson to review</Link>
         </div>
       ) : (
         <>

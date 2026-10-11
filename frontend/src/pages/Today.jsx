@@ -12,7 +12,7 @@ import StudyWorkDialog from "@/components/StudyWorkDialog";
 import NewNoteDialog from "@/components/NewNoteDialog";
 import useStudyDesk, { studyFocusHref } from "@/hooks/useStudyDesk";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { nextStudyAction } from "@/lib/nextStudyAction";
+import { nextStudyAction, reviewHref } from "@/lib/nextStudyAction";
 import { browserTimezone, formatStudyTime } from "@/lib/studyTime";
 
 export default function Today() {
@@ -128,7 +128,7 @@ export default function Today() {
           </li>)}
           {remainingReviews.map(review => <li key={review.review_id} className="flex flex-wrap items-center gap-3 py-4">
             <RotateCcw aria-hidden="true" className="h-5 w-5 text-muted-foreground shrink-0" /><div className="min-w-0 flex-1"><p className="font-medium">{review.lesson_title || review.title || "Review lesson"}</p><p className="text-sm text-muted-foreground">{new Date(review.next_review_at).getTime() <= Date.now() ? "Ready for review" : `Review at ${formatStudyTime(review.next_review_at, timezone)}`}</p></div>
-            <Link className="btn btn-outline" to={review.lesson_id ? `/lessons/${review.lesson_id}` : "/reviews"}>Review lesson<span className="sr-only">: {review.lesson_title || review.title || "lesson"}</span></Link>
+            <Link className="btn btn-outline" to={reviewHref(review)}>Review lesson<span className="sr-only">: {review.lesson_title || review.title || "lesson"}</span></Link>
           </li>)}
         </ul>
       </section>}

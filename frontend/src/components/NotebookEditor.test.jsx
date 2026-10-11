@@ -26,6 +26,16 @@ it("renders legacy text literally in an accessible rich editor", () => {
   expect(screen.queryByText("Literal", { selector: "b" })).not.toBeInTheDocument();
 });
 
+it("shows review notes without allowing edits or writing controls", async () => {
+  const editorRef = createRef();
+  render(<NotebookEditor notebook={{ rich_content: [{ type: "callout", props: { kind: "definition" }, content: "Saved lesson notes" }] }} theme="light" editorRef={editorRef} readOnly />);
+  expect(editorRef.current.isEditable).toBe(false);
+  expect(screen.getByText("Saved lesson notes")).toBeVisible();
+  expect(await screen.findByLabelText("Callout type")).toBeDisabled();
+  expect(screen.queryByText(/Type \/ for equations/)).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Insert/ })).not.toBeInTheDocument();
+});
+
 it("saves real heading, ink and highlight edits with readable plain text", async () => {
   const editorRef = createRef(), onChange = vi.fn();
   render(<NotebookEditor notebook={{ content: "Cells" }} theme="light" editorRef={editorRef} onChange={onChange} />);

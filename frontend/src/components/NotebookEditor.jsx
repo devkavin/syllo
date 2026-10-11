@@ -15,7 +15,7 @@ import NotebookStudyTools from "./NotebookStudyTools";
 
 const mediaCommands = new Set(["image", "video", "audio", "file"]);
 
-export default function NotebookEditor({ notebook, theme, editorRef, onChange }) {
+export default function NotebookEditor({ notebook, theme, editorRef, onChange, readOnly = false }) {
   const editor = useCreateBlockNote({
     schema: notebookSchema,
     dictionary: { ...en, math: mathLocales.en, diagram: diagramLocales.en },
@@ -38,11 +38,12 @@ export default function NotebookEditor({ notebook, theme, editorRef, onChange })
   ), [editor]);
 
   return <>
-    <NotebookStudyTools editor={editor} />
-    <p className="text-xs text-muted-foreground">Type / for equations, diagrams and callouts. Equations use LaTeX; diagrams use Mermaid.</p>
+    {!readOnly && <><NotebookStudyTools editor={editor} />
+    <p className="text-xs text-muted-foreground">Type / for equations, diagrams and callouts. Equations use LaTeX; diagrams use Mermaid.</p></>}
     <BlockNoteView className="notebook-writing" editor={editor} theme={theme} slashMenu={false} filePanel={false}
-    onChange={() => onChange({ rich_content: editor.document, content: notebookText(editor.document) })}>
-    <SuggestionMenuController triggerCharacter="/" getItems={getSlashItems}
-      shouldOpen={state => !state.selection.$from.parent.type.isInGroup("tableContent")} />
+    editable={!readOnly} formattingToolbar={readOnly ? false : undefined} sideMenu={readOnly ? false : undefined}
+    onChange={() => { if (!readOnly) onChange?.({ rich_content: editor.document, content: notebookText(editor.document) }); }}>
+    {!readOnly && <SuggestionMenuController triggerCharacter="/" getItems={getSlashItems}
+      shouldOpen={state => !state.selection.$from.parent.type.isInGroup("tableContent")} />}
   </BlockNoteView></>;
 }

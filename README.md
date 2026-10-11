@@ -59,6 +59,11 @@ The web study workflow connects notebooks, Focus, Reviews, Planner and Progress:
   a corrected method. Answers stay hidden until revealed. Again, Hard and Good
   schedule the next review; these are self-ratings, not automatically graded results.
   Selected note text can become a question without calling an AI service.
+- Lesson reviews open a guided recall screen from Reviews or Today. Recall first,
+  check a read-only rich notebook preview or saved questions, then self-rate to
+  schedule the next review. Scratch answers last only while the screen is open;
+  the saved rating updates the lesson's review date. Question practice and lesson
+  reviews have separate schedules. No AI or API key is required.
 - Planner's Revision plans distribute chosen lessons across selected study days
   before an exam, within the plan's daily capacity. Generated work uses ordinary
   tasks, so it appears in Today, Tasks and the agenda. Dates can be rescheduled.

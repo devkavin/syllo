@@ -88,6 +88,27 @@ async def test_reviews_advance_reset_and_expose_due_state(sql_app) -> None:
 
 
 @pytest.mark.asyncio
+async def test_review_retry_and_other_device_cannot_advance_the_same_schedule_twice(sql_app) -> None:
+    app, _ = sql_app
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as client:
+        await register(client, "review-retry@example.com")
+        _, _, lesson = await make_lesson(client)
+        await client.patch(f"/api/lessons/{lesson['lesson_id']}", json={"status": "done"})
+        original = (await client.get("/api/reviews")).json()[0]
+        body = {"quality": "good", "expected_next_review_at": original["next_review_at"]}
+        first = await client.post(f"/api/reviews/{original['review_id']}/mark", json=body)
+        replay = await client.post(f"/api/reviews/{original['review_id']}/mark", json=body)
+        other_device = await client.post(f"/api/reviews/{original['review_id']}/mark", json={**body, "quality": "again"})
+        assert first.status_code == 200
+        assert first.json()["interval_days"] == 3
+        assert replay.status_code == other_device.status_code == 409
+        assert replay.json()["detail"]["current"]["next_review_at"] == first.json()["next_review_at"]
+        saved = (await client.get("/api/reviews")).json()[0]
+        assert saved["interval_days"] == 3
+        assert saved["next_review_at"] == first.json()["next_review_at"]
+
+
+@pytest.mark.asyncio
 async def test_missed_review_appears_in_today_and_due_filter(sql_app) -> None:
     app, factory = sql_app
     async with httpx.AsyncClient(

@@ -36,7 +36,7 @@ it.each(["good", "again"])("completes an owned due review from its lesson (%s)",
   render(<MemoryRouter initialEntries={["/lessons/l"]}><Routes><Route path="/lessons/:id" element={<LessonWorkspace />} /></Routes></MemoryRouter>);
   await screen.findByDisplayValue("Read this first");
   fireEvent.click(screen.getByRole("button", { name: quality === "good" ? "Good · understood" : "Again · revisit tomorrow" }));
-  await waitFor(() => expect(http.post).toHaveBeenCalledWith("/reviews/r/mark", { quality }));
+  await waitFor(() => expect(http.post).toHaveBeenCalledWith("/reviews/r/mark", { quality, expected_next_review_at: "2026-01-01T00:00:00Z" }));
   expect(await screen.findByText("Review complete. Your next review is scheduled.")).toBeInTheDocument();
 });
 

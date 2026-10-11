@@ -242,13 +242,17 @@ async def mark_review(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    await lock_student(session, user.user_id)
     review = await session.scalar(
         select(Review).where(
             Review.review_id == review_id, Review.user_id == user.user_id
-        )
+        ).with_for_update().execution_options(populate_existing=True)
     )
     if review is None:
         raise HTTPException(status_code=404, detail="Review not found")
+    lesson = await owned_lesson(session, user.user_id, review.lesson_id) if review.lesson_id else None
+    if body.expected_next_review_at is not None and utc_value(review.next_review_at) != utc_value(body.expected_next_review_at):
+        raise HTTPException(409, {"message": "This review schedule was already updated. Its saved date has been kept.", "current": review_dict(review, lesson)})
     review.step_index = (
         0
         if body.quality == "again"

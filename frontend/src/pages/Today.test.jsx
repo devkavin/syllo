@@ -117,7 +117,7 @@ it("shows each task and review once, with a direct completion action", async () 
 it("keeps a recurring review visible after its previous completion", async () => {
   day = { ...emptyDay, reviews_due: [{ review_id: "r", lesson_id: "limits", lesson_title: "Limits", next_review_at: "2026-10-06T05:00:00Z", completed_at: "2026-10-03T05:00:00Z", state: "due" }] };
   render(<MemoryRouter><Today /></MemoryRouter>);
-  expect(await screen.findByRole("link", { name: "Review lesson" })).toHaveAttribute("href", "/lessons/limits");
+  expect(await screen.findByRole("link", { name: "Review lesson" })).toHaveAttribute("href", "/reviews?review=r");
 });
 
 it("hands keyboard focus from Add to the study dialog and restores Add on Escape", async () => {
