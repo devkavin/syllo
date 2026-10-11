@@ -10,6 +10,7 @@ import AcademicSelector from "@/components/AcademicSelector";
 import SessionComplete from "@/components/SessionComplete";
 import { useAuth } from "@/lib/auth";
 import { useSharedFocusTimer } from "@/hooks/useSharedFocusTimer";
+import { TimerAlarmControls } from "@/components/TimerAlarm";
 
 const MODES = {
   pomodoro: { label: "Focus block", default: 25 * 60, presets: [25, 50, 90] },
@@ -476,6 +477,7 @@ export default function FocusTimer() {
           <ChevronDown aria-hidden="true" className={`w-4 h-4 text-muted-foreground transition-transform ${settingsOpen ? "rotate-180" : ""}`} />
         </button>
         <div id="focus-settings" hidden={!settingsOpen} role="region" aria-label="Focus settings" className="border-t border-border p-5 space-y-5">
+          <TimerAlarmControls />
           {(running || startedAt || pendingRecording) && <p className="text-sm text-muted-foreground">Finish or reset this session to change its settings.</p>}
           <div>
             <p className="text-sm font-medium mb-2">Timer mode</p>

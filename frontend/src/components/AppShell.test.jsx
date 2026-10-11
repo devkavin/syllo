@@ -13,12 +13,12 @@ const renderShell = () => render(<MemoryRouter><AppShell><h1>Today</h1></AppShel
 it("lets desktop navigation collapse to a labeled icon rail and remembers the preference", () => {
   localStorage.removeItem("syllo.sidebarCollapsed");
   const view = renderShell();
-  fireEvent.click(screen.getByRole("button", { name: "Collapse navigation" }));
+  fireEvent.click(screen.getByRole("button", { name: "Hide sidebar" }));
   expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "true");
   expect(screen.getByRole("link", { name: "Notebooks", exact: true })).toHaveAttribute("href", "/notebooks");
   view.unmount(); renderShell();
   expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "true");
-  fireEvent.click(screen.getByRole("button", { name: "Expand navigation" }));
+  fireEvent.click(screen.getByRole("button", { name: "Show sidebar" }));
   expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "false");
   localStorage.removeItem("syllo.sidebarCollapsed");
 });
@@ -104,7 +104,7 @@ it("keeps secondary study destinations behind Library while preserving their rou
 
 it("keeps the library open on a secondary destination so the current route is visible", () => {
   render(<MemoryRouter initialEntries={["/notebooks"]}><AppShell><h1>Notes</h1></AppShell></MemoryRouter>);
-  fireEvent.click(screen.getByRole("button", { name: "Expand navigation" }));
+  fireEvent.click(screen.getByRole("button", { name: "Show sidebar" }));
   expect(screen.getByRole("button", { name: "Library" })).toHaveAttribute("aria-expanded", "true");
   expect(screen.getByRole("link", { name: "Notebooks" })).toHaveAttribute("aria-current", "page");
 });

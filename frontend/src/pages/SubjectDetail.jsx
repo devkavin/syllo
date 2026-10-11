@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
@@ -7,9 +7,14 @@ import { Plus, ChevronDown, ChevronRight, Timer, Check, StickyNote } from "lucid
 import ExplainPopover from "@/components/ExplainPopover";
 import { useResourceAutosave } from "@/hooks/useResourceAutosave";
 import Modal from "@/components/Modal";
+import DeleteAction from "@/components/DeleteAction";
+import { queryClient } from "@/lib/queryClient";
 
 export default function SubjectDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const newUnitButton = useRef(null);
+  const invalidateCurriculum = () => { void queryClient.invalidateQueries({ predicate: query => ["subjects", "units", "tasks", "today", "reviews", "timetable", "notebooks", "analytics"].includes(query.queryKey[0]) }); };
   const [subject, setSubject] = useState(null);
   const [units, setUnits] = useState([]);
   const [lessonsByUnit, setLessonsByUnit] = useState({});
@@ -78,13 +83,14 @@ export default function SubjectDetail() {
         <div className="flex items-center gap-3 mt-2">
           <span className="subject-dot w-3! h-3!" style={{ background: c.dot }} />
           <h1 className="page-title">{subject.name}</h1>
+          <DeleteAction label={`Delete subject ${subject.name}`} name={subject.name} url={`/subjects/${id}`} description="This permanently deletes the subject and all its units and lessons, including lesson notes. Notebook pages and recorded study time are kept. This cannot be undone." onDeleted={() => { invalidateCurriculum(); navigate("/subjects", { replace: true }); }} />
         </div>
         {subject.description && <p className="text-muted-foreground mt-1">{subject.description}</p>}
       </div>
 
       <div className="flex justify-between items-center">
         <h2 className="font-serif text-xl">Units</h2>
-        <button className="btn btn-primary" onClick={addUnit} data-testid="new-unit-btn"><Plus className="w-4 h-4" /> New unit</button>
+        <button ref={newUnitButton} className="btn btn-primary" onClick={addUnit} data-testid="new-unit-btn"><Plus className="w-4 h-4" /> New unit</button>
       </div>
 
       <details className="border-b border-border pb-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium">Subject settings</summary><PresetCard subject={subject} onSave={savePreset} /></details>
@@ -102,6 +108,7 @@ export default function SubjectDetail() {
             const lessons = lessonsByUnit[u.unit_id] || [];
             return (
               <div key={u.unit_id} className="card" data-testid={`unit-${u.unit_id}`}>
+                <div className="flex items-center pr-2">
                 <button
                   className="w-full flex items-center gap-3 px-4 py-4 text-left rounded-lg hover:bg-accent/40"
                   aria-expanded={open}
@@ -114,6 +121,8 @@ export default function SubjectDetail() {
                     <div className="text-xs text-muted-foreground">{lessons.length} lesson{lessons.length === 1 ? "" : "s"}</div>
                   </div>
                 </button>
+                <DeleteAction label={`Delete unit ${u.name}`} name={u.name} url={`/units/${u.unit_id}`} fallbackFocusRef={newUnitButton} description={`This permanently deletes this unit and its ${lessons.length} lesson${lessons.length === 1 ? "" : "s"}, including lesson notes. Notebook pages and recorded study time are kept. This cannot be undone.`} onDeleted={() => { setUnits(previous => previous.filter(item => item.unit_id !== u.unit_id)); invalidateCurriculum(); }} />
+                </div>
                 {open && (
                   <div className="border-t border-border px-4 py-3 space-y-1">
                     {lessons.length === 0 ? (
@@ -130,6 +139,8 @@ export default function SubjectDetail() {
                         statusMeta={statusMeta}
                         subjectName={subject.name}
                         onStatus={() => cycleStatus(l)}
+                        fallbackFocusRef={newUnitButton}
+                        onDeleted={() => { setLessonsByUnit(previous => ({ ...previous, [u.unit_id]: previous[u.unit_id].filter(item => item.lesson_id !== l.lesson_id) })); invalidateCurriculum(); }}
                         onNotesSaved={(nl) => setLessonsByUnit((m) => ({ ...m, [l.unit_id]: m[l.unit_id].map((x) => x.lesson_id === l.lesson_id ? nl : x) }))}
                       />
                     );})}
@@ -177,7 +188,7 @@ function StatusIcon({ status }) {  if (status === "done") {
   );
 }
 
-function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) {
+function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved, onDeleted, fallbackFocusRef }) {
   const [open, setOpen] = useState(false);
   const autosave = useResourceAutosave({ resourceKey: `lesson.${lesson.lesson_id}`, initialValue: { notes: lesson.notes || "" }, save: async patch => {
     const { data } = await http.patch(`/lessons/${lesson.lesson_id}`, patch);
@@ -231,6 +242,7 @@ function LessonRow({ lesson, statusMeta, subjectName, onStatus, onNotesSaved }) 
           <StickyNote className="w-3.5 h-3.5" />
         </button>
         <div className="text-xs text-muted-foreground font-mono">{Math.round((lesson.total_seconds || 0) / 60)}m</div>
+        <DeleteAction label={`Delete lesson ${lesson.title}`} name={lesson.title} url={`/lessons/${lesson.lesson_id}`} description="This permanently deletes the lesson and its lesson notes. Notebook pages and recorded study time are kept. This cannot be undone." onDeleted={onDeleted} fallbackFocusRef={fallbackFocusRef} beforeDelete={autosave.flush} />
       </div>
       {open && (
         <div ref={containerRef} className="ml-7 mt-1 mb-3 p-3 rounded-lg border border-border bg-accent/20 relative" data-testid={`lesson-notes-panel-${lesson.lesson_id}`}>

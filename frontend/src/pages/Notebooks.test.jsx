@@ -447,9 +447,13 @@ it("refreshes the deleted revision before offering an immediate Trash restore", 
   await waitFor(() => expect(screen.getByRole("button", { name: "New notebook" })).toBeEnabled());
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   await waitFor(() => expect(screen.getByRole("button", { name: "Notebooks", exact: true })).toHaveFocus());
+  const trashRequestsBeforeOpen = http.get.mock.calls.filter(([url]) => url === "/notebooks?trash=true").length;
   await openNotebookList();
   const trashMenu = screen.getByText("Trash");
   if (!trashMenu.closest("details").open) fireEvent.click(trashMenu);
+  // Opening details dispatches its native toggle asynchronously. Wait for that
+  // refresh before using the previously cached Restore control.
+  await waitFor(() => expect(http.get.mock.calls.filter(([url]) => url === "/notebooks?trash=true").length).toBeGreaterThan(trashRequestsBeforeOpen));
   await waitFor(() => expect(screen.getByRole("button", { name: "Restore Keep notes" })).toBeEnabled());
   fireEvent.click(screen.getByRole("button", { name: "Restore Keep notes" }));
   await waitFor(() => expect(http.post).toHaveBeenCalledWith("/notebooks/delete-restore/restore", { expected_revision: 5 }));

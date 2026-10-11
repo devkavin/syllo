@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/auth";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useNotebookLayout } from "@/lib/workspaceLayout";
+import { TimerAlarmControls } from "@/components/TimerAlarm";
 
 export default function Notebooks() {
   const accountId = useAuth()?.user?.user_id;
@@ -356,7 +357,7 @@ function NotebookWorkspace({ accountId }) {
                   <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => { setOptionsOpen(false); void removeNotebook(notebook.notebook_id); }} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>
                   <button className="btn btn-outline w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void summarize(); }} disabled={summarizing} data-testid="notebook-summarize-btn" aria-label="Summarize with Study Companion" title="Summarize with Study Companion">{summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Summarize</button>
                   <AiPrivacyNote />
-                </div></SheetContent></Sheet>
+                <TimerAlarmControls /></div></SheetContent></Sheet>
               </div>
             </div>
             {saveState === "failed" && autosave.error && <p className="mb-3 text-xs text-muted-foreground">{autosave.error}</p>}

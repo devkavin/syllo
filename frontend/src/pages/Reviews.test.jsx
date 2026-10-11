@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, it, vi } from "vitest";
 import { http } from "@/lib/api";
 const account = vi.hoisted(() => ({ id: "student" }));
-vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), post: vi.fn() }, formatError: error => error.message }));
+vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), post: vi.fn(), delete: vi.fn() }, formatError: error => error.message }));
 vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: { user_id: account.id } }) }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 import Reviews from "./Reviews";
@@ -12,6 +12,15 @@ beforeEach(() => {
   vi.clearAllMocks();
   account.id = "student";
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/study/questions" ? [{ question_id: "q", prompt: "Recall the formula", answer: "F = ma", kind: "question", revision: 1, next_review_at: "2020-01-01" }] : url === "/reviews" ? [{ review_id: "r", lesson_id: "l", lesson_title: "Newton's laws", next_review_at: "2020-01-01", interval_days: 1 }] : [] }));
+});
+it("removes a lesson review only after confirmation while keeping its lesson", async () => {
+  http.delete.mockResolvedValue({ data: {} });
+  render(<MemoryRouter><Reviews /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole("button", { name: "Delete review Newton's laws" }));
+  expect(http.delete).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Delete permanently" }));
+  await waitFor(() => expect(http.delete).toHaveBeenCalledWith("/reviews/r"));
+  await waitFor(() => expect(screen.queryByTestId("review-r")).not.toBeInTheDocument());
 });
 
 it("clears the prior account's question while the next account loads", async () => {

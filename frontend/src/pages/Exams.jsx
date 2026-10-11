@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays } from "lucide-react";
 import { http, formatError } from "@/lib/api";
+import DeleteAction from "@/components/DeleteAction";
 
 const selfRatings = { again: "Again · revisit", hard: "Hard · uncertain", good: "Good · recalled" };
 const lessonStatuses = { not_started: "Not started", in_progress: "In progress", done: "Done" };
@@ -25,7 +26,7 @@ export default function Exams() {
     {!exams && !error && <p role="status">Loading exam plans…</p>}
     {exams?.length === 0 && <section className="empty-state space-y-2"><h2 className="font-serif text-xl">No exam plans yet</h2><p>Create a revision plan in Planner and choose the lessons on your syllabus.</p></section>}
     {exams && [...exams].sort((a, b) => a.exam_date.localeCompare(b.exam_date)).map(exam => <article key={exam.plan_id} aria-labelledby={`exam-${exam.plan_id}`} className="card p-4 sm:p-6 space-y-5">
-      <div><h2 id={`exam-${exam.plan_id}`} className="font-serif text-2xl break-words">{exam.title}</h2><p className="mt-1 text-sm text-muted-foreground">Exam {exam.exam_date} · {exam.daily_minutes} min per study day</p><p className="mt-3 text-sm font-medium">{exam.completed_count} of {exam.total_items} revision sessions completed</p></div>
+      <div><div className="flex items-start gap-2"><h2 id={`exam-${exam.plan_id}`} className="font-serif text-2xl break-words flex-1 min-w-0">{exam.title}</h2><DeleteAction label={`Delete exam plan ${exam.title}`} name={exam.title} url={`/study/plans/${exam.plan_id}`} description="This deletes the revision plan and its generated tasks from Today, Tasks and your agenda. Lessons, notes and recorded study time are kept. This cannot be undone." onDeleted={() => setExams(previous => previous.filter(item => item.plan_id !== exam.plan_id))} /></div><p className="mt-1 text-sm text-muted-foreground">Exam {exam.exam_date} · {exam.daily_minutes} min per study day</p><p className="mt-3 text-sm font-medium">{exam.completed_count} of {exam.total_items} revision sessions completed</p></div>
       <div className="space-y-3">{exam.topics.map(topic => <section key={topic.lesson_id} aria-labelledby={`exam-${exam.plan_id}-topic-${topic.lesson_id}`} className="rounded-lg border border-border p-4 space-y-2">
         <h3 id={`exam-${exam.plan_id}-topic-${topic.lesson_id}`} className="font-medium break-words">{topic.title}</h3>
         <p className="text-xs text-muted-foreground">Lesson marked {lessonStatuses[topic.status] || topic.status}</p>

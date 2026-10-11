@@ -61,6 +61,10 @@ def envelope(item, now, received_at):
     return {"revision": item.revision, "server_now": now.isoformat(), "server_received_at": received_at.isoformat(), "timer": timer,
         "last_session": (item.completion or {}).get("last_session"),
         "completed_timer_id": (item.completion or {}).get("timer_id"),
+        "completion_automatic": (item.completion or {}).get("automatic", False),
+        "completed_at": (item.completion or {}).get("completed_at"),
+        "alarm_timer_id": (item.completion or {}).get("alarm_timer_id"),
+        "alarm_completed_at": (item.completion or {}).get("alarm_completed_at"),
         "finished_duration_seconds": (item.completion or {}).get("duration_seconds")}
 
 
@@ -68,6 +72,7 @@ async def finish_timer(session, user, item, now, *, automatic=False):
     timer = item.timer
     total = int(elapsed(timer, now))
     is_break = timer["mode"] in ("short", "long")
+    completed_at = datetime.fromisoformat(timer["run_started_at"]) + timedelta(seconds=timer["duration_seconds"] - timer["elapsed_seconds"]) if automatic else now
     if total < 10 and not is_break and not automatic:
         raise HTTPException(422, "A session needs at least 10 seconds.")
     last = None
@@ -106,7 +111,10 @@ async def finish_timer(session, user, item, now, *, automatic=False):
             last.finished_at = utc_value(finish_at).replace(microsecond=0) if offset + duration == total else utc_value(original_start + timedelta(seconds=offset + duration)).replace(microsecond=0)
             offset += duration
     await session.flush()
-    item.completion = {"timer_id": timer["timer_id"], "duration_seconds": total, "last_session": session_dict(last) if last else None}
+    previous = item.completion or {}
+    item.completion = {"timer_id": timer["timer_id"], "duration_seconds": total, "last_session": session_dict(last) if last else None, "automatic": automatic, "completed_at": completed_at.isoformat(),
+        "alarm_timer_id": timer["timer_id"] if automatic else previous.get("alarm_timer_id"),
+        "alarm_completed_at": completed_at.isoformat() if automatic else previous.get("alarm_completed_at")}
     item.timer = None
     item.revision += 1
 
@@ -180,10 +188,9 @@ async def timer_action(body: TimerAction, user: User = Depends(get_current_user)
             "elapsed_seconds": 0.0, "started_at": now.isoformat(), "run_started_at": now.isoformat(),
             "subject_id": subject_id, "unit_id": unit_id, "lesson_id": lesson.lesson_id if lesson else None,
             "lesson_title": lesson.title if lesson else "", "circle_event_id": body.circle_event_id, "event_topic": event_topic}
-        item.completion = None
+        # Retain completion so another device can observe it after a quick restart.
     elif body.action == "reset":
         timer = None
-        item.completion = None
     elif not timer:
         raise HTTPException(409, "There is no active timer. Refresh to see the latest state.")
     elif body.action == "pause":

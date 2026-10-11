@@ -1,11 +1,11 @@
 import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, it, vi } from "vitest";
 import Exams from "./Exams";
 import { http } from "@/lib/api";
 
-vi.mock("@/lib/api", () => ({ http: { get: vi.fn() }, formatError: error => error.message }));
+vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), delete: vi.fn() }, formatError: error => error.message }));
 
 const exam = {
   plan_id: "physics-exam", title: "Physics revision", subject_id: "physics", exam_date: "2099-11-01", daily_minutes: 60, completed_count: 1, total_items: 3,
@@ -16,6 +16,14 @@ const exam = {
 };
 beforeEach(() => vi.resetAllMocks());
 const mount = () => render(<MemoryRouter><Exams /></MemoryRouter>);
+it("confirms removal of an exam plan and its generated tasks", async () => {
+  http.get.mockResolvedValue({ data: [exam] }); http.delete.mockResolvedValue({ data: {} }); mount();
+  fireEvent.click(await screen.findByRole("button", { name: "Delete exam plan Physics revision" }));
+  expect(http.delete).not.toHaveBeenCalled(); expect(screen.getByRole("dialog")).toHaveTextContent(/generated tasks/);
+  fireEvent.click(screen.getByRole("button", { name: "Delete permanently" }));
+  await waitFor(() => expect(http.delete).toHaveBeenCalledWith("/study/plans/physics-exam"));
+  await waitFor(() => expect(screen.queryByRole("article", { name: "Physics revision" })).not.toBeInTheDocument());
+});
 
 it("shows actual exam work and manual recall ratings with scoped lesson practice", async () => {
   http.get.mockResolvedValue({ data: [exam] });

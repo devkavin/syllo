@@ -32,6 +32,22 @@ duplicate study logs. Deploy migration `20261010_0011` before serving the update
 frontend (the production API entrypoint applies it automatically). Older unsaved
 local sessions can be logged or reset before switching to the shared timer.
 
+Countdown completion now has a per-device sound alarm and a dismissible visual
+notice across web pages. Enable/test sound in Focus settings or notebook options
+on each device after opening the app; browsers require a user gesture to allow
+audio. The same countdown can ring on both open devices. Natural completion
+markers survive quick restarts and resets so another device's next sync can
+still receive the alarm. Manual finish/reset does not generate an alarm. Sound
+lasts about 11 seconds or stops on dismissal/mute; missed completions older than
+two minutes show the notice without replaying sound. Closed, locked or suspended
+browsers cannot guarantee an immediate alarm; server timing remains accurate.
+
+Subjects, units and lessons expose confirmed deletion controls. Deleting a unit
+also deletes its lessons; deleting a subject includes all units and lessons.
+Dialogs explain this and the permanent removal of lesson notes. Notebook pages
+and recorded study sessions are retained. Lesson reviews can be removed without
+deleting their lessons, and exam plans can be deleted with their generated tasks.
+
 The web study workflow connects notebooks, Focus, Reviews, Planner and Progress:
 
 - Notebooks retain account-scoped browser drafts, detect conflicting edits, keep

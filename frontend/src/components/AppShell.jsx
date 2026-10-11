@@ -8,6 +8,8 @@ import ActiveFocusBar from "@/components/ActiveFocusBar";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import ReminderCentre from "@/components/ReminderCentre";
 import { WorkspaceLayoutContext } from "@/lib/workspaceLayout";
+import { TimerAlarmProvider } from "@/components/TimerAlarm";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, GraduationCap,
@@ -33,7 +35,7 @@ const NAV = [
   { to: "/circles", label: "Circles", icon: Users, testid: "nav-circles" },
 ];
 
-function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false }) {
+function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false, onToggleSidebar }) {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const { usage } = useUsage();
@@ -50,8 +52,9 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false }) 
     <Icon className="w-4 h-4 shrink-0" /><span className={collapsed ? "sr-only" : undefined}>{label}</span>
   </NavLink>;
   return <div className="flex min-h-full flex-col">
-    <div className={`${collapsed ? "px-3" : "px-5"} pt-6 pb-5 shrink-0`}>
-      <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-4 h-4" /></div>
+    <div className={`${onToggleSidebar ? "px-2" : "px-5"} pt-4 pb-5 shrink-0 flex items-center gap-3`}>
+      {onToggleSidebar && <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><button className="btn btn-outline btn-icon shrink-0" aria-label={collapsed ? "Show sidebar" : "Hide sidebar"} aria-expanded={!collapsed} onClick={onToggleSidebar}>{collapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}</button></TooltipTrigger><TooltipContent side="right">{collapsed ? "Show sidebar" : "Hide sidebar"}</TooltipContent></Tooltip></TooltipProvider>}
+      <div className={`flex items-center gap-2 ${collapsed ? "sr-only" : ""}`}><div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-4 h-4" /></div>
         <div className={collapsed ? "sr-only" : undefined}><div className="font-display font-semibold text-xl leading-none tracking-tight">syllo</div><div className="text-xs text-muted-foreground mt-1">Your study space</div></div></div>
     </div>
     <div className={`${collapsed ? "px-2" : "px-3"} pb-4 space-y-1 shrink-0`}>
@@ -143,20 +146,20 @@ export default function AppShell({ children }) {
   }, []);
 
   return (
-    <WorkspaceLayoutContext.Provider value={{ expanded, setExpanded: setWritingExpanded }}>
+    <TimerAlarmProvider userId={user?.user_id}><WorkspaceLayoutContext.Provider value={{ expanded, setExpanded: setWritingExpanded }}>
     <Sheet open={open} onOpenChange={setOpen}><div className="min-h-dvh flex bg-background text-foreground">
       <a className="skip-link" href="#main-content">Skip to content</a>
       {/* Desktop sidebar */}
       {!expanded && <aside data-testid="desktop-sidebar" data-collapsed={sidebarCollapsed} className={`hidden md:flex ${sidebarCollapsed ? "w-16" : "md:w-60 lg:w-64"} shrink-0 border-r border-border bg-card`}>
         <div className="w-full sticky top-0 h-screen overflow-y-auto">
-          <button className="btn btn-ghost w-full min-h-11 rounded-none" aria-label={sidebarCollapsed ? "Expand navigation" : "Collapse navigation"} title={sidebarCollapsed ? "Expand navigation" : "Collapse navigation"} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar}>{sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <><PanelLeftClose className="w-4 h-4" /><span>Collapse navigation</span></>}</button>
-          <SidebarBody collapsed={sidebarCollapsed} onOpenSearch={() => setSearchOpen(true)} onOpenAi={() => setAiOpen(true)} />
+          <SidebarBody collapsed={sidebarCollapsed} onToggleSidebar={toggleSidebar} onOpenSearch={() => setSearchOpen(true)} onOpenAi={() => setAiOpen(true)} />
         </div>
       </aside>}
 
       {/* Mobile top bar */}
       {!expanded && <div className="md:hidden fixed top-0 inset-x-0 z-30 h-16 border-b border-border bg-background flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
+          <SheetTrigger asChild><button ref={mobileMenu} className="btn btn-ghost btn-icon" data-testid="mobile-nav-open" aria-label="Open menu" onClick={event => { navigationOpener.current = event.currentTarget; }}><Menu className="w-5 h-5" /></button></SheetTrigger>
           <div className="w-7 h-7 rounded-md bg-primary text-primary-foreground grid place-items-center">
             <GraduationCap className="w-3.5 h-3.5" />
           </div>
@@ -166,15 +169,6 @@ export default function AppShell({ children }) {
           <button className="btn btn-ghost btn-icon" onClick={() => setSearchOpen(true)} data-testid="mobile-search-btn" aria-label="Search">
             <SearchIcon className="w-5 h-5" />
           </button>
-          <SheetTrigger asChild><button
-            ref={mobileMenu}
-            className="btn btn-ghost btn-icon"
-            data-testid="mobile-nav-open"
-            aria-label="Open menu"
-            onClick={event => { navigationOpener.current = event.currentTarget; }}
-          >
-            <Menu className="w-5 h-5" />
-          </button></SheetTrigger>
         </div>
       </div>}
 
@@ -226,6 +220,6 @@ export default function AppShell({ children }) {
         {aiOpen && <AiCompanion open onClose={() => setAiOpen(false)} fallbackFocusRef={mobileMenu} />}
       </Suspense>
     </div></Sheet>
-    </WorkspaceLayoutContext.Provider>
+    </WorkspaceLayoutContext.Provider></TimerAlarmProvider>
   );
 }

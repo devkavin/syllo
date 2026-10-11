@@ -6,6 +6,7 @@ import { subjectClasses, SUBJECT_COLORS, SUBJECT_COLOR_IDS } from "@/lib/palette
 import { Plus, ArrowUpRight } from "lucide-react";
 import Modal from "@/components/Modal";
 import { useSubjectsQuery } from "@/hooks/useAcademicQueries";
+import DeleteAction from "@/components/DeleteAction";
 
 export default function Subjects() {
   const { data: subjects = [], isPending: loading, error, refetch } = useSubjectsQuery();
@@ -44,24 +45,24 @@ export default function Subjects() {
           {subjects.map((s) => {
             const c = subjectClasses(s.color, isDark);
             return (
-              <Link
+              <article
                 key={s.subject_id}
-                to={`/subjects/${s.subject_id}`}
                 data-testid={`subject-card-${s.subject_id}`}
                 className="card p-5 hover:border-ring transition-colors group"
               >
                 <div className="flex items-center justify-between gap-2 mb-4">
                   <span className="subject-dot" style={{ background: c.dot }} />
                   <ArrowUpRight aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
+                  <DeleteAction label={`Delete subject ${s.name}`} name={s.name} url={`/subjects/${s.subject_id}`} description="This permanently deletes the subject and all its units and lessons, including lesson notes. Notebook pages and recorded study time are kept. This cannot be undone." onDeleted={refetch} />
                 </div>
-                <div className="font-serif text-2xl mb-1 tracking-tight">{s.name}</div>
+                <Link to={`/subjects/${s.subject_id}`} className="block font-serif text-2xl mb-1 tracking-tight hover:text-primary">{s.name}</Link>
                 <div className="text-sm text-muted-foreground line-clamp-2">
                   {s.description || "Open to view units and lessons."}
                 </div>
-                <div className="text-sm mt-4 inline-flex items-center gap-1 text-primary">
+                <Link to={`/subjects/${s.subject_id}`} className="text-sm mt-4 inline-flex items-center gap-1 text-primary">
                   Open subject →
-                </div>
-              </Link>
+                </Link>
+              </article>
             );
           })}
         </div>

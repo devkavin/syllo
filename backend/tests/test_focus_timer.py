@@ -51,6 +51,7 @@ async def test_timer_is_shared_across_devices_and_excludes_paused_fractional_tim
         data = finished.json()
         assert data["timer"] is None and data["revision"] == 4
         assert data["completed_timer_id"] == timer["timer_id"]
+        assert data["completion_automatic"] is False
         assert data["finished_duration_seconds"] == 12
         assert data["last_session"]["duration_seconds"] == 12
         assert (await phone.post("/api/focus-timer/action", json=finish_body)).json()["last_session"]["session_id"] == data["last_session"]["session_id"]
@@ -71,6 +72,8 @@ async def test_timer_countdown_expires_without_browser_and_records_once(sql_app,
         assert expired.json()["timer"] is None
         assert expired.json()["last_session"]["duration_seconds"] == 30
         assert expired.json()["revision"] == 2
+        assert expired.json()["completion_automatic"] is True
+        assert datetime.fromisoformat(expired.json()["completed_at"]) == datetime.fromisoformat(started.json()["timer"]["started_at"]) + timedelta(seconds=30)
         assert expired.json()["last_session"]["finished_at"] == (datetime.fromisoformat(started.json()["timer"]["started_at"]) + timedelta(seconds=30)).replace(microsecond=0).isoformat()
         await client.get("/api/focus-timer")
         assert len((await client.get("/api/sessions")).json()) == 1
@@ -78,6 +81,25 @@ async def test_timer_countdown_expires_without_browser_and_records_once(sql_app,
         server_clock[0] += timedelta(minutes=5)
         assert (await client.get("/api/focus-timer")).json()["timer"] is None
         assert len((await client.get("/api/sessions")).json()) == 1
+
+
+@pytest.mark.asyncio
+async def test_alarm_completion_survives_next_start_reset_and_manual_finish(sql_app, server_clock):
+    app, factory = sql_app
+    user = await person(factory, "alarm-durable@example.com")
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver", headers=headers(app, user)) as client:
+        first = (await client.post("/api/focus-timer/action", json=action("start", 0, mode="short", duration_seconds=10))).json()
+        server_clock[0] += timedelta(seconds=10)
+        completion = (await client.get("/api/focus-timer")).json()
+        second = (await client.post("/api/focus-timer/action", json=action("start", completion["revision"], mode="pomodoro", duration_seconds=60))).json()
+        reset = (await client.post("/api/focus-timer/action", json=action("reset", second["revision"]))).json()
+        third = (await client.post("/api/focus-timer/action", json=action("start", reset["revision"], mode="stopwatch"))).json()
+        server_clock[0] += timedelta(seconds=12)
+        manual = (await client.post("/api/focus-timer/action", json=action("finish", third["revision"]))).json()
+        for snapshot in [completion, second, reset, third, manual, (await client.get("/api/focus-timer")).json()]:
+            assert snapshot["alarm_timer_id"] == first["timer"]["timer_id"]
+            assert snapshot["alarm_completed_at"] == completion["completed_at"]
+        assert manual["completion_automatic"] is False
 
 
 @pytest.mark.asyncio

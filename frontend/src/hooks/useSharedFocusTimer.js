@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { formatError, http } from "@/lib/api";
 
-function timerStore(enabled) {
+function timerStore(enabled, background) {
   let state = { snapshot: null, loading: enabled, busy: false, error: "", displaySeconds: 0, elapsedSeconds: 0 };
   let baseline = 0;
   let active = false;
@@ -102,7 +102,7 @@ function timerStore(enabled) {
     }
   }
   function tick() {
-    if (!active || document.visibilityState === "hidden") return;
+    if (!active || (!background && document.visibilityState === "hidden")) return;
     const values = clock();
     if (values.elapsedSeconds !== state.elapsedSeconds || values.displaySeconds !== state.displaySeconds) publish(values);
     const timer = state.snapshot?.timer;
@@ -141,8 +141,8 @@ function timerStore(enabled) {
  * Actions return the server envelope or throw; refresh returns an envelope or null.
  * Pass the authenticated userId to discard old account state on an account change.
  */
-export function useSharedFocusTimer({ userId, enabled = true } = {}) {
-  const store = useMemo(() => timerStore(enabled), [userId, enabled]);
+export function useSharedFocusTimer({ userId, enabled = true, background = false } = {}) {
+  const store = useMemo(() => timerStore(enabled, background), [userId, enabled, background]);
   const state = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
   useEffect(() => store.start(), [store]);
   return { ...state, refresh: store.refresh, act: store.act };

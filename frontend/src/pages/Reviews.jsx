@@ -6,6 +6,7 @@ import { Sparkles } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import NotebookPractice from "@/components/NotebookPractice";
 import { useAuth } from "@/lib/auth";
+import DeleteAction from "@/components/DeleteAction";
 
 export default function Reviews() {
   const accountId = useAuth()?.user?.user_id;
@@ -58,6 +59,7 @@ function ReviewWorkspace() {
         ) : (
           <div className="text-xs text-muted-foreground">Scheduled</div>
         )}
+        <DeleteAction label={`Delete review ${r.lesson_title || "Lesson"}`} name={r.lesson_title || "lesson review"} url={`/reviews/${r.review_id}`} description="Remove this review schedule? Your lesson, notes, practice cards and recorded study time are kept. You can schedule another review later." onDeleted={() => setItems(previous => previous.filter(item => item.review_id !== r.review_id))} />
       </li>
     );
   };

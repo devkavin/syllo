@@ -224,6 +224,17 @@ async def set_review(lesson_id: str, body: ReviewSchedule, user: User = Depends(
     return review_dict(review, lesson)
 
 
+@router.delete("/reviews/{review_id}")
+async def delete_review(review_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    await lock_student(session, user.user_id)
+    review = await session.scalar(select(Review).where(Review.review_id == review_id, Review.user_id == user.user_id).with_for_update())
+    if review is None:
+        raise HTTPException(404, "Review not found")
+    await session.delete(review)
+    await session.commit()
+    return {"ok": True}
+
+
 @router.post("/reviews/{review_id}/mark")
 async def mark_review(
     review_id: str,
