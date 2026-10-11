@@ -10,6 +10,14 @@ vi.mock("@/lib/usage", () => ({ useUsage: () => ({ usage: null }) }));
 
 const token = "abcdefghijklmnopqrstuvwxyz123456";
 const renderShell = () => render(<MemoryRouter><AppShell><h1>Today</h1></AppShell></MemoryRouter>);
+it("provides compact mobile study navigation and a labeled More menu", async () => {
+  renderShell();
+  const mobile = screen.getByRole("navigation", { name: "Mobile navigation" });
+  expect(within(mobile).getByRole("link", { name: "Study" })).toHaveAttribute("href", "/notebooks");
+  expect(within(mobile).getByRole("link", { name: "Planner" })).toHaveAttribute("href", "/planner");
+  fireEvent.click(within(mobile).getByRole("button", { name: "More destinations" }));
+  expect(await screen.findByRole("dialog", { name: "Navigation" })).toBeVisible();
+});
 
 it("provides a skip link to the main workspace", () => {
   renderShell();

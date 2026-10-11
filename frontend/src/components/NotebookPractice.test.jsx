@@ -1,12 +1,143 @@
 import React from "react";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { http } from "@/lib/api";
 vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() }, formatError: error => error.message }));
 import NotebookPractice from "./NotebookPractice";
 const notebook = { notebook_id: "nb", subject_id: "s", lesson_id: "l" };
 const question = { question_id: "q", notebook_id: "nb", kind: "question", prompt: "Define equilibrium", answer: "Forward and reverse rates are equal", revision: 1, next_review_at: "2020-01-01T00:00:00Z" };
 beforeEach(() => { vi.clearAllMocks(); http.get.mockResolvedValue({ data: [question] }); });
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+
+it("hides cloze words from both the queue and prompt until reveal", async () => {
+  http.get.mockResolvedValue({ data: [{ ...question, format: "cloze", prompt: "Water is {{H2O}}", answer: "Remember its formula" }] });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: "Practise: Water is […]" }));
+  expect(screen.queryByText(/H2O/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  expect(screen.getByRole("heading", { name: "Water is H2O" })).toBeVisible();
+});
+
+it("uses the saved answer as a reverse prompt and reveals the original question", async () => {
+  http.get.mockResolvedValue({ data: [{ ...question, format: "reverse" }] });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: `Practise: ${question.answer}` }));
+  expect(screen.getByRole("heading", { name: question.answer })).toBeVisible();
+  expect(screen.queryByText(question.prompt)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  expect(screen.getByText(question.prompt)).toBeVisible();
+});
+
+it("advances a mixed session only after its rating has saved", async () => {
+  const mistake = { ...question, question_id: "m", kind: "mistake", prompt: "Convert minutes", correction: "Multiply by 60", revision: 3 };
+  http.get.mockResolvedValue({ data: [question, mistake] });
+  http.post.mockImplementation((url) => Promise.resolve({ data: url.includes("/q/") ? { ...question, revision: 2 } : { ...mistake, revision: 4 } }));
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(screen.getByRole("button", { name: "Mixed" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "Start practice" })).not.toBeDisabled());
+  fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
+  expect(screen.getByRole("heading", { name: question.prompt })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Good · recalled" })));
+  expect(screen.getByRole("heading", { name: mistake.prompt })).toBeVisible();
+  expect(screen.queryByText(mistake.correction)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Again · revisit" })));
+  expect(screen.getByRole("status")).toHaveTextContent("Session complete · 2 reviews saved");
+});
+
+it("records elapsed exam time and optional honest self-marked marks with retry", async () => {
+  const exam = { ...question, format: "exam", time_limit_seconds: 30, max_marks: 5 };
+  http.get.mockResolvedValue({ data: [exam] });
+  http.post.mockRejectedValueOnce({ message: "Gateway unavailable", response: { status: 503 } }).mockResolvedValueOnce({ data: { ...exam, revision: 2 } });
+  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: `Practise: ${question.prompt}` }));
+  expect(screen.getByText(/Time remaining/)).toBeVisible();
+  now.mockReturnValue(13000);
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  fireEvent.change(screen.getByLabelText(/Self-marked earned marks/), { target: { value: "4" } });
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Good · recalled" })));
+  expect(http.post).toHaveBeenCalledWith("/study/questions/q/attempt", expect.objectContaining({ elapsed_seconds: 12, earned_marks: 4 }));
+  expect(screen.getByText(/Marks are your own assessment/)).toBeVisible();
+  now.mockReturnValue(25000);
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Retry review" })));
+  expect(http.post.mock.calls[1][1]).toEqual(http.post.mock.calls[0][1]);
+});
+
+it("blocks exam marks outside the available maximum", async () => {
+  http.get.mockResolvedValue({ data: [{ ...question, format: "exam", time_limit_seconds: 30, max_marks: 5 }] });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: `Practise: ${question.prompt}` }));
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  fireEvent.change(screen.getByLabelText(/Self-marked earned marks/), { target: { value: "6" } });
+  fireEvent.click(screen.getByRole("button", { name: "Good · recalled" }));
+  expect(screen.getByRole("alert")).toHaveTextContent("Enter whole marks from 0 to 5");
+  expect(http.post).not.toHaveBeenCalled();
+});
+
+it("creates a timed exam question with its mark limit", async () => {
+  http.post.mockResolvedValue({ data: { ...question, question_id: "new-exam" } });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: "Add question" }));
+  fireEvent.change(screen.getByLabelText("Format"), { target: { value: "exam" } });
+  fireEvent.change(screen.getByLabelText("Question"), { target: { value: "Explain equilibrium" } });
+  fireEvent.change(screen.getByLabelText("Answer"), { target: { value: question.answer } });
+  fireEvent.change(screen.getByLabelText("Time limit (seconds)"), { target: { value: "120" } });
+  fireEvent.change(screen.getByLabelText("Maximum marks (optional)"), { target: { value: "6" } });
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Save question" })));
+  expect(http.post).toHaveBeenCalledWith("/study/questions", expect.objectContaining({ format: "exam", time_limit_seconds: 120, max_marks: 6 }));
+});
+
+it("uses a mistake's corrected method as the required reverse answer", async () => {
+  http.get.mockResolvedValue({ data: [] });
+  http.post.mockResolvedValue({ data: { ...question, question_id: "reverse-mistake", kind: "mistake", format: "reverse", answer: "Multiply by 60", correction: "Multiply by 60" } });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(screen.getByRole("button", { name: "Mistakes" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add mistake" }));
+  fireEvent.change(screen.getByLabelText("Format"), { target: { value: "reverse" } });
+  fireEvent.change(screen.getByLabelText("Question"), { target: { value: "Convert minutes to seconds" } });
+  fireEvent.change(screen.getByLabelText("Corrected method"), { target: { value: "Multiply by 60" } });
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Save mistake" })));
+  expect(http.post).toHaveBeenCalledWith("/study/questions", expect.objectContaining({ kind: "mistake", format: "reverse", answer: "Multiply by 60", correction: "Multiply by 60" }));
+});
+
+it("keeps an uncertain mixed-session rating on the same question until retry succeeds", async () => {
+  const second = { ...question, question_id: "second", prompt: "Second prompt" };
+  http.get.mockResolvedValue({ data: [question, second] });
+  http.post.mockRejectedValueOnce(new Error("Offline")).mockResolvedValueOnce({ data: { ...question, revision: 2 } });
+  render(<NotebookPractice dueOnly />);
+  await waitFor(() => expect(screen.getByRole("button", { name: "Start practice" })).not.toBeDisabled());
+  fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Good · recalled" })));
+  expect(screen.getByRole("heading", { name: question.prompt })).toBeVisible();
+  expect(screen.queryByRole("heading", { name: second.prompt })).not.toBeInTheDocument();
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Retry review" })));
+  expect(screen.getByRole("heading", { name: second.prompt })).toBeVisible();
+});
+
+it("omits optional exam marks when the student leaves them blank", async () => {
+  const exam = { ...question, format: "exam", time_limit_seconds: 30, max_marks: 5 };
+  http.get.mockResolvedValue({ data: [exam] });
+  http.post.mockResolvedValue({ data: { ...exam, revision: 2 } });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: `Practise: ${question.prompt}` }));
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Good · recalled" })));
+  expect(http.post.mock.calls[0][1]).not.toHaveProperty("earned_marks");
+});
+
+it("reloads the current queue after a rejected stale rating without retrying it", async () => {
+  http.post.mockRejectedValue({ message: "Practice changed", response: { status: 409 } });
+  render(<NotebookPractice notebook={notebook} />);
+  fireEvent.click(await screen.findByRole("button", { name: `Practise: ${question.prompt}` }));
+  fireEvent.click(screen.getByRole("button", { name: "Reveal answer" }));
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Good · recalled" })));
+  expect(await screen.findByRole("button", { name: `Practise: ${question.prompt}` })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Retry review" })).not.toBeInTheDocument();
+  expect(screen.getByRole("alert")).toHaveTextContent("Practice changed");
+});
 
 it("hides answers and rating controls until the student reveals the answer", async () => {
   render(<NotebookPractice notebook={notebook} />);

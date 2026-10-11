@@ -32,9 +32,9 @@ export default function Planner() {
           <button className="btn btn-ghost btn-icon" aria-label={`Next ${view.toLowerCase()}`} onClick={() => setDay(d => shiftDate(d, view === "Week" ? 7 : 1))}><ChevronRight className="h-4 w-4" /></button>
         </div>
       </div>
-      <Link className="btn btn-outline sm:ml-auto" to="/timetable">Weekly timetable</Link>
+      <Link className="action-link sm:ml-auto" to="/exams">Open exams</Link>
     </div>
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground"><span>Times in {timezone}</span><Link to="/settings" className="action-link"><Settings2 className="h-4 w-4" />Change timezone</Link></div>
+    <details className="text-sm border-b border-border pb-2"><summary className="cursor-pointer min-h-11 py-3 font-medium">Planner options</summary><div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground"><span>Times in {timezone}</span><Link to="/settings" className="action-link"><Settings2 className="h-4 w-4" />Change timezone</Link><Link className="action-link" to="/timetable">Weekly timetable</Link></div></details>
     {error && <div role="alert" className="notice">{error} <button className="btn btn-outline" onClick={() => setRetry(n => n + 1)}>Retry</button></div>}
     {!data && !error && <p role="status">Loading your agenda…</p>}
     {data && <>{data.items.length ? <AgendaList items={data.items} timezone={timezone} withDate={view === "Week"} /> : <section className="empty-state space-y-3"><h2>A little room in your {view.toLowerCase()}</h2><p>No activities planned. Add a class or make time to study.</p><Link className="btn btn-outline" to="/timetable?new=1">Plan an activity</Link></section>}{data.warnings?.map(w => <p key={w.id} role="status" className="notice">{w.message} <Link className="action-link" to={w.href || "/timetable"}>Check timetable</Link></p>)}</>}

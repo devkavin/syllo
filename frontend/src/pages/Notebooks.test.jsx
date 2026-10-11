@@ -7,6 +7,7 @@ import { http } from "@/lib/api";
 vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), patch: vi.fn(), post: vi.fn(), delete: vi.fn() }, formatError: String }));
 vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: { user_id: "student" } }) }));
 vi.mock("@/components/NotebookFocus", () => ({ default: () => null }));
+vi.mock("@/components/ActiveFocusBar", () => ({ default: () => <div aria-label="Active focus session">Focus in progress</div> }));
 vi.mock("@/components/NotebookPractice", () => ({ default: () => null }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 vi.mock("@/lib/usage", () => ({ useUsage: () => ({ setRemaining: vi.fn() }) }));
@@ -23,6 +24,187 @@ it("saves title and content together instead of dropping a pending title", async
   fireEvent.change(screen.getByTestId("notebook-title-input"), { target: { value: "Limits" } });
   fireEvent.change(content, { target: { value: "Limit definition" } });
   await waitFor(() => expect(http.patch).toHaveBeenCalledWith("/notebooks/nb", expect.objectContaining({ title: "Limits", content: "Limit definition", rich_content: expect.any(Array) })), { timeout: 2000 });
+});
+
+it("keeps the same editor, draft and selection when switching Write and Practice modes", async () => {
+  const notebook = { notebook_id: "modes", title: "Chemistry", content: "Original", revision: 2 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  const editor = await screen.findByRole("textbox", { name: "Notebook notes" });
+  fireEvent.change(editor, { target: { value: "Unsaved recall text" } });
+  editor.setSelectionRange(2, 8);
+  fireEvent.click(screen.getByRole("button", { name: "Practice" }));
+  expect(screen.queryByRole("textbox", { name: "Notebook notes" })).not.toBeInTheDocument();
+  expect(editor).toHaveValue("Unsaved recall text");
+  fireEvent.click(screen.getByRole("button", { name: "Write" }));
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toBe(editor);
+  expect(editor.selectionStart).toBe(2);
+  expect(editor.selectionEnd).toBe(8);
+  expect(editor).toHaveValue("Unsaved recall text");
+});
+
+it("keeps offline pending sync visible outside collapsed notebook options", async () => {
+  const notebook = { notebook_id: "offline-status", title: "Chemistry", content: "Original", revision: 2 };
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Device draft" } });
+  await waitFor(() => expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Saved on device · pending sync"), { timeout: 2000 });
+  expect(screen.getByTestId("notebook-autosave-indicator")).toBeVisible();
+  expect(JSON.parse(localStorage.getItem("syllo.draft.account.student.notebook.offline-status"))).toMatchObject({ baseRevision: 2, patch: { content: "Device draft" } });
+});
+
+it("switches cached notebooks offline while restoring the durable account draft and base revision", async () => {
+  const a = { notebook_id: "cached-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "cached-b", title: "Beta", content: "Saved B", revision: 5 };
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/cached-b" ? b : a }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  const page = <MemoryRouter><Notebooks /></MemoryRouter>;
+  const view = render(page);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Pending A notes" } });
+  fireEvent.click(screen.getByTestId("notebook-item-cached-b"));
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Saved B"));
+  fireEvent.click(screen.getByTestId("notebook-item-cached-a"));
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Pending A notes"));
+  expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Saved on device · pending sync");
+  expect(http.patch).not.toHaveBeenCalled();
+  expect(JSON.parse(localStorage.getItem("syllo.draft.account.student.notebook.cached-a"))).toMatchObject({ baseRevision: 3, patch: { content: "Pending A notes" } });
+  view.unmount();
+  render(page);
+  expect(await screen.findByRole("textbox", { name: "Notebook notes" })).toHaveValue("Pending A notes");
+  expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Saved on device · pending sync");
+});
+
+it("keeps the current offline draft if another tab overwrites it while the next note loads", async () => {
+  const a = { notebook_id: "delayed-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "delayed-b", title: "Beta", content: "Saved B", revision: 5 };
+  let resolveB;
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  http.get.mockImplementation(url => url === "/notebooks/delayed-b" ? new Promise(resolve => { resolveB = resolve; }) : Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : a }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "My pending notes" } });
+  fireEvent.click(screen.getByTestId("notebook-item-delayed-b"));
+  await waitFor(() => expect(resolveB).toBeTypeOf("function"));
+  const otherDraft = JSON.stringify({ baseRevision: 3, patch: { content: "Other tab notes" } });
+  localStorage.setItem("syllo.draft.account.student.notebook.delayed-a", otherDraft);
+  await act(async () => resolveB({ data: b }));
+  expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("My pending notes");
+  expect(localStorage.getItem("syllo.draft.account.student.notebook.delayed-a")).toBe(otherDraft);
+});
+
+it("keeps the active focus controls available when there are no notebooks", async () => {
+  http.get.mockResolvedValue({ data: [] });
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  expect(await screen.findByText("Start with a blank page.")).toBeVisible();
+  expect(screen.getByLabelText("Active focus session")).toBeVisible();
+});
+
+it("blocks offline switching when the pending draft could not be saved on the device", async () => {
+  const a = { notebook_id: "storage-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "storage-b", title: "Beta", content: "Saved B", revision: 5 };
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Storage full"); });
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/storage-b" ? b : a }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Keep my unpersisted notes" } });
+  fireEvent.click(screen.getByTestId("notebook-item-storage-b"));
+  expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Keep my unpersisted notes");
+  expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Not saved · Retry");
+  expect(http.get).not.toHaveBeenCalledWith("/notebooks/storage-b");
+});
+
+it("requires a confirmed server save before online switching even with a durable draft", async () => {
+  const a = { notebook_id: "online-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "online-b", title: "Beta", content: "Saved B", revision: 5 };
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(true);
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/online-b" ? b : a }));
+  http.patch.mockRejectedValue(new Error("Server unavailable"));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Awaiting server confirmation" } });
+  fireEvent.click(screen.getByTestId("notebook-item-online-b"));
+  expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Awaiting server confirmation");
+  expect(http.get).not.toHaveBeenCalledWith("/notebooks/online-b");
+  expect(http.patch).toHaveBeenCalledWith("/notebooks/online-a", expect.objectContaining({ expected_revision: 3, content: "Awaiting server confirmation" }));
+});
+
+it("requires recovery before offline switching away from a conflicting durable draft", async () => {
+  const a = { notebook_id: "conflict-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "conflict-b", title: "Beta", content: "Saved B", revision: 5 };
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  localStorage.setItem("syllo.draft.account.student.notebook.conflict-a", JSON.stringify({ baseRevision: 2, patch: { content: "Conflicting notes" } }));
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/conflict-b" ? b : a }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  expect(await screen.findByRole("textbox", { name: "Notebook notes" })).toHaveValue("Conflicting notes");
+  fireEvent.click(screen.getByTestId("notebook-item-conflict-b"));
+  expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Save recovered copy" })).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Conflicting notes");
+  expect(http.get).not.toHaveBeenCalledWith("/notebooks/conflict-b");
+});
+
+it("offers retry loading after the initial cached notebook list is unavailable", async () => {
+  const notebook = { notebook_id: "retry-cache", title: "Cached notes", content: "Available now", revision: 2 };
+  http.get.mockImplementation(url => url === "/notebooks" ? Promise.reject(new Error("No cached notebooks available")) : Promise.resolve({ data: [] }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  expect(await screen.findByRole("alert")).toHaveTextContent("No cached notebooks available");
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  fireEvent.click(screen.getByRole("button", { name: "Retry loading" }));
+  expect(await screen.findByRole("textbox", { name: "Notebook notes" })).toHaveValue("Available now");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+it("retries an unavailable cached note while preserving the current offline draft", async () => {
+  const a = { notebook_id: "retry-a", title: "Alpha", content: "Saved A", revision: 3 };
+  const b = { notebook_id: "retry-b", title: "Beta", content: "Saved B", revision: 5 };
+  let available = false;
+  vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  http.get.mockImplementation(url => url === "/notebooks/retry-b" && !available ? Promise.reject(new Error("This note is not cached")) : Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/retry-b" ? b : a }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Draft remains safe" } });
+  fireEvent.click(screen.getByTestId("notebook-item-retry-b"));
+  expect(await screen.findByRole("alert")).toHaveTextContent("This note is not cached");
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Draft remains safe");
+  available = true;
+  fireEvent.click(screen.getByRole("button", { name: "Retry loading" }));
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Saved B"));
+  expect(JSON.parse(localStorage.getItem("syllo.draft.account.student.notebook.retry-a"))).toMatchObject({ baseRevision: 3, patch: { content: "Draft remains safe" } });
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(http.patch).not.toHaveBeenCalled();
+});
+
+it("opens the new-note command once and creates the named notebook", async () => {
+  const notebook = { notebook_id: "created", title: "New study note", content: "", revision: 1 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" || url === "/notebooks" ? [] : notebook }));
+  http.post.mockResolvedValue({ data: notebook });
+  render(<React.StrictMode><MemoryRouter initialEntries={["/notebooks?new=1"]}><Notebooks /></MemoryRouter></React.StrictMode>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Title", exact: true }), { target: { value: notebook.title } });
+  fireEvent.click(screen.getByRole("button", { name: "Create note" }));
+  expect(await screen.findByRole("textbox", { name: "Notebook title" })).toHaveValue(notebook.title);
+  expect(http.post).toHaveBeenCalledWith("/notebooks", { title: notebook.title, content: "", subject_id: null, lesson_id: null });
+  expect(http.post).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+});
+
+it("keeps a failed notebook draft before opening the new-note command", async () => {
+  const notebook = { notebook_id: "command-draft", title: "Existing", content: "Original", revision: 2 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  http.patch.mockRejectedValue(new Error("Offline"));
+  function Page() { const navigate = useNavigate(); return <><button onClick={() => navigate("/notebooks?notebook=command-draft&new=1")}>New note command</button><Notebooks /></>; }
+  render(<MemoryRouter><Page /></MemoryRouter>);
+  fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Keep my pending work" } });
+  fireEvent.click(screen.getByRole("button", { name: "New note command" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("Save or recover your current draft");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Keep my pending work");
+  expect(http.post).not.toHaveBeenCalled();
 });
 it("gives notebook title and content accessible editor names", async () => {
   const notebook = { notebook_id: "n", title: "Limits", content: "Definition", subject_id: null };

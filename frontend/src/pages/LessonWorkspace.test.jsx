@@ -17,6 +17,19 @@ it("opens private lesson notes with linked work and focus actions", async () => 
   fireEvent.click(screen.getByRole("button", { name: "Schedule review" }));
   expect(screen.getByRole("button", { name: "30 minutes" })).toBeInTheDocument();
 });
+
+it("offers scoped practice and compact lesson options while save errors remain visible", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/lessons/l" ? { lesson_id: "l", subject_id: "s", unit_id: "u", title: "Limits", status: "learning", total_seconds: 60 } : [] }));
+  http.patch.mockRejectedValue(new Error("Save failed"));
+  render(<MemoryRouter initialEntries={["/lessons/l"]}><Routes><Route path="/lessons/:id" element={<LessonWorkspace />} /></Routes></MemoryRouter>);
+  expect(await screen.findByRole("link", { name: "Practise lesson" })).toHaveAttribute("href", "/reviews?lesson=l");
+  const options = screen.getByText("Lesson options").closest("details");
+  expect(options).not.toHaveAttribute("open");
+  fireEvent.click(screen.getByText("Lesson options"));
+  fireEvent.change(screen.getByLabelText("Lesson status"), { target: { value: "done" } });
+  fireEvent.click(screen.getByText("Lesson options"));
+  expect(await screen.findByRole("button", { name: "Retry save" }, { timeout: 2000 })).toBeVisible();
+});
 it.each(["good", "again"])("completes an owned due review from its lesson (%s)", async quality => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/lessons/l" ? { lesson_id: "l", subject_id: "s", unit_id: "u", title: "Limits", notes: "Read this first", status: "learning", total_seconds: 60 } : url === "/reviews" ? [{ review_id: "r", lesson_id: "l", next_review_at: "2026-01-01T00:00:00Z", state: "due" }] : [] }));
   http.post.mockResolvedValue({ data: { review_id: "r", lesson_id: "l", next_review_at: "2099-01-01T00:00:00Z", state: "upcoming" } });

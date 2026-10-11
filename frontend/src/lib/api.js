@@ -1,4 +1,5 @@
 import axios from "axios";
+import { createOfflineNotes, installOfflineNotes } from "./offlineNotes";
 
 export function resolveApiBase(value) {
   return value?.replace(/\/$/, "") || "/api";
@@ -11,6 +12,8 @@ export const http = axios.create({
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
+export const offlineNotes = createOfflineNotes({ namespace: API });
+installOfflineNotes(http, offlineNotes);
 
 export function formatError(err) {
   const d = err?.response?.data?.detail;

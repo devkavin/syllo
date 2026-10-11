@@ -17,6 +17,13 @@ beforeEach(() => {
   vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-10-06T06:00:00Z"));
 });
 afterEach(() => vi.restoreAllMocks());
+it("recommends due questions and mistakes on a quiet day", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? day : url === "/study/due-summary" ? { due_count: 4, questions_count: 3, mistakes_count: 1 } : [] }));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const action = await screen.findByRole("link", { name: "Practice due questions" });
+  expect(action).toHaveAttribute("href", "/reviews");
+  expect(screen.getByRole("region", { name: "Suggested next step" })).toHaveTextContent("3 questions · 1 mistakes");
+});
 it("makes focus and due work visible without analytics cards", async () => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? { today: "2026-10-05", agenda: [], tasks: [{ task_id: "t", title: "Physics worksheet", due_date: "2026-10-05" }], reviews_due: [] } : [] }));
   render(<MemoryRouter><Today /></MemoryRouter>);

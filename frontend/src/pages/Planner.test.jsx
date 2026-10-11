@@ -11,6 +11,7 @@ it("shows a dated agenda and links the actual activity", async () => {
   render(<MemoryRouter><Planner /></MemoryRouter>);
   expect(await screen.findByRole("link", { name: /Physics exam/ })).toHaveAttribute("href", "/timetable?edit=exam");
   expect(screen.getByRole("button", { name: "Week" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Open exams" })).toHaveAttribute("href", "/exams");
 });
 
 it("provides labelled date navigation with the current view preserved", async () => {

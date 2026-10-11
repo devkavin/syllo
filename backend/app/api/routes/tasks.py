@@ -143,6 +143,9 @@ async def delete_task(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, bool]:
+    from backend.app.services.study import lock_student
+
+    await lock_student(session, user.user_id)
     task = await owned_task(session, user.user_id, task_id)
     await session.delete(task)
     await session.commit()

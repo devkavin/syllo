@@ -3,29 +3,41 @@ import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import NotebookPractice from "@/components/NotebookPractice";
+import { useAuth } from "@/lib/auth";
 
 export default function Reviews() {
+  const accountId = useAuth()?.user?.user_id;
+  return <ReviewWorkspace key={accountId || "unavailable"} />;
+}
+
+function ReviewWorkspace() {
+  const [params] = useSearchParams();
+  const lessonId = params.get("lesson");
+  const questionId = params.get("question");
   const [items, setItems] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
+  const [retry, setRetry] = useState(0);
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const load = async () => {
-    try {
-      const [r, s] = await Promise.all([http.get("/reviews"), http.get("/subjects")]);
-      setItems(r.data); setSubjects(s.data);
-    } catch (e) { setErr(formatError(e)); } finally { setLoading(false); }
-  };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    let live = true; setLoading(true); setErr("");
+    Promise.all([http.get("/reviews"), http.get("/subjects")])
+      .then(([r, s]) => { if (live) { setItems(r.data); setSubjects(s.data); } })
+      .catch(e => { if (live) setErr(formatError(e)); })
+      .finally(() => { if (live) setLoading(false); });
+    return () => { live = false; };
+  }, [retry]);
 
   const subMap = useMemo(() => Object.fromEntries(subjects.map((x) => [x.subject_id, x])), [subjects]);
   const now = new Date();
-  const due = items.filter((r) => new Date(r.next_review_at) <= now);
-  const later = items.filter((r) => new Date(r.next_review_at) > now);
+  const scopedItems = lessonId ? items.filter(item => item.lesson_id === lessonId) : items;
+  const due = scopedItems.filter((r) => new Date(r.next_review_at) <= now);
+  const later = scopedItems.filter((r) => new Date(r.next_review_at) > now);
 
   const renderItem = (r) => {
     const sub = r.subject_id ? subMap[r.subject_id] : null;
@@ -57,13 +69,13 @@ export default function Reviews() {
         <h1 className="page-title">Reviews</h1>
         <p className="text-muted-foreground mt-2 max-w-md">A little recall practice, then a chance to revisit your lessons.</p>
       </div>
-      {err && <div className="text-destructive text-sm">{err}</div>}
-      <NotebookPractice dueOnly />
+      {lessonId && <Link className="action-link" to={`/lessons/${encodeURIComponent(lessonId)}`}>Back to lesson</Link>}
+      <NotebookPractice key={`${lessonId || "all"}.${questionId || "queue"}`} dueOnly={!lessonId && !questionId} lessonId={lessonId} initialQuestionId={questionId} />
       <section className="border-t border-border pt-6 space-y-4" aria-label="Lesson reviews">
       <h2 className="font-serif text-xl">Lesson reviews</h2>
       {loading ? (
         <div className="space-y-2">{[0,1,2].map((i) => <div key={i} className="h-16 bg-muted rounded-xl animate-pulse" />)}</div>
-      ) : items.length === 0 ? (
+      ) : err ? <div role="alert" className="text-destructive text-sm space-y-2"><p>{err}</p><button className="btn btn-outline" onClick={() => setRetry(value => value + 1)}>Retry lesson reviews</button></div> : scopedItems.length === 0 ? (
         <div className="empty-state">
           <Sparkles className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
           <div className="font-serif text-lg mb-1">Nothing to review yet</div>

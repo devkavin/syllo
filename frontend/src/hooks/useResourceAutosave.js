@@ -33,26 +33,33 @@ function resourceStore(key, initialValue, save, { accountId, versioned }) {
     }
   } catch { /* Keep editing when storage is unavailable. */ }
   const recovered = Object.keys(pending).length > 0;
+  let deviceSaved = Boolean(canPersist && storedValue);
   const conflict = recovered && versioned && baseRevision !== (initialValue?.revision ?? 1) ? { current: initialValue } : null;
-  let snapshot = { draft: { ...initialValue, ...pending }, saveState: conflict ? "conflict" : recovered ? "failed" : "idle", error: recovered ? "Recovered a draft from this device." : "", conflict };
+  let snapshot = { draft: { ...initialValue, ...pending }, deviceSaved, saveState: conflict ? "conflict" : recovered ? "failed" : "idle", error: recovered ? "Recovered a draft from this device." : "", conflict };
   let timer;
   let writing;
   let generation = 0;
   let active = true;
   const listeners = new Set();
-  const publish = (patch) => { snapshot = { ...snapshot, ...patch }; listeners.forEach(fn => fn()); };
+  const publish = (patch) => { snapshot = { ...snapshot, deviceSaved, ...patch }; listeners.forEach(fn => fn()); };
   const persist = (onlyIfUnchanged = false) => {
     try {
-      if (!canPersist || (onlyIfUnchanged && storage.getItem(storageKey) !== storedValue)) return;
+      if (!canPersist || (onlyIfUnchanged && storage.getItem(storageKey) !== storedValue)) { deviceSaved = false; return; }
       const recovery = { ...inFlight, ...pending };
-      storedValue = Object.keys(recovery).length ? JSON.stringify(versioned ? { patch: recovery, baseRevision } : recovery) : null;
-      if (storedValue) storage.setItem(storageKey, storedValue);
+      const nextValue = Object.keys(recovery).length ? JSON.stringify(versioned ? { patch: recovery, baseRevision } : recovery) : null;
+      if (nextValue) storage.setItem(storageKey, nextValue);
       else storage.removeItem(storageKey);
-    } catch { /* Server saves still work when recovery storage is unavailable. */ }
+      storedValue = nextValue;
+      deviceSaved = Boolean(nextValue);
+    } catch { deviceSaved = false; /* Server saves still work when recovery storage is unavailable. */ }
   };
   const store = {
     save,
     getSnapshot: () => snapshot,
+    isDeviceSaved() {
+      try { return Boolean(canPersist && deviceSaved && storedValue && storage.getItem(storageKey) === storedValue); }
+      catch { return false; }
+    },
     subscribe: fn => { listeners.add(fn); return () => listeners.delete(fn); },
     activate: () => { active = true; },
     cancel: () => { active = false; clearTimeout(timer); },
@@ -129,6 +136,11 @@ export function useResourceAutosave({ resourceKey, initialValue, save, accountId
   const store = useMemo(() => resourceStore(resourceKey, initialValue, save, { accountId, versioned }), [resourceKey, accountId, versioned]);
   store.save = save;
   const snapshot = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
-  useEffect(() => { store.activate(); return () => store.cancel(); }, [store]);
-  return { ...snapshot, update: store.update, retry: store.flush, flush: store.flush, replace: store.replace, conflictWith: store.conflictWith, getDraft: () => store.getSnapshot().draft };
+  useEffect(() => {
+    store.activate();
+    const reconnect = () => { if (store.getSnapshot().saveState === "failed") void store.flush(); };
+    window.addEventListener("online", reconnect);
+    return () => { window.removeEventListener("online", reconnect); store.cancel(); };
+  }, [store]);
+  return { ...snapshot, isDeviceSaved: store.isDeviceSaved, canKeepDeviceDraft: () => store.isDeviceSaved() && !store.getSnapshot().conflict, update: store.update, retry: store.flush, flush: store.flush, replace: store.replace, conflictWith: store.conflictWith, getDraft: () => store.getSnapshot().draft };
 }

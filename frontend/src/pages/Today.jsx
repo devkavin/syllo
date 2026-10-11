@@ -20,6 +20,7 @@ export default function Today() {
   const timezone = user?.timezone || browserTimezone();
   const [data, setData] = useState(null), [error, setError] = useState(""), [version, setVersion] = useState(0);
   const [dialog, setDialog] = useState(null), [notice, setNotice] = useState("");
+  const [practice, setPractice] = useState(null), [practiceError, setPracticeError] = useState("");
   const desk = useStudyDesk();
   const [workItem, setWorkItem] = useState(null);
   const [working, setWorking] = useState(null);
@@ -32,7 +33,14 @@ export default function Today() {
     http.get("/today").then(r => { if (live) setData(r.data); }).catch(e => { if (live) setError(formatError(e)); });
     return () => { live = false; };
   }, [version]);
-  const quiet = data && !(data.agenda || []).length && !(data.tasks || []).some(t => !t.completed) && !(data.reviews_due || []).length;
+  useEffect(() => {
+    let live = true;
+    const load = () => { http.get("/study/due-summary").then(({ data }) => { if (live) { setPractice(data); setPracticeError(""); } }).catch(error => { if (live) setPracticeError(formatError(error)); }); };
+    load();
+    window.addEventListener("focus", load);
+    return () => { live = false; window.removeEventListener("focus", load); };
+  }, [version, user?.user_id]);
+  const quiet = data && !(data.agenda || []).length && !(data.tasks || []).some(t => !t.completed) && !(data.reviews_due || []).length && !(practice?.due_count > 0);
   useEffect(() => { if (dialog) setNotice(""); }, [dialog]);
   const saved = message => { setNotice(message); refresh(); };
 
@@ -47,7 +55,7 @@ export default function Today() {
     } catch (e) { setError(formatError(e)); }
     finally { mutation.current = false; setWorking(null); }
   };
-  const next = data && nextStudyAction({ today: data.today, agenda: data.agenda, reviews: data.reviews_due, tasks: data.tasks });
+  const next = data && nextStudyAction({ today: data.today, agenda: data.agenda, reviews: data.reviews_due, tasks: data.tasks, practice });
   const lesson = desk.lesson;
   const firstUse = quiet && data.subjects_count === 0 && desk.history.data?.length === 0 && desk.timetable.data?.length === 0 && !desk.history.failed && !desk.timetable.failed;
   const focusHref = lesson ? `/timer?lesson=${encodeURIComponent(lesson.lesson_id)}` : "/timer";
@@ -59,7 +67,8 @@ export default function Today() {
   const completion = task => <button className="btn btn-ghost btn-icon" aria-label={`Complete ${task.title}`} disabled={working != null} onClick={() => complete(task)}><Check className="h-5 w-5" /></button>;
   const openWork = (item, isTask = false) => { setError(""); setWorkItem({ item, isTask }); };
   const contextName = next?.kind === "focus" ? desk.subjectName(lesson?.subject_id) : desk.subjectName(next?.item?.subject_id);
-  const nextDescription = next?.kind === "task" ? taskMeta(next.item) : next?.kind === "review" ? "A chance to revisit what you've learned." :
+  const practiceDescription = `${practice?.questions_count || 0} questions · ${practice?.mistakes_count || 0} mistakes ready to revisit.`;
+  const nextDescription = next?.kind === "task" ? taskMeta(next.item) : next?.kind === "practice" ? practiceDescription : next?.kind === "review" ? "A chance to revisit what you've learned." :
     ["current", "upcoming"].includes(next?.kind) ? `${formatStudyTime(next.item.starts_at, timezone)} – ${formatStudyTime(next.item.ends_at, timezone)} · ${next.item.kind?.replaceAll("_", " ") || "Activity"}` :
     lesson ? "Pick up where you left off." : firstUse ? "Start a session, jot down a note, or add one thing to work on. Subjects can wait." : quiet ? "Choose a subject, write a note, or take a little time to focus." : "There's room for a focus session. Your due work is below.";
 
@@ -85,12 +94,12 @@ export default function Today() {
       <section aria-label="Suggested next step" className="border-l-2 border-primary pl-5 py-1 sm:pl-6">
         <div className="flex items-start gap-4">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-muted-foreground mb-2">{next.kind === "current" ? "Happening now" : next.kind === "upcoming" ? "Later today" : next.kind === "review" ? "Ready for review" : next.kind === "task" ? "One thing to work on" : lesson ? "Continue learning" : firstUse ? "Welcome to your study space" : "Make some room to study"}</p>
+            <p className="text-sm font-medium text-muted-foreground mb-2">{next.kind === "current" ? "Happening now" : next.kind === "upcoming" ? "Later today" : next.kind === "practice" ? "Ready for practice" : next.kind === "review" ? "Ready for review" : next.kind === "task" ? "One thing to work on" : lesson ? "Continue learning" : firstUse ? "Welcome to your study space" : "Make some room to study"}</p>
             <h2 className="text-xl sm:text-2xl font-semibold tracking-tight break-words">{next.kind === "focus" ? lesson?.title || "What would you like to work on?" : next.label}</h2>
             {contextName && <p className="text-sm font-medium mt-1 text-primary break-words">{contextName}</p>}
             <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl">{nextDescription}</p>
             <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
-              {next.kind === "focus" ? <Link to={focusHref} className="btn btn-primary">{lesson ? "Continue studying" : "Start Focus"}</Link> :
+              {next.kind === "practice" ? <Link to="/reviews" className="btn btn-primary">Practice due questions</Link> : next.kind === "focus" ? <Link to={focusHref} className="btn btn-primary">{lesson ? "Continue studying" : "Start Focus"}</Link> :
                 next.kind === "task" ? <button className="btn btn-primary" onClick={() => openWork(next.item, true)}>Work on task</button> :
                 next.kind === "review" || next.item.kind === "circle_study" ? <Link to={next.href} className="btn btn-primary">{next.kind === "review" ? "Review lesson" : "Start session"}</Link> :
                 <button className="btn btn-primary" onClick={() => openWork(next.item)}>{next.item.kind === "class" ? "Open class" : "Open activity"}</button>}
@@ -102,6 +111,9 @@ export default function Today() {
           </div>
         </div>
       </section>
+
+      {practiceError && <p role="alert" className="notice">Practice counts could not load. {practiceError}<button className="btn btn-ghost" onClick={refresh}>Retry practice</button></p>}
+      {practice?.due_count > 0 && next.kind !== "practice" && <section aria-label="Due practice" className="flex flex-wrap items-center gap-4 border-y border-border py-4"><div className="flex-1 min-w-0"><h2 className="font-semibold">Keep your recall fresh</h2><p className="text-sm text-muted-foreground mt-1">{practiceDescription}</p></div><Link to="/reviews" className="btn btn-outline">Practice due questions</Link></section>}
 
       {!!data.circle_invitations?.length && <section aria-label="Circle session invitations" className="border border-primary/25 bg-accent/40 rounded-xl p-5 space-y-3">
         <h2 className="text-lg font-semibold">You're invited to study together</h2>

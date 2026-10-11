@@ -1,0 +1,20 @@
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { expect, it, vi } from "vitest";
+import ActiveFocusBar from "./ActiveFocusBar";
+import { useSharedFocusTimer } from "@/hooks/useSharedFocusTimer";
+vi.mock("@/hooks/useSharedFocusTimer", () => ({ useSharedFocusTimer: vi.fn() }));
+it("keeps an active server timer and sync errors visible with compact controls", () => {
+  const act = vi.fn().mockResolvedValue({});
+  const refresh = vi.fn();
+  useSharedFocusTimer.mockReturnValue({ snapshot: { timer: { status: "running", mode: "stopwatch" } }, displaySeconds: 1832, busy: false, error: "Timer could not sync", act, refresh });
+  render(<MemoryRouter><ActiveFocusBar userId="u" /></MemoryRouter>);
+  expect(screen.getByRole("region", { name: "Active focus session" })).toHaveTextContent("30:32");
+  fireEvent.click(screen.getByRole("button", { name: "Pause focus" }));
+  expect(act).toHaveBeenCalledWith("pause");
+  expect(screen.getByRole("alert")).toHaveTextContent("Timer could not sync");
+  fireEvent.click(screen.getByRole("button", { name: "Sync timer" }));
+  expect(refresh).toHaveBeenCalledOnce();
+  expect(screen.getByRole("link", { name: "Open Focus" })).toHaveAttribute("href", "/timer");
+});

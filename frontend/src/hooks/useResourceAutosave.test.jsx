@@ -2,6 +2,34 @@ import { act, renderHook } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { useResourceAutosave } from "./useResourceAutosave";
 afterEach(() => { vi.useRealTimers(); sessionStorage.clear(); localStorage.clear(); });
+it("checks that a device draft still belongs to this editor before allowing offline navigation", async () => {
+  const options = { resourceKey: "notebook.two-tabs", accountId: "alice", versioned: true, initialValue: { content: "Server", revision: 1 }, save: vi.fn().mockRejectedValue(new Error("offline")) };
+  const first = renderHook(() => useResourceAutosave(options));
+  act(() => first.result.current.update({ content: "Draft A" }));
+  const second = renderHook(() => useResourceAutosave(options));
+  act(() => second.result.current.update({ content: "Draft B" }));
+  expect(first.result.current.deviceSaved).toBe(true);
+  expect(first.result.current.isDeviceSaved()).toBe(false);
+  expect(second.result.current.isDeviceSaved()).toBe(true);
+  await act(async () => first.result.current.flush());
+  expect(first.result.current.draft.content).toBe("Draft A");
+  expect(first.result.current.deviceSaved).toBe(false);
+  expect(second.result.current.isDeviceSaved()).toBe(true);
+});
+it("retries durable edits on reconnect with their base revision, then stops at a conflict", async () => {
+  const current = { content: "Changed on phone", revision: 5 };
+  const save = vi.fn().mockRejectedValueOnce(new Error("offline")).mockRejectedValueOnce({ response: { status: 409, data: { detail: { current } } } });
+  const { result } = renderHook(() => useResourceAutosave({ resourceKey: "notebook.reconnect", accountId: "alice", versioned: true, initialValue: { content: "Original", revision: 4 }, save }));
+  act(() => result.current.update({ content: "Offline edit" }));
+  expect(result.current.deviceSaved).toBe(true);
+  await act(async () => result.current.flush());
+  await act(async () => window.dispatchEvent(new Event("online")));
+  expect(save).toHaveBeenLastCalledWith({ content: "Offline edit", expected_revision: 4 });
+  expect(result.current.saveState).toBe("conflict");
+  await act(async () => window.dispatchEvent(new Event("online")));
+  expect(save).toHaveBeenCalledTimes(2);
+  expect(result.current.draft.content).toBe("Offline edit");
+});
 it("keeps a failed draft and retries it", async () => {
   const save = vi.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ notes: "Draft" });
   const { result } = renderHook(() => useResourceAutosave({ resourceKey: "retry", initialValue: { notes: "" }, save }));

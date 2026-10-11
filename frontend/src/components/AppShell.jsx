@@ -4,6 +4,9 @@ import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import ActiveFocusBar from "@/components/ActiveFocusBar";
+import ConnectionStatus from "@/components/ConnectionStatus";
+import ReminderCentre from "@/components/ReminderCentre";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, GraduationCap,
@@ -22,6 +25,7 @@ const NAV = [
   { to: "/notebooks", label: "Notebooks", icon: NotebookPen, testid: "nav-notebooks" },
   { to: "/tasks", label: "Tasks", icon: ListTodo, testid: "nav-tasks" },
   { to: "/reviews", label: "Reviews", icon: Sparkles, testid: "nav-reviews" },
+  { to: "/exams", label: "Exams", icon: GraduationCap, testid: "nav-exams" },
   { to: "/timer", label: "Focus", icon: Timer, testid: "nav-timer" },
   { to: "/analytics", label: "Progress", icon: BarChart3, testid: "nav-analytics" },
   { to: "/settings", label: "Settings", icon: Settings, testid: "nav-settings" },
@@ -34,7 +38,7 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
   const { usage } = useUsage();
   const nav = useNavigate();
   const { pathname } = useLocation();
-  const libraryItems = NAV.filter(item => ["/notebooks", "/tasks", "/reviews"].includes(item.to));
+  const libraryItems = NAV.filter(item => ["/notebooks", "/tasks", "/reviews", "/exams"].includes(item.to));
   const libraryActive = libraryItems.some(item => pathname.startsWith(item.to));
   const [libraryExpanded, setLibraryExpanded] = useState(false);
   const libraryOpen = libraryExpanded || libraryActive;
@@ -92,6 +96,7 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
 
 export default function AppShell({ children }) {
   const { pathname } = useLocation();
+  const { user } = useAuth();
   const [pendingCircle] = useState(() => {
     try {
       const invite = JSON.parse(sessionStorage.getItem("syllo.circleInvite"));
@@ -106,6 +111,7 @@ export default function AppShell({ children }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const mobileMenu = useRef(null);
+  const navigationOpener = useRef(null);
   // FocusScope dispatches close autofocus after unmount; read the current handoff,
   // not the state captured by the drawer's previous render.
   const overlayOpen = useRef(false);
@@ -149,6 +155,7 @@ export default function AppShell({ children }) {
             className="btn btn-ghost btn-icon"
             data-testid="mobile-nav-open"
             aria-label="Open menu"
+            onClick={event => { navigationOpener.current = event.currentTarget; }}
           >
             <Menu className="w-5 h-5" />
           </button></SheetTrigger>
@@ -157,7 +164,7 @@ export default function AppShell({ children }) {
 
       {open && (
           <SheetContent side="left" className="w-80 max-w-[90vw] bg-card p-0 overflow-y-auto" closeLabel="Close menu" closeTestId="mobile-nav-close" aria-describedby={undefined}
-            onCloseAutoFocus={event => { if (overlayOpen.current) event.preventDefault(); }}>
+            onCloseAutoFocus={event => { event.preventDefault(); if (!overlayOpen.current) (navigationOpener.current || mobileMenu.current)?.focus(); }}>
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <SidebarBody onNavigate={() => setOpen(false)} onOpenSearch={() => setSearchOpen(true)} onOpenAi={() => setAiOpen(true)} />
           </SheetContent>
@@ -165,6 +172,9 @@ export default function AppShell({ children }) {
 
       <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 pt-16 md:pt-0">
         <div className="workspace max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 md:py-10 pb-24">
+          <ConnectionStatus />
+          <ActiveFocusBar userId={user?.user_id} enabled={!pathname.startsWith("/timer") && !pathname.startsWith("/notebooks")} />
+          <ReminderCentre key={user?.user_id || "anonymous"} userId={user?.user_id} />
           {pendingCircle && !inviteDismissed && pathname.replace(/\/$/, "") !== "/circles" && (
             <section aria-labelledby="circle-invitation-heading" className="mb-6 rounded-xl border border-primary/25 bg-accent/60 p-4 sm:p-5">
               <div className="flex items-start gap-3 sm:gap-4">
@@ -189,6 +199,11 @@ export default function AppShell({ children }) {
           {children}
         </div>
       </main>
+
+      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 inset-x-0 z-30 grid grid-cols-4 border-t border-border bg-background px-2 pb-[env(safe-area-inset-bottom)]">
+        {[{ to: "/today", label: "Today", icon: Home }, { to: "/notebooks", label: "Study", icon: NotebookPen }, { to: "/planner", label: "Planner", icon: Calendar }].map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} className={({ isActive }) => `min-h-16 flex flex-col items-center justify-center gap-1 text-xs rounded-lg ${isActive ? "text-primary font-semibold" : "text-muted-foreground"}`}><Icon className="h-5 w-5" />{label}</NavLink>)}
+        <SheetTrigger asChild><button className="min-h-16 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground rounded-lg" aria-label="More destinations" onClick={event => { navigationOpener.current = event.currentTarget; }}><Menu className="h-5 w-5" />More</button></SheetTrigger>
+      </nav>
 
       <Suspense fallback={null}>
         {searchOpen && <SearchDialog open onClose={() => setSearchOpen(false)} fallbackFocusRef={mobileMenu} />}

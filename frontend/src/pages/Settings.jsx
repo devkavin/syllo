@@ -4,10 +4,12 @@ import { useTheme } from "@/lib/theme";
 import { useUsage } from "@/lib/usage";
 import { http, formatError } from "@/lib/api";
 import { createBillingPortal } from "@/lib/billing";
-import { Loader2, ExternalLink, Gift, Copy, Check } from "lucide-react";
+import { Loader2, ExternalLink, Gift, Copy, Check, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { browserTimezone } from "@/lib/studyTime";
 import AvailabilitySettings from "@/components/AvailabilitySettings";
+import ReminderSettings from "@/components/ReminderSettings";
+import OfflineSettings from "@/components/OfflineSettings";
 
 export default function Settings() {
   const { user, updateMe } = useAuth();
@@ -19,13 +21,16 @@ export default function Settings() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [portalBusy, setPortalBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const save = async () => {
+    if (saving) return;
+    setSaving(true);
     setMsg(""); setErr("");
     try {
       await updateMe({ name, daily_goal_minutes: Number(goal) || 60, timezone });
       setMsg("Saved.");
-    } catch (e) { setErr(formatError(e)); }
+    } catch (e) { setErr(formatError(e)); } finally { setSaving(false); }
   };
 
   const openPortal = async () => {
@@ -40,15 +45,17 @@ export default function Settings() {
   const isPaid = currentPlan && currentPlan.price_cents > 0;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8" data-testid="settings-page">
+    <div className="max-w-2xl mx-auto space-y-4" data-testid="settings-page">
       <div className="page-header">
         <div>
         <div className="section-title mb-2">Your preferences</div>
         <h1 className="page-title">Settings</h1>
         <p className="text-muted-foreground mt-2">Small preferences that make Syllo yours.</p>
         </div>
-        <button className="btn btn-primary" onClick={save} data-testid="settings-save">Save changes</button>
+        <button className="btn btn-primary" onClick={save} disabled={saving} data-testid="settings-save">{saving ? "Saving…" : "Save changes"}</button>
       </div>
+      {msg && <div role="status" className="notice text-primary" data-testid="settings-msg">{msg}</div>}
+      {err && <div role="alert" className="notice text-destructive">{err}</div>}
 
       <section className="card p-5 space-y-3">
         <h2 className="font-serif text-xl">Profile</h2>
@@ -58,8 +65,7 @@ export default function Settings() {
         <input id="settings-field-2" className="input" value={user?.email || ""} disabled />
       </section>
 
-      <section className="card p-5 space-y-3">
-        <h2 className="font-serif text-xl">Appearance</h2>
+      <PreferenceSection title="Appearance">
         <p className="text-sm text-muted-foreground">Saved automatically and synced across devices.</p>
         <div className="flex gap-2">
           {["light", "dark"].map((t) => (
@@ -72,10 +78,9 @@ export default function Settings() {
             >{t === "light" ? "Light" : "Dark"}</button>
           ))}
         </div>
-      </section>
+      </PreferenceSection>
 
-      <section className="card p-5 space-y-3">
-        <h2 className="font-serif text-xl">Daily goal</h2>
+      <PreferenceSection title="Daily goal" hint={`${goal} minutes`}>
         <p className="text-sm text-muted-foreground">A time you can meet on most days.</p>
         <div className="flex items-center gap-3">
           <input
@@ -88,16 +93,16 @@ export default function Settings() {
           />
           <div className="font-mono w-16 text-right">{goal}m</div>
         </div>
-      </section>
+      </PreferenceSection>
 
-      <section className="card p-5 space-y-3">
-        <h2 className="font-serif text-xl">Timezone</h2>
+      <PreferenceSection title="Timezone" hint={user?.timezone || browserTimezone()}>
         <p className="text-sm text-muted-foreground">Classes, dates and reviews use this timezone across devices.</p>
         <label className="text-sm">Timezone<input className="input mt-1" list="study-timezones" value={timezone} onChange={e => setTimezone(e.target.value)} /></label>
         <datalist id="study-timezones">{[browserTimezone(), "Asia/Colombo", "Europe/London", "America/New_York", "Asia/Kolkata", "UTC"].filter((v, i, a) => a.indexOf(v) === i).map(v => <option key={v} value={v} />)}</datalist>
-      </section>
-      <section className="card p-5 space-y-3" data-testid="settings-billing">
-        <h2 className="font-serif text-xl">Billing</h2>
+      </PreferenceSection>
+      <PreferenceSection title="Reminders"><ReminderSettings key={user?.user_id} userId={user?.user_id} /></PreferenceSection>
+      <PreferenceSection title="Install & offline notes"><OfflineSettings /></PreferenceSection>
+      <PreferenceSection title="Billing" data-testid="settings-billing" hint={currentPlan?.name || "Freshman"}>
         <p className="text-sm text-muted-foreground">
           You're on <span className="text-foreground font-medium">{currentPlan?.name || "Freshman"}</span>.
           {isPaid
@@ -115,22 +120,18 @@ export default function Settings() {
             </button>
           )}
         </div>
-      </section>
+      </PreferenceSection>
 
       <InviteCard />
-      <AvailabilitySettings timezone={user?.timezone || browserTimezone()} />
+      <PreferenceSection title="Study availability"><AvailabilitySettings timezone={user?.timezone || browserTimezone()} /></PreferenceSection>
 
-      <section className="card p-5 space-y-3" data-testid="settings-legal">
-        <h2 className="font-serif text-xl">Legal and privacy</h2>
+      <PreferenceSection title="Legal and privacy" data-testid="settings-legal">
         <p className="text-sm text-muted-foreground">Read how Syllo handles your information and the rules that apply to the service.</p>
         <div className="flex gap-4 text-sm">
           <Link to="/privacy" className="text-foreground action-link">Privacy Policy</Link>
           <Link to="/terms" className="text-foreground action-link">Terms of Service</Link>
         </div>
-      </section>
-
-      {msg && <div role="status" className="notice text-primary" data-testid="settings-msg">{msg}</div>}
-      {err && <div role="alert" className="notice text-destructive">{err}</div>}
+      </PreferenceSection>
     </div>
   );
 }
@@ -147,13 +148,7 @@ function InviteCard() {
   };
 
   return (
-    <section className="card p-5 space-y-3" data-testid="settings-invite">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-md grid place-items-center bg-secondary text-primary">
-          <Gift className="w-4 h-4" />
-        </div>
-        <h2 className="font-serif text-xl mb-0!">Study with a friend</h2>
-      </div>
+    <PreferenceSection title="Study with a friend" data-testid="settings-invite">
       <p className="text-sm text-muted-foreground">
         Share Syllo. When a new student signs up with your code, you both get {data.per_signup_credits} extra helps. You can earn rewards from up to {data.monthly_reward_limit} new signups each month; the new student receives their signup bonus once.
       </p>
@@ -182,6 +177,13 @@ function InviteCard() {
         <span><span className="font-mono text-foreground">{data.credits_earned}</span> extra helps earned</span>
         <span>{data.monthly_rewarded_count} / {data.monthly_reward_limit} rewarded this month</span>
       </div>
-    </section>
+    </PreferenceSection>
   );
+}
+
+function PreferenceSection({ title, hint, children, ...props }) {
+  return <details className="card group" {...props}>
+    <summary className="min-h-14 cursor-pointer list-none flex items-center gap-3 px-5 py-3"><span className="font-medium flex-1">{title}</span>{hint && <span className="text-xs text-muted-foreground max-w-[45%] truncate">{hint}</span>}<ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180" aria-hidden="true" /></summary>
+    <div className="border-t border-border p-5 space-y-3">{children}</div>
+  </details>;
 }

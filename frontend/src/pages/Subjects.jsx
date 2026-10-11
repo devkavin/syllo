@@ -94,7 +94,7 @@ function NewSubjectModal({ onClose, onCreated }) {
       <form onSubmit={submit} data-testid="new-subject-modal">
         <label className="text-xs text-muted-foreground" htmlFor="subjects-field-1">Name</label>
         <input id="subjects-field-1" className="input mt-1 mb-4" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Organic Chemistry" data-testid="new-subject-name" autoFocus />
-        <fieldset><legend className="field-label">Colour</legend>
+        <details className="mb-4"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium">Subject options</summary><fieldset><legend className="field-label">Colour</legend>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 mb-4">
           {SUBJECT_COLOR_IDS.map((cid) => (
             <button
@@ -109,7 +109,7 @@ function NewSubjectModal({ onClose, onCreated }) {
               <span>{SUBJECT_COLORS[cid].name}</span>
             </button>
           ))}
-        </div></fieldset>
+        </div></fieldset></details>
         {err && <div role="alert" className="text-destructive text-sm mb-2">{err}</div>}
         <button className="btn btn-primary w-full" disabled={busy} data-testid="new-subject-submit">
           {busy ? "Adding" : "Add subject"}

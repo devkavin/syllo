@@ -54,6 +54,40 @@ entrypoint upgrades automatically. These features introduce no paid package,
 AI/API key requirement, or media uploads. Existing Study Companion calls retain
 their existing Gemini configuration and metering.
 
+The daily study update adds compact mobile navigation and expandable secondary
+controls throughout the study pages. Today includes due questions and mistakes;
+search includes practice and quick actions. Write and Practice share a notebook
+workspace, and the active server timer stays visible on other study pages.
+Practice supports cloze (`{{hidden words}}`), reverse recall, mixed sessions, and
+timed prompts with optional self-marked marks. Exam plans support varied topic
+lengths, repeats for topics rated Again/Hard, and reviewed rescheduling of missed
+work. Revision plans and scheduled study share capacity; the Exams page reports
+actual topic coverage, completed work and self-ratings.
+
+Apply migration `20261011_0013` before serving the daily study frontend. Existing
+questions remain basic recall and existing plan items retain their duration. The
+production entrypoint upgrades automatically; no new service or API key is needed.
+
+The production web build is installable on supported browsers over HTTPS. Its
+service worker stores only static app/editor assets. Recent opened notes and the
+last authenticated profile use a separate account-scoped IndexedDB cache (up to
+25 notes, 8 MB, 30-day expiry; entries larger than 1 MB stay online). Offline reads
+are permitted only after a network failure while the browser reports offline;
+server rejections never become cached successes. Confirmed saves update the cache.
+Signing out clears that account's cached copies. Unsynced browser drafts retain
+their base revision and retry on reconnect; conflicts require an explicit recovery
+choice. Browser storage can be evicted, so export important unsynced drafts. Focus
+controls and practice saves require a connection. Development mode does not
+register the service worker; verify installation/offline access with a production
+build served on localhost or HTTPS.
+
+Reminders are optional and use the account timezone, quiet hours and a daily
+digest. Browser permission is requested only through Enable browser alerts in
+Settings; the browser opt-in is specific to the account/device. Delivery is deduped
+per local day. Browser reminders run while Syllo is open; closed-browser push and
+email reminders are not included. In-app reminders remain available without
+browser permission.
+
 The web frontend uses Tailwind 4's Vite plugin and CSS theme configuration.
 Browser requirements follow the [Tailwind 4 compatibility guide](https://tailwindcss.com/docs/upgrade-guide#browser-requirements).
 The separate Expo app keeps NativeWind 4's supported Tailwind 3 dependency.

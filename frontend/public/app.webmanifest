@@ -1,0 +1,16 @@
+{
+  "id": "/",
+  "name": "Syllo — Your study space",
+  "short_name": "Syllo",
+  "description": "Your notes, practice and focus in one study space.",
+  "start_url": "/today",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f5ef",
+  "theme_color": "#456451",
+  "icons": [{ "src": "/syllo-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }],
+  "shortcuts": [
+    { "name": "Notes", "url": "/notebooks" },
+    { "name": "Focus", "url": "/timer" }
+  ]
+}

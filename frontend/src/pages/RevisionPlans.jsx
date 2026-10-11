@@ -29,9 +29,10 @@ export default function RevisionPlans({ timezone, onChange }) {
     onChange?.();
   };
   const removePlan = planId => { setPlans(current => current.filter(plan => plan.plan_id !== planId)); onChange?.(); };
+  const updatePlan = updated => { setPlans(current => current.map(plan => plan.plan_id === updated.plan_id ? updated : plan)); onChange?.(); };
 
   return <section className="border-t border-border pt-5" aria-labelledby="revision-plans-heading">
-    <h2 id="revision-plans-heading"><button className="flex w-full items-center justify-between gap-3 py-2 text-left font-serif text-xl" aria-expanded={open} aria-controls="revision-plans-content" onClick={() => setOpen(value => !value)}>
+    <h2 id="revision-plans-heading"><button className="flex min-h-11 w-full items-center justify-between gap-3 py-2 text-left font-serif text-xl" aria-expanded={open} aria-controls="revision-plans-content" onClick={() => setOpen(value => !value)}>
       Revision plans <ChevronDown aria-hidden="true" className={`h-5 w-5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
     </button></h2>
     <p className="mt-1 text-sm text-muted-foreground">Make room for lesson revision before an exam.</p>
@@ -48,7 +49,7 @@ export default function RevisionPlans({ timezone, onChange }) {
             setPlans(current => [...current, plan]); setCreating(false); onChange?.();
           }} />}
           {!plans.length && <p className="text-sm text-muted-foreground">No revision plans yet. Choose your lessons and the time you can give them.</p>}
-          {plans.map(plan => <PlanCard key={plan.plan_id} plan={plan} today={today} onItemChange={item => updateItem(plan.plan_id, item)} onDeleted={() => removePlan(plan.plan_id)} />)}
+          {plans.map(plan => <PlanCard key={plan.plan_id} plan={plan} today={today} onItemChange={item => updateItem(plan.plan_id, item)} onPlanChange={updatePlan} onDeleted={() => removePlan(plan.plan_id)} />)}
         </>}
       </>}
     </div>
@@ -56,7 +57,7 @@ export default function RevisionPlans({ timezone, onChange }) {
 }
 
 function PlanForm({ today, onClose, onCreated }) {
-  const [form, setForm] = useState({ title: "", subject_id: "", exam_date: "", daily_minutes: 60, minutes_per_lesson: 30, start_date: today, study_days: [0, 1, 2, 3, 4], lesson_ids: [] });
+  const [form, setForm] = useState({ title: "", subject_id: "", exam_date: "", daily_minutes: 60, minutes_per_lesson: 30, start_date: today, study_days: [0, 1, 2, 3, 4], lesson_ids: [], lesson_minutes: {}, repeat_difficult: false });
   const [subjects, setSubjects] = useState(null), [groups, setGroups] = useState([]);
   const [subjectsError, setSubjectsError] = useState(""), [lessonsError, setLessonsError] = useState("");
   const [subjectsRetry, setSubjectsRetry] = useState(0), [lessonsRetry, setLessonsRetry] = useState(0);
@@ -95,12 +96,15 @@ function PlanForm({ today, onClose, onCreated }) {
     if (form.exam_date <= form.start_date) { setError("Choose an exam date after the start date."); return; }
     setBusy(true); setError("");
     try {
-      const { data } = await http.post("/study/plans", { ...form, title: form.title.trim(), daily_minutes: Number(form.daily_minutes), minutes_per_lesson: Number(form.minutes_per_lesson) });
+      const lessonMinutes = Object.fromEntries(form.lesson_ids.map(id => [id, Number(form.lesson_minutes[id] ?? form.minutes_per_lesson)]));
+      const { data } = await http.post("/study/plans", { ...form, title: form.title.trim(), daily_minutes: Number(form.daily_minutes), minutes_per_lesson: Number(form.minutes_per_lesson), lesson_minutes: lessonMinutes });
       onCreated(data);
     } catch (e) { setError(formatError(e)); }
     finally { setBusy(false); }
   };
   const lessonCount = groups.reduce((count, group) => count + group.lessons.length, 0);
+  const selectedLessons = groups.flatMap(group => group.lessons).filter(lesson => form.lesson_ids.includes(lesson.lesson_id));
+  const totalMinutes = form.lesson_ids.reduce((total, id) => total + Number(form.lesson_minutes[id] ?? form.minutes_per_lesson), 0);
   let capacity = null;
   if (form.start_date && form.exam_date && Number(form.minutes_per_lesson) > 0) {
     const start = new Date(`${form.start_date}T00:00:00Z`);
@@ -118,7 +122,7 @@ function PlanForm({ today, onClose, onCreated }) {
     <fieldset disabled={busy} className="space-y-5 min-w-0">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">Plan title<input className="input mt-1" required maxLength={200} value={form.title} onChange={e => setField("title", e.target.value)} autoFocus /></label>
-        <label className="block text-sm">Revision subject<select className="input mt-1" required disabled={!subjects} value={form.subject_id} onChange={e => setForm(current => ({ ...current, subject_id: e.target.value, lesson_ids: [] }))}>
+        <label className="block text-sm">Revision subject<select className="input mt-1" required disabled={!subjects} value={form.subject_id} onChange={e => setForm(current => ({ ...current, subject_id: e.target.value, lesson_ids: [], lesson_minutes: {} }))}>
           <option value="">Choose a subject</option>{subjects?.map(subject => <option key={subject.subject_id} value={subject.subject_id}>{subject.name}</option>)}
         </select></label>
       </div>
@@ -133,7 +137,7 @@ function PlanForm({ today, onClose, onCreated }) {
           <button type="button" className="action-link text-sm" onClick={() => setField("lesson_ids", form.lesson_ids.length === lessonCount ? [] : groups.flatMap(group => group.lessons.map(lesson => lesson.lesson_id)))}>{form.lesson_ids.length === lessonCount ? "Clear selection" : "Select all lessons"}</button>
           <div className="max-h-64 overflow-y-auto space-y-4 rounded-lg border border-border p-3">
             {groups.filter(group => group.lessons.length).map(group => <fieldset key={group.unit_id} className="space-y-2 min-w-0"><legend className="text-xs font-semibold text-muted-foreground mb-2">{group.name}</legend>
-              {group.lessons.map(lesson => <label key={lesson.lesson_id} className="flex items-start gap-2 py-1 text-sm cursor-pointer"><input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-primary" checked={form.lesson_ids.includes(lesson.lesson_id)} onChange={() => toggle("lesson_ids", lesson.lesson_id)} /><span className="break-words min-w-0">{lesson.title}</span></label>)}
+              {group.lessons.map(lesson => <label key={lesson.lesson_id} className="flex min-h-11 items-center gap-2 py-1 text-sm cursor-pointer"><input type="checkbox" className="h-4 w-4 shrink-0 accent-primary" checked={form.lesson_ids.includes(lesson.lesson_id)} onChange={() => toggle("lesson_ids", lesson.lesson_id)} /><span className="break-words min-w-0">{lesson.title}</span></label>)}
             </fieldset>)}
           </div>
         </> : <p className="text-sm text-muted-foreground">This subject has no lessons yet. <Link className="action-link" to={`/subjects/${form.subject_id}`}>Add lessons</Link></p>)}
@@ -143,14 +147,18 @@ function PlanForm({ today, onClose, onCreated }) {
         <label className="block text-sm">Daily study minutes<input type="number" className="input mt-1" required min="1" max="1440" value={form.daily_minutes} onChange={e => setField("daily_minutes", e.target.value)} /></label>
       </div>
       <fieldset className="min-w-0"><legend className="text-sm font-medium mb-2">Study days</legend><div className="flex flex-wrap gap-2">
-        {weekdays.map((day, index) => <label key={day} className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm cursor-pointer"><input type="checkbox" aria-label={day} className="accent-primary" checked={form.study_days.includes(index)} onChange={() => toggle("study_days", index)} />{day.slice(0, 3)}</label>)}
+        {weekdays.map((day, index) => <label key={day} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm cursor-pointer"><input type="checkbox" aria-label={day} className="accent-primary" checked={form.study_days.includes(index)} onChange={() => toggle("study_days", index)} />{day.slice(0, 3)}</label>)}
       </div></fieldset>
-      <details className="text-sm"><summary className="cursor-pointer font-medium py-2">Planning settings</summary><div className="grid gap-4 sm:grid-cols-2 mt-3">
+      <details className="text-sm"><summary className="min-h-11 cursor-pointer font-medium py-3">Planning settings</summary><div className="grid gap-4 sm:grid-cols-2 mt-3">
         <label className="block">Start date<input type="date" className="input mt-1" required min={today} value={form.start_date} onChange={e => setField("start_date", e.target.value)} /></label>
         <label className="block">Minutes per lesson<input type="number" className="input mt-1" required min="1" max="1440" value={form.minutes_per_lesson} onChange={e => setField("minutes_per_lesson", e.target.value)} /></label>
-      </div></details>
-      <p className="text-sm text-muted-foreground">{form.lesson_ids.length} lesson{form.lesson_ids.length === 1 ? "" : "s"} selected · {form.lesson_ids.length * Number(form.minutes_per_lesson || 0)} minutes of revision. Lessons fit within your daily limit on selected days before the exam. If there isn't enough room, adjust the dates, time or lessons.</p>
-      {capacity !== null && <p className={`text-sm ${capacity < form.lesson_ids.length ? "text-destructive" : "text-muted-foreground"}`} role="status">{capacity} lesson slot{capacity === 1 ? "" : "s"} before the exam</p>}
+      </div>
+        {!!selectedLessons.length && <fieldset className="mt-4 space-y-3"><legend className="font-medium">Time for each topic</legend><div className="grid gap-3 sm:grid-cols-2 mt-2">{selectedLessons.map(lesson => <label key={lesson.lesson_id} className="block break-words">Minutes for {lesson.title}<input className="input mt-1" type="number" min="1" max="1440" required value={form.lesson_minutes[lesson.lesson_id] ?? form.minutes_per_lesson} onChange={e => setField("lesson_minutes", { ...form.lesson_minutes, [lesson.lesson_id]: e.target.value })} /></label>)}</div></fieldset>}
+        <label className="mt-4 flex min-h-11 items-center gap-2 cursor-pointer"><input type="checkbox" className="accent-primary" checked={form.repeat_difficult} onChange={e => setField("repeat_difficult", e.target.checked)} />Repeat difficult topics</label>
+        <p className="text-xs text-muted-foreground">Allow extra revision for topics with practice you have rated Again or Hard.</p>
+      </details>
+      <p className="text-sm text-muted-foreground">{form.lesson_ids.length} lesson{form.lesson_ids.length === 1 ? "" : "s"} selected · {totalMinutes} minutes before optional repeats. Your other revision plans and study activities share the daily allowance. If there isn't enough room, adjust the dates, time or lessons.</p>
+      {capacity !== null && <div className="text-sm text-muted-foreground" role="status"><p>{capacity} lesson slot{capacity === 1 ? "" : "s"} before the exam</p><p className="text-xs mt-1">Estimate at {form.minutes_per_lesson} minutes per lesson, before other planned work, topic durations and repeats. Capacity is checked when you create the plan.</p></div>}
     </fieldset>
     {error && <p role="alert" className="notice">{error}</p>}
     <p className="text-xs text-muted-foreground">Your revision work will also appear in Today, Tasks and your agenda.</p>
@@ -158,8 +166,9 @@ function PlanForm({ today, onClose, onCreated }) {
   </form>;
 }
 
-function PlanCard({ plan, today, onItemChange, onDeleted }) {
+function PlanCard({ plan, today, onItemChange, onPlanChange, onDeleted }) {
   const [deleting, setDeleting] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState("");
+  const [preview, setPreview] = useState(null), [scheduleError, setScheduleError] = useState("");
   const done = plan.items.filter(item => item.completed).length;
   const overdue = plan.items.filter(item => !item.completed && item.due_date < today).length;
   const upcoming = plan.items.length - done - overdue;
@@ -169,19 +178,39 @@ function PlanCard({ plan, today, onItemChange, onDeleted }) {
     catch (e) { setError(formatError(e)); }
     finally { setBusy(false); }
   };
+  const previewSchedule = async () => {
+    setBusy(true); setScheduleError(""); setPreview(null);
+    try { const { data } = await http.post(`/study/plans/${plan.plan_id}/reschedule/preview`); setPreview(data); }
+    catch (e) { setScheduleError(formatError(e)); }
+    finally { setBusy(false); }
+  };
+  const applySchedule = async () => {
+    setBusy(true); setScheduleError("");
+    try {
+      const { data } = await http.post(`/study/plans/${plan.plan_id}/reschedule`, { fingerprint: preview.fingerprint, moves: preview.moves.map(move => ({ task_id: move.task_id, due_date: move.to_date })) });
+      onPlanChange(data); setPreview(null);
+    } catch (e) { setScheduleError(formatError(e)); if (e.response?.status === 409) setPreview(null); }
+    finally { setBusy(false); }
+  };
   return <article className="rounded-xl border border-border p-4 sm:p-5 space-y-4" aria-labelledby={`revision-plan-${plan.plan_id}`}>
     <div><h3 id={`revision-plan-${plan.plan_id}`} className="font-serif text-xl break-words">{plan.title}</h3>
       <p className="text-xs text-muted-foreground mt-1">Exam {plan.exam_date} · {plan.daily_minutes} min per study day</p>
       <p className="mt-2 text-sm">{done}/{plan.items.length} completed · <span className={overdue ? "text-destructive" : ""}>{overdue} overdue</span> · {upcoming} upcoming</p>
     </div>
+    {overdue > 0 && !preview && <button className="btn btn-outline" disabled={busy} onClick={previewSchedule}>{busy ? "Checking schedule…" : "Preview missed work"}</button>}
+    {scheduleError && <p role="alert" className="notice">{scheduleError}</p>}
+    {preview && <section className="rounded-lg border border-border bg-accent/20 p-4 space-y-3" aria-label={`Missed work preview for ${plan.title}`}>
+      <h4 className="font-medium">Review the new schedule</h4><p className="text-sm text-muted-foreground">Only incomplete overdue work will move. Completed and future work keeps its schedule.</p>
+      {preview.moves.length ? <><ul className="space-y-2">{preview.moves.map(move => <li key={move.task_id} className="text-sm break-words"><span className="font-medium">{move.title}</span><span className="block text-muted-foreground">{move.from_date} → {move.to_date} · {move.minutes} min</span></li>)}</ul><div className="flex flex-wrap gap-2"><button className="btn btn-primary" disabled={busy} onClick={applySchedule}>{busy ? "Applying…" : "Apply schedule"}</button><button className="btn btn-ghost" disabled={busy} onClick={() => { setPreview(null); setScheduleError(""); }}>Keep current dates</button></div></> : <><p className="text-sm">No missed work to move.</p><button className="btn btn-ghost" onClick={() => setPreview(null)}>Close preview</button></>}
+    </section>}
     <ul className="divide-y divide-border">{[...plan.items].sort((a, b) => Number(a.completed) - Number(b.completed) || a.due_date.localeCompare(b.due_date)).map(item => <PlanItem key={item.task_id} plan={plan} item={item} today={today} onSaved={onItemChange} disabled={busy} />)}</ul>
-    <details className="text-sm border-t border-border pt-2"><summary className="cursor-pointer py-2 text-muted-foreground">Plan options</summary>
+    <details className="text-sm border-t border-border pt-2"><summary className="min-h-11 cursor-pointer py-3 text-muted-foreground">Plan options</summary>
       <p className="text-xs text-muted-foreground mt-2">Study days: {plan.study_days.map(day => weekdays[day]).join(", ")}</p>
       {deleting ? <div role="group" aria-label={`Delete ${plan.title}?`} className="notice mt-3 space-y-3"><p>Delete this plan and its generated tasks from Today, Tasks and your agenda?</p>
-        {error && <p role="alert">{error}</p>}
         <div className="flex flex-wrap gap-2"><button className="btn btn-outline text-destructive" disabled={busy} onClick={remove}>{busy ? "Deleting…" : "Delete plan and tasks"}</button><button className="btn btn-ghost" disabled={busy} onClick={() => { setDeleting(false); setError(""); }}>Keep plan</button></div>
       </div> : <button className="btn btn-ghost text-destructive mt-2" aria-label={`Delete ${plan.title}`} onClick={() => setDeleting(true)}>Delete plan</button>}
     </details>
+    {error && <p role="alert" className="notice">{error}</p>}
   </article>;
 }
 
@@ -198,8 +227,9 @@ function PlanItem({ plan, item, today, onSaved, disabled }) {
     <div className="flex items-start gap-2">
       <button className="btn btn-ghost btn-icon shrink-0" aria-label={`${item.completed ? "Reopen" : "Complete"} ${item.title}`} aria-pressed={item.completed} disabled={busy || disabled} onClick={() => save({ completed: !item.completed })}>{item.completed ? <CheckCircle2 className="h-5 w-5 text-primary" /> : <Circle className="h-5 w-5" />}</button>
       <div className="min-w-0 flex-1"><p className={`text-sm break-words ${item.completed ? "line-through text-muted-foreground" : "font-medium"}`}>{item.title}</p>
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>Due {item.due_date}</span>{!item.completed && item.due_date < today && <span className="text-destructive">Overdue</span>}{item.completed && <span>Completed</span>}
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>Due {item.due_date}</span>{item.minutes != null && <span>{item.minutes} min</span>}{!item.completed && item.due_date < today && <span className="text-destructive">Overdue</span>}{item.completed && <span>Completed</span>}
           {item.lesson_id && <Link className="action-link" aria-label={`${item.title.replace(/^Revise /, "")} lesson`} to={`/lessons/${item.lesson_id}`}>Open lesson</Link>}
+          {item.lesson_id && <Link className="action-link" aria-label={`Practice ${item.title.replace(/^Revise /, "")}`} to={`/reviews?lesson=${encodeURIComponent(item.lesson_id)}`}>Practice topic</Link>}
           <button className="action-link" disabled={busy || disabled} aria-label={`Reschedule ${item.title}`} onClick={() => { setDueDate(item.due_date); setError(""); setEditing(value => !value); }}>Reschedule</button>
         </div>
       </div>

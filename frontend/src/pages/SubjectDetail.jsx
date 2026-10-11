@@ -84,12 +84,12 @@ export default function SubjectDetail() {
 
       <div className="flex justify-between items-center">
         <h2 className="font-serif text-xl">Units</h2>
-        <button className="btn btn-outline" onClick={addUnit} data-testid="new-unit-btn"><Plus className="w-4 h-4" /> New unit</button>
+        <button className="btn btn-primary" onClick={addUnit} data-testid="new-unit-btn"><Plus className="w-4 h-4" /> New unit</button>
       </div>
 
-      <PresetCard subject={subject} onSave={savePreset} />
+      <details className="border-b border-border pb-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium">Subject settings</summary><PresetCard subject={subject} onSave={savePreset} /></details>
 
-      {err && <div className="text-destructive text-sm">{err}</div>}
+      {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
 
       {units.length === 0 ? (
         <div className="card p-10 text-center text-muted-foreground text-sm">

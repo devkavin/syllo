@@ -3,17 +3,19 @@ import { http, formatError } from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { Plus, CheckCircle2, Circle, Trash2 } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import TaskDialog from "@/components/TaskDialog";
 
 export default function Tasks() {
   const [params] = useSearchParams();
+  const location = useLocation();
   const openedTask = useRef(null);
+  const openedCreation = useRef(null);
   const [editing, setEditing] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [tab, setTab] = useState("open"); // open | done | all
-  const [showNew, setShowNew] = useState(!!params.get("lesson"));
+  const [showNew, setShowNew] = useState(false);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
@@ -27,6 +29,11 @@ export default function Tasks() {
     finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (params.get("task") || (!params.has("new") && !params.get("lesson")) || openedCreation.current === location.key) return;
+    openedCreation.current = location.key;
+    setEditing(null); setShowNew(true);
+  }, [params, location.key]);
   useEffect(() => {
     const id = params.get("task");
     if (!id || openedTask.current === id || loading) return;
@@ -60,7 +67,7 @@ export default function Tasks() {
         <button className="btn btn-primary" onClick={() => setShowNew(true)} data-testid="new-task-btn"><Plus className="w-4 h-4" /> New task</button>
       </div>
 
-      <div className="segmented-control" role="group" aria-label="Task filter">
+      <details><summary className="cursor-pointer min-h-11 py-3 text-sm font-medium">Task filters · {tab === "open" ? "Open" : tab === "done" ? "Done" : "All"}</summary><div className="segmented-control mt-2" role="group" aria-label="Task filter">
         {["open", "done", "all"].map((t) => (
           <button
             key={t}
@@ -72,9 +79,9 @@ export default function Tasks() {
             {t === "open" ? "Open" : t === "done" ? "Done" : "All"}
           </button>
         ))}
-      </div>
+      </div></details>
 
-      {err && <div className="text-destructive text-sm">{err}</div>}
+      {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
 
       {loading ? (
         <div className="space-y-2">{[0,1,2,3].map((i) => <div key={i} className="h-14 bg-muted rounded-xl animate-pulse" />)}</div>
@@ -101,9 +108,7 @@ export default function Tasks() {
                     <span className="capitalize">{t.priority}</span>
                   </div>
                 </div>
-                <button className="btn btn-ghost btn-icon text-muted-foreground" aria-label={`Delete ${t.title}`} onClick={() => remove(t)} data-testid={`task-delete-${t.task_id}`}>
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <details className="text-sm shrink-0"><summary className="min-h-11 cursor-pointer py-3 text-muted-foreground" aria-label={`Task options for ${t.title}`}>Options</summary><button className="btn btn-ghost text-destructive" aria-label={`Delete ${t.title}`} onClick={() => remove(t)} data-testid={`task-delete-${t.task_id}`}><Trash2 className="w-4 h-4" />Delete task</button></details>
               </li>
             );
           })}

@@ -24,6 +24,7 @@ from backend.app.api.routes.focus_timer import router as focus_timer_router
 from backend.app.api.routes.tasks import router as tasks_router
 from backend.app.api.routes.study_questions import router as study_questions_router
 from backend.app.api.routes.revision_plans import router as revision_plans_router
+from backend.app.api.routes.study_dashboard import router as study_dashboard_router
 from backend.app.api.routes.stripe_webhooks import router as stripe_webhook_router
 
 api_router = APIRouter(prefix="/api")
@@ -41,6 +42,7 @@ api_router.include_router(notebooks_router)
 api_router.include_router(tasks_router)
 api_router.include_router(study_questions_router)
 api_router.include_router(revision_plans_router)
+api_router.include_router(study_dashboard_router)
 api_router.include_router(planner_router)
 api_router.include_router(sessions_router)
 api_router.include_router(focus_timer_router)

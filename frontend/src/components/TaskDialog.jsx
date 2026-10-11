@@ -34,19 +34,22 @@ export default function TaskDialog({ subjects, task, prefillLesson, initialDueDa
       <form onSubmit={submit} className="space-y-4" data-testid="new-task-modal">
         <div><label htmlFor="task-title" className="field-label">Title</label>
         <input id="task-title" className="input" required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Write your task" autoFocus data-testid="new-task-title" /></div>
-        <AcademicSelector subjects={subjects} value={selection} onChange={setSelection} disabled={busy} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="task-due" className="field-label">Due date</label>
             <input id="task-due" type="date" className="input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} data-testid="new-task-due" />
           </div>
+        <details className="rounded-lg border border-border p-3" open={Boolean(task?.lesson_id || prefillLesson)}>
+          <summary className="cursor-pointer min-h-11 flex items-center text-sm font-medium">Task details · subject and priority</summary>
+          <div className="space-y-4 pt-3">
+          <AcademicSelector subjects={subjects} value={selection} onChange={setSelection} disabled={busy} />
           <div>
             <label htmlFor="task-priority" className="field-label">Priority</label>
             <select id="task-priority" className="input" value={priority} onChange={(e) => setPriority(e.target.value)} data-testid="new-task-priority">
               {PRIORITIES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
           </div>
-        </div>
+          </div>
+        </details>
         {err && <div role="alert" className="text-destructive text-sm mt-3">{err}</div>}
         <button className="btn btn-primary w-full mt-4" disabled={busy} data-testid="new-task-submit">{busy ? "Saving…" : task ? "Save task" : "Add task"}</button>
       </form>

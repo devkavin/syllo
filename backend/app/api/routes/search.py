@@ -9,7 +9,7 @@ from backend.app.api.routes.academics import lesson_dict, subject_dict
 from backend.app.api.routes.notebooks import notebook_dict
 from backend.app.api.routes.tasks import task_dict
 from backend.app.database import get_session
-from backend.app.models import Lesson, Notebook, Subject, Task, User
+from backend.app.models import Lesson, Notebook, Subject, StudyQuestion, Task, User
 
 router = APIRouter(tags=["search"])
 
@@ -21,7 +21,13 @@ async def search(
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, list[dict]]:
     query = q.strip()
-    empty = {"subjects": [], "lessons": [], "notebooks": [], "tasks": []}
+    empty = {
+        "subjects": [],
+        "lessons": [],
+        "notebooks": [],
+        "tasks": [],
+        "questions": [],
+    }
     if not query:
         return empty
     pattern = f"%{query}%"
@@ -57,9 +63,35 @@ async def search(
             .limit(10)
         )
     ).all()
+    questions = (
+        await session.scalars(
+            select(StudyQuestion)
+            .where(
+                StudyQuestion.user_id == user.user_id,
+                or_(
+                    *(
+                        getattr(StudyQuestion, field).icontains(query, autoescape=True)
+                        for field in ("prompt", "answer", "mistake", "correction")
+                    )
+                ),
+            )
+            .order_by(StudyQuestion.updated_at.desc(), StudyQuestion.question_id)
+            .limit(10)
+        )
+    ).all()
     return {
         "subjects": [subject_dict(item) for item in subjects],
         "lessons": [lesson_dict(item) for item in lessons],
         "notebooks": [notebook_dict(item, include_content=False) for item in notebooks],
         "tasks": [task_dict(item) for item in tasks],
+        "questions": [
+            {
+                "question_id": item.question_id,
+                "prompt": item.prompt,
+                "kind": item.kind,
+                "notebook_id": item.notebook_id,
+                "lesson_id": item.lesson_id,
+            }
+            for item in questions
+        ],
     }

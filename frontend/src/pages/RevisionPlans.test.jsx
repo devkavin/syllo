@@ -150,3 +150,65 @@ it("shows capacity using whole lessons on selected days before the exam", async 
   fireEvent.change(screen.getByLabelText("Daily study minutes"), { target: { value: "60" } });
   expect(screen.getByText("4 lesson slots before the exam")).toBeVisible();
 });
+
+it("sends selected topic durations and difficult-topic repetition without losing choices on capacity failure", async () => {
+  http.post.mockRejectedValueOnce(new Error("Other plans fill the daily allowance"));
+  http.post.mockResolvedValueOnce({ data: { ...plan, plan_id: "new-plan", title: "Variable revision" } });
+  mount(); await openPlans();
+  fireEvent.click(screen.getByRole("button", { name: "New revision plan" }));
+  fireEvent.change(screen.getByLabelText("Plan title"), { target: { value: "Variable revision" } });
+  await screen.findByRole("option", { name: "Physics" });
+  fireEvent.change(screen.getByLabelText("Revision subject"), { target: { value: "physics" } });
+  fireEvent.click(await screen.findByLabelText("Forces"));
+  fireEvent.click(screen.getByLabelText("Energy"));
+  fireEvent.click(screen.getByText("Planning settings"));
+  fireEvent.change(screen.getByLabelText("Minutes for Forces"), { target: { value: "45" } });
+  fireEvent.change(screen.getByLabelText("Minutes for Energy"), { target: { value: "15" } });
+  fireEvent.click(screen.getByLabelText("Repeat difficult topics"));
+  fireEvent.change(screen.getByLabelText("Exam date"), { target: { value: "2099-11-01" } });
+  fireEvent.click(screen.getByRole("button", { name: "Create plan" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("Other plans fill the daily allowance");
+  expect(screen.getByLabelText("Minutes for Forces")).toHaveValue(45);
+  expect(screen.getByLabelText("Repeat difficult topics")).toBeChecked();
+  fireEvent.click(screen.getByRole("button", { name: "Create plan" }));
+  expect(await screen.findByRole("heading", { name: "Variable revision" })).toBeVisible();
+  expect(http.post).toHaveBeenLastCalledWith("/study/plans", expect.objectContaining({ lesson_minutes: { forces: 45, energy: 15 }, repeat_difficult: true }));
+});
+
+it("previews missed work before applying and leaves completed work unchanged", async () => {
+  plans[0].items.push({ task_id: "task-done", title: "Revise Motion", lesson_id: "motion", due_date: "2020-01-01", completed: true, minutes: 30 });
+  http.post.mockImplementation(async (url, body) => {
+    if (url.endsWith("/preview")) return { data: { fingerprint: "current-plan", moves: [{ task_id: "task-1", title: "Revise Forces", from_date: "2020-01-01", to_date: "2099-10-22", minutes: 45 }] } };
+    if (url.endsWith("/reschedule")) {
+      plans[0].items[0].due_date = body.moves[0].due_date;
+      return { data: structuredClone(plans[0]) };
+    }
+    throw new Error("Unexpected plan action");
+  });
+  mount(); await openPlans();
+  fireEvent.click(screen.getByRole("button", { name: "Preview missed work" }));
+  const preview = await screen.findByRole("region", { name: "Missed work preview for Physics revision" });
+  expect(preview).toHaveTextContent("2020-01-01 → 2099-10-22");
+  expect(preview).toHaveTextContent("45 min");
+  expect(http.post).not.toHaveBeenCalledWith("/study/plans/plan-1/reschedule", expect.anything());
+  fireEvent.click(within(preview).getByRole("button", { name: "Apply schedule" }));
+  await waitFor(() => expect(screen.queryByRole("region", { name: "Missed work preview for Physics revision" })).not.toBeInTheDocument());
+  expect(http.post).toHaveBeenCalledWith("/study/plans/plan-1/reschedule", { fingerprint: "current-plan", moves: [{ task_id: "task-1", due_date: "2099-10-22" }] });
+  expect(screen.getByText("Due 2099-10-22")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Reopen Revise Motion" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByText("Due 2020-01-01")).toBeVisible();
+});
+
+it("requires a fresh preview after a stale schedule rejection", async () => {
+  http.post.mockImplementation(async url => {
+    if (url.endsWith("/preview")) return { data: { fingerprint: "old-plan", moves: [{ task_id: "task-1", title: "Revise Forces", from_date: "2020-01-01", to_date: "2099-10-22", minutes: 30 }] } };
+    throw Object.assign(new Error("The plan changed. Preview again."), { response: { status: 409 } });
+  });
+  mount(); await openPlans();
+  fireEvent.click(screen.getByRole("button", { name: "Preview missed work" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Apply schedule" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("The plan changed");
+  expect(screen.queryByRole("button", { name: "Apply schedule" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Preview missed work" })).toBeEnabled();
+  expect(screen.getByText("Due 2020-01-01")).toBeVisible();
+});

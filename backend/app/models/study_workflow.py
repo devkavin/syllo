@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from sqlalchemy import (
+    Boolean,
     Date,
     DateTime,
     ForeignKey,
@@ -72,6 +73,11 @@ class StudyQuestion(TimestampMixin, Base):
         ForeignKey("lessons.lesson_id", ondelete="SET NULL")
     )
     kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    format: Mapped[str] = mapped_column(
+        String(16), default="basic", server_default="basic", nullable=False
+    )
+    time_limit_seconds: Mapped[int | None] = mapped_column(Integer)
+    max_marks: Mapped[int | None] = mapped_column(Integer)
     prompt: Mapped[str] = mapped_column(Text, nullable=False)
     answer: Mapped[str] = mapped_column(Text, default="", nullable=False)
     mistake: Mapped[str] = mapped_column(Text, default="", nullable=False)
@@ -107,6 +113,9 @@ class StudyAttempt(Base):
     )
     topic_title: Mapped[str] = mapped_column(String(240), nullable=False)
     quality: Mapped[str] = mapped_column(String(16), nullable=False)
+    elapsed_seconds: Mapped[int | None] = mapped_column(Integer)
+    earned_marks: Mapped[int | None] = mapped_column(Integer)
+    max_marks: Mapped[int | None] = mapped_column(Integer)
     payload: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True).with_variant(DATETIME(fsp=6), "mysql", "mariadb"),
@@ -131,6 +140,9 @@ class RevisionPlan(TimestampMixin, Base):
     daily_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
     study_days: Mapped[list[int]] = mapped_column(JSON, nullable=False)
     minutes_per_lesson: Mapped[int] = mapped_column(Integer, nullable=False)
+    repeat_difficult: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="0", nullable=False
+    )
 
 
 class RevisionPlanItem(Base):
@@ -143,4 +155,27 @@ class RevisionPlanItem(Base):
         ForeignKey("revision_plans.plan_id", ondelete="CASCADE"),
         nullable=False,
         index=True,
+    )
+    minutes: Mapped[int] = mapped_column(
+        Integer, default=30, server_default="30", nullable=False
+    )
+
+
+class StudyReminder(TimestampMixin, Base):
+    __tablename__ = "study_reminders"
+
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="0", nullable=False
+    )
+    quiet_start: Mapped[str] = mapped_column(
+        String(5), default="22:00", server_default="22:00", nullable=False
+    )
+    quiet_end: Mapped[str] = mapped_column(
+        String(5), default="07:00", server_default="07:00", nullable=False
+    )
+    digest_time: Mapped[str] = mapped_column(
+        String(5), default="17:00", server_default="17:00", nullable=False
     )

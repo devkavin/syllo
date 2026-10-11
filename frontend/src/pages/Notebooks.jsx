@@ -11,11 +11,13 @@ import { useResourceAutosave } from "@/hooks/useResourceAutosave";
 import AcademicSelector from "@/components/AcademicSelector";
 import NotebookEditor from "@/components/NotebookEditor";
 import NotebookFocus from "@/components/NotebookFocus";
+import ActiveFocusBar from "@/components/ActiveFocusBar";
 import NotebookPractice from "@/components/NotebookPractice";
 import NotebookRecovery from "@/components/NotebookRecovery";
 import NotebookHistory from "@/components/NotebookHistory";
+import NewNoteDialog from "@/components/NewNoteDialog";
 import { useAuth } from "@/lib/auth";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 export default function Notebooks() {
   const accountId = useAuth()?.user?.user_id;
@@ -24,9 +26,17 @@ export default function Notebooks() {
 
 function NotebookWorkspace({ accountId }) {
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const requestedId = params.get("notebook");
+  const requestedNew = params.get("new") === "1";
+  const [newNoteOpen, setNewNoteOpen] = useState(false);
+  const commandNavigation = useRef(null);
+  const commandActive = useRef(true);
   const [list, setList] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [loadingList, setLoadingList] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const listRequest = useRef(0);
   const [trash, setTrash] = useState([]);
   const [trashLoading, setTrashLoading] = useState(false);
   const [trashError, setTrashError] = useState("");
@@ -37,6 +47,8 @@ function NotebookWorkspace({ accountId }) {
   const [recoveryError, setRecoveryError] = useState("");
   const [editorVersion, setEditorVersion] = useState(0);
   const [practiceOpen, setPracticeOpen] = useState(false);
+  const [mode, setMode] = useState("write");
+  const [online, setOnline] = useState(() => navigator.onLine !== false);
   const [subjects, setSubjects] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [loadedNotebook, setNotebook] = useState(null);
@@ -59,16 +71,37 @@ function NotebookWorkspace({ accountId }) {
   } });
   const notebook = activeId ? autosave.draft : null;
   const { saveState } = autosave;
+  useEffect(() => {
+    const updateOnline = () => setOnline(navigator.onLine !== false);
+    window.addEventListener("online", updateOnline); window.addEventListener("offline", updateOnline);
+    return () => { window.removeEventListener("online", updateOnline); window.removeEventListener("offline", updateOnline); };
+  }, []);
+  const deviceDraftSaved = !online && saveState === "failed" && autosave.deviceSaved;
 
   const load = async () => {
+    const request = ++listRequest.current;
+    setLoadingList(true); setLoadError(null);
     try {
       const [ls, ss] = await Promise.all([http.get("/notebooks"), http.get("/subjects")]);
+      if (request !== listRequest.current) return;
       setList(ls.data);
       setSubjects(ss.data);
       setLoaded(true);
-    } catch (e) { setErr(formatError(e)); }
+    } catch (e) { if (request === listRequest.current) setLoadError({ message: formatError(e) }); }
+    finally { if (request === listRequest.current) setLoadingList(false); }
   };
-  useEffect(() => { load(); return () => { selectionRequest.current += 1; }; }, []);
+  useEffect(() => { commandActive.current = true; load(); return () => { selectionRequest.current += 1; listRequest.current += 1; commandActive.current = false; }; }, []);
+  useEffect(() => {
+    if (!requestedNew || busy || commandNavigation.current === location.key) return;
+    commandNavigation.current = location.key;
+    setParams(previous => { const next = new URLSearchParams(previous); next.delete("new"); return next; }, { replace: true });
+    void (async () => {
+      const saved = await autosave.flush();
+      if (!commandActive.current) return;
+      if (!saved) { setErr("Save or recover your current draft before creating a notebook."); return; }
+      setNewNoteOpen(true);
+    })();
+  }, [requestedNew, location.key, busy]);
   useEffect(() => {
     if (!loaded) return;
     const id = requestedId || (!activeId ? list[0]?.notebook_id : null);
@@ -85,20 +118,26 @@ function NotebookWorkspace({ accountId }) {
 
   const adoptNotebook = data => {
     deferredSelection.current = null;
-    setNotebook(data); setActiveId(data.notebook_id); setSummary(null); setErr("");
-    setHistory(null); setHistoryLoading(false); setHistoryError(""); setRecoveryError(""); setEditorVersion(0); setPracticeOpen(false);
+    setNotebook(data); setActiveId(data.notebook_id); setSummary(null); setErr(""); setLoadError(null);
+    setHistory(null); setHistoryLoading(false); setHistoryError(""); setRecoveryError(""); setEditorVersion(0); setPracticeOpen(false); setMode("write");
     setParams(previous => { const next = new URLSearchParams(previous); next.set("notebook", data.notebook_id); return next; }, { replace: true });
   };
 
   const selectNotebook = async (id) => {
     const request = ++selectionRequest.current;
-    if (activeId && id !== activeId && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
+    const canKeepDeviceDraft = navigator.onLine === false && autosave.canKeepDeviceDraft();
+    if (activeId && id !== activeId && !canKeepDeviceDraft && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
     if (request !== selectionRequest.current) return;
+    setLoadError(null);
     try {
       const { data } = await http.get(`/notebooks/${id}`);
       if (request !== selectionRequest.current) return;
+      // Draft edits or another tab's storage write can happen while loading the next note.
+      const draftStillSafe = navigator.onLine === false && autosave.canKeepDeviceDraft();
+      if (activeId && id !== activeId && !draftStillSafe && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
+      if (request !== selectionRequest.current) return;
       adoptNotebook(data);
-    } catch (e) { if (request === selectionRequest.current) setErr(formatError(e)); }
+    } catch (e) { if (request === selectionRequest.current) setLoadError({ message: formatError(e), notebookId: id }); }
   };
 
   const summarize = async () => {
@@ -205,7 +244,8 @@ function NotebookWorkspace({ accountId }) {
           <button className="btn btn-outline btn-icon" disabled={busy} onClick={newNotebook} data-testid="new-notebook-btn" aria-label="New notebook" title="New notebook"><Plus className="w-4 h-4" /></button>
         </div>
         <div className="space-y-1 max-h-48 lg:max-h-none overflow-y-auto">
-          {list.length === 0 && <div className="text-sm text-muted-foreground py-6 text-center">Start with a blank page.</div>}
+          {loadingList && <p role="status" className="text-sm text-muted-foreground py-3">Loading notebooks…</p>}
+          {!loadingList && !loadError && list.length === 0 && <div className="text-sm text-muted-foreground py-6 text-center">Start with a blank page.</div>}
           {list.map((nb) => {
             const sub = nb.subject_id ? subjectMap[nb.subject_id] : null;
             const c = sub ? subjectClasses(sub.color, isDark) : null;
@@ -232,7 +272,7 @@ function NotebookWorkspace({ accountId }) {
           })}
         </div>
         <details open={params.get("trash") === "1" || undefined} className="mt-5 border-t border-border pt-3" onToggle={e => { if (e.currentTarget.open) void loadTrash(); }}>
-          <summary className="cursor-pointer text-sm text-muted-foreground">Trash</summary>
+          <summary className="btn btn-ghost cursor-pointer text-sm text-muted-foreground w-fit">Trash</summary>
           <div className="mt-3 space-y-3 text-sm">
             {trashLoading ? <p role="status">Loading Trash…</p> : trash.length ? trash.map(nb => <div key={nb.notebook_id} className="flex items-center gap-2"><span className="flex-1 min-w-0 truncate">{nb.title || "Untitled"}</span><button className="action-link text-xs" disabled={busy} aria-label={`Restore ${nb.title || "Untitled"}`} onClick={() => restoreTrash(nb)}>Restore</button></div>) : <p className="text-muted-foreground">Trash is empty.</p>}
             {trashError && <p role="alert" className="text-destructive">{trashError}</p>}
@@ -242,6 +282,7 @@ function NotebookWorkspace({ accountId }) {
       </aside>
 
       <section className="flex-1 min-w-0">
+        {!notebook && <ActiveFocusBar userId={accountId} />}
         {!notebook ? (
           <div className="card h-full grid place-items-center p-10 text-center text-muted-foreground">
             <div>
@@ -253,55 +294,34 @@ function NotebookWorkspace({ accountId }) {
           <div inert={busy || undefined} aria-busy={busy} className="notebook-paper paper card p-4 sm:p-6 lg:p-8 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" data-paper-style={notebook.paper_style || "plain"} data-font-style={notebook.font_style || "sans"} ref={editorRef}>
             <NotebookFocus notebook={notebook} beforeStart={autosave.flush} />
             {autosave.conflict && <NotebookRecovery busy={busy} error={recoveryError} onCopy={recoverCopy} onLoadServer={loadServer} />}
-            <div className="flex flex-wrap gap-3 items-start justify-between mb-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-3">
-                <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
+            <div className="flex flex-wrap gap-3 items-center justify-between mb-4 text-sm text-muted-foreground">
+              <div className="segmented-control" role="group" aria-label="Notebook mode">
+                <button className="segment" aria-pressed={mode === "write"} onMouseDown={event => event.preventDefault()} onClick={() => setMode("write")}>Write</button>
+                <button className="segment" aria-pressed={mode === "practice"} onMouseDown={event => event.preventDefault()} onClick={() => { setPracticeOpen(true); setMode("practice"); }}>Practice</button>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  className="btn btn-outline py-1! px-2! text-xs"
-                  onClick={summarize}
-                  disabled={summarizing}
-                  data-testid="notebook-summarize-btn"
-                  aria-label="Summarize with Study Companion" title="Summarize with Study Companion"
-                >
-                  {summarizing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                  Summarize
-                </button>
                 <span role="status" data-testid="notebook-autosave-indicator" className="inline-flex items-center gap-1">
                   {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
                   {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
-                  {saveState === "failed" && <button className="text-destructive action-link" onClick={autosave.retry}>Not saved · Retry</button>}
+                  {saveState === "failed" && <button className="action-link min-h-11" onClick={autosave.retry}>{deviceDraftSaved ? "Saved on device · pending sync" : "Not saved · Retry"}</button>}
                   {saveState === "conflict" && <span className="text-amber-700 dark:text-amber-300">Draft needs recovery</span>}
                 </span>
-                <details key={activeId} className="relative"><summary className="cursor-pointer rounded-md px-2 py-1 hover:bg-accent text-xs">Notebook options</summary><div className="absolute right-0 z-30 mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-xl border border-border bg-background p-3 shadow-lg space-y-2">
+                <details key={activeId} className="relative"><summary className="btn btn-ghost cursor-pointer text-sm">Notebook options</summary><div className="absolute right-0 z-30 mt-2 w-80 max-w-[calc(100vw-3rem)] max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-background p-4 shadow-lg space-y-3">
+                  <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
+                  <fieldset className="border-t border-border pt-3 space-y-2"><legend className="text-xs text-muted-foreground">Page settings</legend><div className="flex flex-wrap gap-3">
+                    <label className="flex items-center gap-2">Paper<select aria-label="Notebook paper" className="input w-auto! text-sm" value={notebook.paper_style || "plain"} onChange={e => autosave.update({ paper_style: e.target.value })}><option value="plain">Plain</option><option value="ruled">Ruled</option><option value="dotted">Dotted</option></select></label>
+                    <label className="flex items-center gap-2">Font<select aria-label="Notebook font" className="input w-auto! text-sm" value={notebook.font_style || "sans"} onChange={e => autosave.update({ font_style: e.target.value })}><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select></label>
+                  </div></fieldset>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={loadHistory}>Version history</button>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={exportNotebook}>Export JSON</button>
                   <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => removeNotebook(notebook.notebook_id)} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>
-                  {history !== null && <NotebookHistory versions={history} loading={historyLoading} busy={busy} error={historyError} onRestore={restoreVersion} onRetry={loadHistory} />}
+                  <button className="btn btn-outline w-full justify-start text-sm" onClick={summarize} disabled={summarizing} data-testid="notebook-summarize-btn" aria-label="Summarize with Study Companion" title="Summarize with Study Companion">{summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Summarize</button>
+                  <AiPrivacyNote />
                 </div></details>
               </div>
             </div>
-            <AiPrivacyNote className="mb-3 text-right" />
             {saveState === "failed" && autosave.error && <p className="mb-3 text-xs text-muted-foreground">{autosave.error}</p>}
-            <details className="mb-4 text-xs text-muted-foreground"><summary className="cursor-pointer w-fit rounded-md px-2 py-1 hover:bg-accent">Page settings</summary><div className="flex flex-wrap gap-3 items-center mt-3">
-              <label className="flex items-center gap-2 whitespace-nowrap">
-                Paper
-                <select aria-label="Notebook paper" className="input w-auto! py-1! text-xs" value={notebook.paper_style || "plain"} onChange={e => autosave.update({ paper_style: e.target.value })}>
-                  <option value="plain">Plain</option>
-                  <option value="ruled">Ruled</option>
-                  <option value="dotted">Dotted</option>
-                </select>
-              </label>
-              <label className="flex items-center gap-2 whitespace-nowrap">
-                Font
-                <select aria-label="Notebook font" className="input w-auto! py-1! text-xs" value={notebook.font_style || "sans"} onChange={e => autosave.update({ font_style: e.target.value })}>
-                  <option value="sans">Sans</option>
-                  <option value="serif">Serif</option>
-                  <option value="mono">Mono</option>
-                </select>
-              </label>
-            </div></details>
+            {history !== null && <div className="mb-4"><NotebookHistory versions={history} loading={historyLoading} busy={busy} error={historyError} onRestore={restoreVersion} onRetry={loadHistory} /></div>}
             <input
               aria-label="Notebook title"
               className="bg-transparent w-full font-display text-2xl sm:text-3xl border-none placeholder:text-muted-foreground mb-4 rounded-md p-1"
@@ -310,17 +330,17 @@ function NotebookWorkspace({ accountId }) {
               onChange={onTitleChange}
               data-testid="notebook-title-input"
             />
-            <div className="flex-1 min-w-0" ref={notesRef}>
+            <div className="flex-1 min-w-0" ref={notesRef} hidden={mode !== "write"}>
               <NotebookEditor key={`${activeId}.${editorVersion}`} notebook={notebook} theme={theme} editorRef={richEditorRef} onChange={autosave.update} />
             </div>
-            <details id="notebook-practice" key={`practice.${activeId}`} className="mt-5 border-t border-border pt-4" onToggle={e => setPracticeOpen(e.currentTarget.open)}><summary className="cursor-pointer font-medium text-sm">Practice</summary>{practiceOpen && <div className="mt-4"><NotebookPractice key={activeId} notebook={notebook} getSelectedText={getSelectedText} beforeStart={autosave.flush} /></div>}</details>
-            <ExplainPopover
+            {practiceOpen && <div id="notebook-practice" hidden={mode !== "practice"} className="mt-2"><NotebookPractice key={activeId} notebook={notebook} getSelectedText={getSelectedText} beforeStart={autosave.flush} /></div>}
+            {mode === "write" && <ExplainPopover
               key={activeId}
               textareaRef={notesRef}
               getSelectedText={getSelectedText}
               containerRef={editorRef}
               subjectName={notebook.subject_id ? subjectMap[notebook.subject_id]?.name : null}
-            />
+            />}
             {summary && (
               <div className="mt-4 rounded-lg border border-border p-4 bg-accent/40" data-testid="notebook-summary">
                 <div className="flex items-center justify-between mb-2">
@@ -334,7 +354,9 @@ function NotebookWorkspace({ accountId }) {
           </div>
         )}
         {err && <div role="alert" className="text-destructive text-sm mt-2">{err}</div>}
+        {loadError && <div role="alert" className="text-destructive text-sm mt-2 space-y-2"><p>{loadError.message}</p><button className="btn btn-outline" disabled={loadingList} onClick={() => { if (loadError.notebookId) void selectNotebook(loadError.notebookId); else void load(); }}>Retry loading</button></div>}
       </section>
+      {newNoteOpen && <NewNoteDialog subjects={{ data: subjects, loading: loadingList, failed: !!loadError && !loaded, retry: load }} onClose={() => { setNewNoteOpen(false); void load(); }} />}
     </div>
   );
 }
@@ -342,5 +364,5 @@ function NotebookWorkspace({ accountId }) {
 function NotebookLinks({ notebook, subjects, update }) {
   const [unitId, setUnitId] = useState(null);
   useEffect(() => { let live = true; if (notebook.lesson_id) http.get(`/lessons/${notebook.lesson_id}`).then(r => { if (live) setUnitId(r.data.unit_id); }).catch(() => {}); return () => { live = false; }; }, [notebook.lesson_id]);
-  return <details><summary className="cursor-pointer">{notebook.lesson_id ? "Linked lesson" : "Link to a subject or lesson"}</summary><div className="mt-3"><AcademicSelector subjects={subjects} value={{ subject_id: notebook.subject_id, unit_id: unitId, lesson_id: notebook.lesson_id }} onChange={v => { setUnitId(v.unit_id); update({ subject_id: v.subject_id, lesson_id: v.lesson_id }); }} />{notebook.lesson_id && <Link className="block action-link mt-2" to={`/lessons/${notebook.lesson_id}`}>Open lesson</Link>}</div></details>;
+  return <section className="space-y-2"><h2 className="text-xs text-muted-foreground">{notebook.lesson_id ? "Linked lesson" : "Link to a subject or lesson"}</h2><AcademicSelector subjects={subjects} value={{ subject_id: notebook.subject_id, unit_id: unitId, lesson_id: notebook.lesson_id }} onChange={v => { setUnitId(v.unit_id); update({ subject_id: v.subject_id, lesson_id: v.lesson_id }); }} />{notebook.lesson_id && <Link className="btn btn-ghost w-full justify-start" to={`/lessons/${notebook.lesson_id}`}>Open lesson</Link>}</section>;
 }

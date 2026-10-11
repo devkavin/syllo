@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import re
 from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from sqlalchemy import select, update
+from sqlalchemy import or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.api.dependencies import get_current_user
 from backend.app.api.routes.notebooks import owned_notebook, validate_links
+from backend.app.api.routes.academics import owned_lesson, owned_subject
 from backend.app.database import get_session
 from backend.app.models import Lesson, StudyAttempt, StudyQuestion, Subject, User, base
 from backend.app.services.scheduling import utc
@@ -27,6 +29,9 @@ class QuestionCreate(BaseModel):
     subject_id: str | None = None
     lesson_id: str | None = None
     kind: Literal["question", "mistake"] = "question"
+    format: Literal["basic", "cloze", "reverse", "exam"] = "basic"
+    time_limit_seconds: int | None = Field(default=None, ge=30, le=7200)
+    max_marks: int | None = Field(default=None, ge=1, le=1000)
     prompt: str = Field(min_length=1, max_length=20000)
     answer: str = Field(default="", max_length=50000)
     mistake: str = Field(default="", max_length=50000)
@@ -44,10 +49,20 @@ class QuestionPatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
     expected_revision: int = Field(ge=1)
     kind: Literal["question", "mistake"] | None = None
+    format: Literal["basic", "cloze", "reverse", "exam"] | None = None
+    time_limit_seconds: int | None = Field(default=None, ge=30, le=7200)
+    max_marks: int | None = Field(default=None, ge=1, le=1000)
     prompt: str | None = Field(default=None, min_length=1, max_length=20000)
     answer: str | None = Field(default=None, max_length=50000)
     mistake: str | None = Field(default=None, max_length=50000)
     correction: str | None = Field(default=None, max_length=50000)
+
+    @field_validator("format")
+    @classmethod
+    def nonnull_format(cls, value):
+        if value is None:
+            raise ValueError("Choose a question format")
+        return value
 
     @field_validator(*TEXT_FIELDS)
     @classmethod
@@ -62,6 +77,19 @@ class QuestionAttempt(BaseModel):
     quality: Literal["again", "hard", "good"]
     expected_revision: int = Field(ge=1)
     request_id: UUID
+    elapsed_seconds: int | None = Field(default=None, ge=0, le=86400)
+    earned_marks: int | None = Field(default=None, ge=0, le=1000)
+
+
+def validate_format(format_, prompt, answer):
+    if format_ == "cloze" and not any(
+        match.strip() for match in re.findall(r"\{\{([^{}]+)\}\}", prompt)
+    ):
+        raise HTTPException(
+            422, "Cloze prompts need hidden words inside {{double braces}}"
+        )
+    if format_ == "reverse" and not answer.strip():
+        raise HTTPException(422, "Reverse prompts need an answer to show first")
 
 
 def question_dict(item):
@@ -71,6 +99,9 @@ def question_dict(item):
         "subject_id": item.subject_id,
         "lesson_id": item.lesson_id,
         "kind": item.kind,
+        "format": item.format,
+        "time_limit_seconds": item.time_limit_seconds,
+        "max_marks": item.max_marks,
         **{field: getattr(item, field) for field in TEXT_FIELDS},
         "confidence": item.confidence,
         "interval_days": item.interval_days,
@@ -129,6 +160,9 @@ async def update_question(session, item, revision, data):
 @router.get("/questions")
 async def list_questions(
     notebook_id: str | None = None,
+    subject_id: str | None = None,
+    lesson_id: str | None = None,
+    q: str = Query(default="", max_length=200),
     kind: Literal["question", "mistake"] | None = None,
     due: bool = False,
     user: User = Depends(get_current_user),
@@ -138,6 +172,21 @@ async def list_questions(
     if notebook_id:
         await owned_notebook(session, user.user_id, notebook_id)
         query = query.where(StudyQuestion.notebook_id == notebook_id)
+    if subject_id:
+        await owned_subject(session, user.user_id, subject_id)
+        query = query.where(StudyQuestion.subject_id == subject_id)
+    if lesson_id:
+        await owned_lesson(session, user.user_id, lesson_id)
+        query = query.where(StudyQuestion.lesson_id == lesson_id)
+    if q.strip():
+        query = query.where(
+            or_(
+                *(
+                    getattr(StudyQuestion, field).icontains(q.strip(), autoescape=True)
+                    for field in TEXT_FIELDS
+                )
+            )
+        )
     if kind:
         query = query.where(StudyQuestion.kind == kind)
     if due:
@@ -157,6 +206,7 @@ async def create_question(
     session: AsyncSession = Depends(get_session),
 ):
     await lock_student(session, user.user_id)
+    validate_format(body.format, body.prompt, body.answer)
     notebook = (
         await owned_notebook(session, user.user_id, body.notebook_id)
         if body.notebook_id
@@ -200,6 +250,12 @@ async def patch_question(
     data = body.model_dump(exclude_unset=True, exclude={"expected_revision"})
     if "kind" in data and data.pop("kind") != item.kind:
         raise HTTPException(422, "A practice question's kind cannot be changed")
+    check_revision(item, body.expected_revision)
+    validate_format(
+        data.get("format", item.format),
+        data.get("prompt", item.prompt),
+        data.get("answer", item.answer),
+    )
     await update_question(session, item, body.expected_revision, data)
     await session.commit()
     return question_dict(item)
@@ -265,10 +321,17 @@ async def attempt_question(
     user_id = user.user_id
     await lock_student(session, user_id)
     item = await owned_question(session, user_id, question_id)
-    payload = {"question_id": question_id, **body.model_dump(mode="json")}
+    payload = {
+        "question_id": question_id,
+        **body.model_dump(mode="json", exclude_none=True),
+    }
     previous = await session.get(StudyAttempt, (user_id, str(body.request_id)))
     if previous:
         return replay_attempt(previous, payload, item)
+    if body.earned_marks is not None and (
+        item.max_marks is None or body.earned_marks > item.max_marks
+    ):
+        raise HTTPException(422, "Earned marks need a maximum and cannot exceed it")
     interval = (
         1
         if body.quality == "again"
@@ -297,6 +360,9 @@ async def attempt_question(
                 lesson_id=item.lesson_id,
                 topic_title=title,
                 quality=body.quality,
+                elapsed_seconds=body.elapsed_seconds,
+                earned_marks=body.earned_marks,
+                max_marks=item.max_marks,
                 payload=payload,
             )
         )
@@ -314,6 +380,29 @@ async def attempt_question(
             return replay_attempt(previous, payload, item)
         raise
     return question_dict(item)
+
+
+async def due_counts(session, user_id):
+    items = (
+        await session.scalars(
+            select(StudyQuestion.kind).where(
+                StudyQuestion.user_id == user_id,
+                StudyQuestion.next_review_at <= base.utc_now(),
+            )
+        )
+    ).all()
+    return {
+        "questions_count": items.count("question"),
+        "mistakes_count": items.count("mistake"),
+        "due_count": len(items),
+    }
+
+
+@router.get("/due-summary")
+async def due_summary(
+    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
+):
+    return await due_counts(session, user.user_id)
 
 
 @router.get("/progress")

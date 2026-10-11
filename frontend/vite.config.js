@@ -4,6 +4,7 @@ import { transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { prerenderHome } from "./scripts/prerender-home.js";
+import { offlineShell } from "./scripts/offline-shell.js";
 
 export default defineConfig({
   plugins: [
@@ -20,6 +21,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     prerenderHome(),
+    offlineShell(),
   ],
   esbuild: {
     loader: "jsx",

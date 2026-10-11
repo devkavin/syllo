@@ -1,5 +1,10 @@
 import { expect, it } from "vitest";
 import { nextStudyAction } from "./nextStudyAction";
+it("offers due practice before a free study session while preserving urgent work", () => {
+  const input = { now: new Date("2026-10-11T10:00:00Z"), today: "2026-10-11", practice: { due_count: 3 } };
+  expect(nextStudyAction(input)).toMatchObject({ kind: "practice", href: "/reviews" });
+  expect(nextStudyAction({ ...input, tasks: [{ task_id: "t", due_date: "2026-10-10" }] }).kind).toBe("task");
+});
 it("links current activities, upcoming activities, due work and the focus fallback", () => {
   const now = new Date("2026-10-05T09:30:00Z");
   const current = { title: "Limits", starts_at: "2026-10-05T09:00:00Z", ends_at: "2026-10-05T10:00:00Z", href: "/timer?event=e" };

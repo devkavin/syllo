@@ -27,8 +27,12 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "plans",
         "stripe_events",
         "oauth_login_codes",
-        "circles", "circle_members", "circle_goals",
-        "paddle_accounts", "paddle_payments", "paddle_events",
+        "circles",
+        "circle_members",
+        "circle_goals",
+        "paddle_accounts",
+        "paddle_payments",
+        "paddle_events",
     }.issubset(tables)
     assert (
         engine.connect().exec_driver_sql("SELECT COUNT(*) FROM users").scalar_one() == 0
@@ -47,7 +51,9 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "scholar": (899, 250),
         "deans_list": (1399, 800),
     }
-    usage_columns = {column["name"] for column in inspect(engine).get_columns("ai_usage_logs")}
+    usage_columns = {
+        column["name"] for column in inspect(engine).get_columns("ai_usage_logs")
+    }
     assert {
         "model",
         "input_tokens",
@@ -55,7 +61,11 @@ def test_initial_migration_round_trip_on_empty_database(tmp_path: Path) -> None:
         "estimated_cost_microusd",
         "latency_ms",
         "error_code",
-        "thinking_tokens", "cached_input_tokens", "total_tokens", "finish_reason", "plan_id",
+        "thinking_tokens",
+        "cached_input_tokens",
+        "total_tokens",
+        "finish_reason",
+        "plan_id",
     }.issubset(usage_columns)
     assert "bonus_credits_remaining" in {
         column["name"] for column in inspect(engine).get_columns("users")
@@ -78,22 +88,50 @@ def test_rich_notebook_migration_preserves_existing_notes(tmp_path: Path) -> Non
     command.upgrade(config, "20261005_0009")
     engine = create_engine(f"sqlite:///{database_path.as_posix()}")
     with engine.begin() as connection:
-        connection.execute(User.__table__.insert().values(user_id="legacy-owner", email="legacy@example.com", normalized_email="legacy@example.com", name="Legacy"))
-        connection.execute(text("INSERT INTO notebooks (notebook_id, user_id, title, content, created_at, updated_at) VALUES ('legacy-note', 'legacy-owner', 'Legacy title', :content, '2026-10-01 00:00:00', '2026-10-02 00:00:00')"), {"content": "Literal <text>\n\nLast line"})
+        connection.execute(
+            User.__table__.insert().values(
+                user_id="legacy-owner",
+                email="legacy@example.com",
+                normalized_email="legacy@example.com",
+                name="Legacy",
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO notebooks (notebook_id, user_id, title, content, created_at, updated_at) VALUES ('legacy-note', 'legacy-owner', 'Legacy title', :content, '2026-10-01 00:00:00', '2026-10-02 00:00:00')"
+            ),
+            {"content": "Literal <text>\n\nLast line"},
+        )
     command.upgrade(config, "head")
     with engine.connect() as connection:
-        note = connection.execute(text("SELECT content, rich_content, paper_style, font_style, user_id FROM notebooks")).one()
-        assert tuple(note) == ("Literal <text>\n\nLast line", None, "plain", "sans", "legacy-owner")
+        note = connection.execute(
+            text(
+                "SELECT content, rich_content, paper_style, font_style, user_id FROM notebooks"
+            )
+        ).one()
+        assert tuple(note) == (
+            "Literal <text>\n\nLast line",
+            None,
+            "plain",
+            "sans",
+            "legacy-owner",
+        )
     command.downgrade(config, "20261005_0009")
-    assert {column["name"] for column in inspect(engine).get_columns("notebooks")}.isdisjoint({"rich_content", "paper_style", "font_style"})
+    assert {
+        column["name"] for column in inspect(engine).get_columns("notebooks")
+    }.isdisjoint({"rich_content", "paper_style", "font_style"})
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT title, content, user_id FROM notebooks")).one() == ("Legacy title", "Literal <text>\n\nLast line", "legacy-owner")
+        assert connection.execute(
+            text("SELECT title, content, user_id FROM notebooks")
+        ).one() == ("Legacy title", "Literal <text>\n\nLast line", "legacy-owner")
     command.upgrade(config, "head")
     command.check(config)
     engine.dispose()
 
 
-def test_focus_timer_migration_is_additive_and_preserves_study_logs(tmp_path: Path) -> None:
+def test_focus_timer_migration_is_additive_and_preserves_study_logs(
+    tmp_path: Path,
+) -> None:
     database_path = tmp_path / "focus-timer.db"
     config = Config(str(Path("backend/alembic.ini").resolve()))
     config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
@@ -101,21 +139,50 @@ def test_focus_timer_migration_is_additive_and_preserves_study_logs(tmp_path: Pa
     command.upgrade(config, "20261010_0010")
     engine = create_engine(f"sqlite:///{database_path.as_posix()}")
     with engine.begin() as connection:
-        connection.execute(User.__table__.insert().values(user_id="timer-migration-owner", email="timer-migration@example.com", normalized_email="timer-migration@example.com", name="Timer"))
-        connection.execute(text("INSERT INTO study_sessions (session_id, user_id, duration_seconds, mode, note, started_at, created_at, updated_at) VALUES ('old-study', 'timer-migration-owner', 120, 'pomodoro', '', '2026-10-01 08:00:00', '2026-10-01 08:00:00', '2026-10-01 08:00:00')"))
+        connection.execute(
+            User.__table__.insert().values(
+                user_id="timer-migration-owner",
+                email="timer-migration@example.com",
+                normalized_email="timer-migration@example.com",
+                name="Timer",
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO study_sessions (session_id, user_id, duration_seconds, mode, note, started_at, created_at, updated_at) VALUES ('old-study', 'timer-migration-owner', 120, 'pomodoro', '', '2026-10-01 08:00:00', '2026-10-01 08:00:00', '2026-10-01 08:00:00')"
+            )
+        )
     command.upgrade(config, "head")
-    assert {"focus_timers", "focus_timer_requests"}.issubset(inspect(engine).get_table_names())
+    assert {"focus_timers", "focus_timer_requests"}.issubset(
+        inspect(engine).get_table_names()
+    )
     command.check(config)
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'")).scalar_one() == 120
+        assert (
+            connection.execute(
+                text(
+                    "SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'"
+                )
+            ).scalar_one()
+            == 120
+        )
     command.downgrade(config, "20261010_0010")
     assert "focus_timers" not in inspect(engine).get_table_names()
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'")).scalar_one() == 120
+        assert (
+            connection.execute(
+                text(
+                    "SELECT duration_seconds FROM study_sessions WHERE session_id = 'old-study'"
+                )
+            ).scalar_one()
+            == 120
+        )
     engine.dispose()
 
 
-def test_study_workflow_migration_preserves_notes_tasks_and_timer(tmp_path: Path) -> None:
+def test_study_workflow_migration_preserves_notes_tasks_and_timer(
+    tmp_path: Path,
+) -> None:
     database_path = tmp_path / "study-workflow.db"
     config = Config(str(Path("backend/alembic.ini").resolve()))
     config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
@@ -123,20 +190,146 @@ def test_study_workflow_migration_preserves_notes_tasks_and_timer(tmp_path: Path
     command.upgrade(config, "20261010_0011")
     engine = create_engine(f"sqlite:///{database_path.as_posix()}")
     with engine.begin() as connection:
-        connection.execute(User.__table__.insert().values(user_id="workflow-owner", email="workflow@example.com", normalized_email="workflow@example.com", name="Workflow"))
-        connection.execute(text("INSERT INTO notebooks (notebook_id, user_id, title, content, rich_content, created_at, updated_at) VALUES ('old-note', 'workflow-owner', 'Keep', :content, :rich, '2026-10-01', '2026-10-01')"), {"content": "Literal <notes>\n\nEnd", "rich": '[{"type":"paragraph","content":"Rich"}]'})
-        connection.execute(text("INSERT INTO tasks (task_id, user_id, title, priority, notes, completed, created_at, updated_at) VALUES ('old-task', 'workflow-owner', 'Existing Today work', 'normal', '', 0, '2026-10-01', '2026-10-01')"))
-        connection.execute(text("INSERT INTO focus_timers (user_id, revision, timer, created_at, updated_at) VALUES ('workflow-owner', 5, :timer, '2026-10-01', '2026-10-01')"), {"timer": '{"timer_id":"keep-timer","status":"paused"}'})
+        connection.execute(
+            User.__table__.insert().values(
+                user_id="workflow-owner",
+                email="workflow@example.com",
+                normalized_email="workflow@example.com",
+                name="Workflow",
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO notebooks (notebook_id, user_id, title, content, rich_content, created_at, updated_at) VALUES ('old-note', 'workflow-owner', 'Keep', :content, :rich, '2026-10-01', '2026-10-01')"
+            ),
+            {
+                "content": "Literal <notes>\n\nEnd",
+                "rich": '[{"type":"paragraph","content":"Rich"}]',
+            },
+        )
+        connection.execute(
+            text(
+                "INSERT INTO tasks (task_id, user_id, title, priority, notes, completed, created_at, updated_at) VALUES ('old-task', 'workflow-owner', 'Existing Today work', 'normal', '', 0, '2026-10-01', '2026-10-01')"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO focus_timers (user_id, revision, timer, created_at, updated_at) VALUES ('workflow-owner', 5, :timer, '2026-10-01', '2026-10-01')"
+            ),
+            {"timer": '{"timer_id":"keep-timer","status":"paused"}'},
+        )
     command.upgrade(config, "head")
-    assert {"notebook_versions", "study_questions", "study_attempts", "revision_plans", "revision_plan_items"}.issubset(inspect(engine).get_table_names())
+    assert {
+        "notebook_versions",
+        "study_questions",
+        "study_attempts",
+        "revision_plans",
+        "revision_plan_items",
+    }.issubset(inspect(engine).get_table_names())
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT content, rich_content, revision, deleted_at FROM notebooks")).one() == ('Literal <notes>\n\nEnd', '[{"type":"paragraph","content":"Rich"}]', 1, None)
-        assert connection.execute(text("SELECT title FROM tasks")).scalar_one() == "Existing Today work"
-        assert connection.execute(text("SELECT revision, timer FROM focus_timers")).one() == (5, '{"timer_id":"keep-timer","status":"paused"}')
+        assert connection.execute(
+            text("SELECT content, rich_content, revision, deleted_at FROM notebooks")
+        ).one() == (
+            "Literal <notes>\n\nEnd",
+            '[{"type":"paragraph","content":"Rich"}]',
+            1,
+            None,
+        )
+        assert (
+            connection.execute(text("SELECT title FROM tasks")).scalar_one()
+            == "Existing Today work"
+        )
+        assert connection.execute(
+            text("SELECT revision, timer FROM focus_timers")
+        ).one() == (5, '{"timer_id":"keep-timer","status":"paused"}')
     command.check(config)
     command.downgrade(config, "20261010_0011")
     assert "study_attempts" not in inspect(engine).get_table_names()
     with engine.connect() as connection:
-        assert connection.execute(text("SELECT content FROM notebooks")).scalar_one() == "Literal <notes>\n\nEnd"
+        assert (
+            connection.execute(text("SELECT content FROM notebooks")).scalar_one()
+            == "Literal <notes>\n\nEnd"
+        )
         assert connection.execute(text("SELECT COUNT(*) FROM tasks")).scalar_one() == 1
+    engine.dispose()
+
+
+def test_daily_workflow_upgrade_preserves_cards_ledger_and_item_durations(
+    tmp_path: Path,
+) -> None:
+    database_path = tmp_path / "daily-workflow.db"
+    config = Config(str(Path("backend/alembic.ini").resolve()))
+    config.set_main_option("script_location", str(Path("backend/alembic").resolve()))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path.as_posix()}")
+    command.upgrade(config, "20261010_0012")
+    engine = create_engine(f"sqlite:///{database_path.as_posix()}")
+    with engine.begin() as connection:
+        connection.execute(
+            User.__table__.insert().values(
+                user_id="daily-owner",
+                email="daily@example.com",
+                normalized_email="daily@example.com",
+                name="Daily",
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO study_questions (question_id,user_id,kind,prompt,answer,mistake,correction,interval_days,next_review_at,attempts,successes,revision,created_at,updated_at) VALUES ('legacy-card','daily-owner','question','Keep <prompt>','Literal answer','','',2,'2026-10-15',1,1,2,'2026-10-10','2026-10-10')"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO study_attempts (user_id,request_id,question_id,topic_title,quality,payload,created_at) VALUES ('daily-owner','legacy-request','legacy-card','Legacy topic','good',:payload,'2026-10-10')"
+            ),
+            {"payload": '{"quality":"good","expected_revision":1}'},
+        )
+        connection.execute(
+            text(
+                "INSERT INTO revision_plans (plan_id,user_id,title,exam_date,daily_minutes,study_days,minutes_per_lesson,created_at,updated_at) VALUES ('legacy-plan','daily-owner','Exam','2026-11-01',90,'[0,1,2]',45,'2026-10-10','2026-10-10')"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO tasks (task_id,user_id,title,priority,notes,completed,created_at,updated_at) VALUES ('legacy-revision','daily-owner','Keep task','normal','Original note',1,'2026-10-10','2026-10-10')"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO revision_plan_items (task_id,plan_id) VALUES ('legacy-revision','legacy-plan')"
+            )
+        )
+    command.upgrade(config, "head")
+    with engine.connect() as connection:
+        assert connection.execute(
+            text(
+                "SELECT format,time_limit_seconds,max_marks,prompt,attempts,successes,revision FROM study_questions"
+            )
+        ).one() == ("basic", None, None, "Keep <prompt>", 1, 1, 2)
+        assert connection.execute(
+            text(
+                "SELECT elapsed_seconds,earned_marks,max_marks,quality FROM study_attempts"
+            )
+        ).one() == (None, None, None, "good")
+        assert (
+            connection.execute(
+                text("SELECT minutes FROM revision_plan_items")
+            ).scalar_one()
+            == 45
+        )
+        assert connection.execute(text("SELECT notes,completed FROM tasks")).one() == (
+            "Original note",
+            1,
+        )
+    command.check(config)
+    command.downgrade(config, "20261010_0012")
+    with engine.connect() as connection:
+        assert connection.execute(
+            text("SELECT prompt,revision FROM study_questions")
+        ).one() == ("Keep <prompt>", 2)
+        assert (
+            connection.execute(text("SELECT COUNT(*) FROM study_attempts")).scalar_one()
+            == 1
+        )
+    command.upgrade(config, "head")
+    command.check(config)
     engine.dispose()

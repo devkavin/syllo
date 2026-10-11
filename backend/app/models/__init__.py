@@ -23,7 +23,7 @@ from backend.app.models.circles import Circle, CircleMember, CircleGoal
 from backend.app.models.scheduling import AvailabilityWindow, AvailabilityExclusion, CircleStudyEvent, CircleParticipation
 from backend.app.models.paddle import PaddleAccount, PaddlePayment, PaddleEvent
 from backend.app.models.focus import FocusTimer, FocusTimerRequest
-from backend.app.models.study_workflow import NotebookVersion, StudyQuestion, StudyAttempt, RevisionPlan, RevisionPlanItem
+from backend.app.models.study_workflow import NotebookVersion, StudyQuestion, StudyAttempt, RevisionPlan, RevisionPlanItem, StudyReminder
 
 __all__ = [
     "NotebookVersion",
@@ -31,6 +31,7 @@ __all__ = [
     "StudyAttempt",
     "RevisionPlan",
     "RevisionPlanItem",
+    "StudyReminder",
     "FocusTimer",
     "FocusTimerRequest",
     "AIUsageLog",

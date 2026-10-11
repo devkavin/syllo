@@ -25,6 +25,7 @@ const Settings = lazy(() => import("@/pages/Settings"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Timetable = lazy(() => import("@/pages/Timetable"));
 const Planner = lazy(() => import("@/pages/Planner"));
+const Exams = lazy(() => import("@/pages/Exams"));
 const Reviews = lazy(() => import("@/pages/Reviews"));
 const Upgrade = lazy(() => import("@/pages/Upgrade"));
 const Admin = lazy(() => import("@/pages/Admin"));
@@ -51,7 +52,7 @@ function Protected({ children }) {
   if (user && user.onboarded === false && location.pathname !== "/onboarding") {
     return <Navigate to="/onboarding" replace />;
   }
-  return <AppShell>{children}</AppShell>;
+  return <AppShell key={user.user_id}>{children}</AppShell>;
 }
 
 function OnboardingRoute() {
@@ -67,7 +68,7 @@ function AdminRoute({ children }) {
   if (user === undefined) return <div className="min-h-screen grid place-items-center text-muted-foreground text-sm">Loading</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== "admin") return <Navigate to="/today" replace />;
-  return <AppShell>{children}</AppShell>;
+  return <AppShell key={user.user_id}>{children}</AppShell>;
 }
 
 export function AppRoutes() {
@@ -93,6 +94,7 @@ export function AppRoutes() {
         <Route path="/lessons/:id" element={<Protected><LessonWorkspace /></Protected>} />
         <Route path="/timetable" element={<Protected><Timetable /></Protected>} />
         <Route path="/planner" element={<Protected><Planner /></Protected>} />
+        <Route path="/exams" element={<Protected><Exams /></Protected>} />
         <Route path="/notebooks" element={<Protected><Notebooks /></Protected>} />
         <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
         <Route path="/reviews" element={<Protected><Reviews /></Protected>} />

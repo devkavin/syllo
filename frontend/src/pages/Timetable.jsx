@@ -54,7 +54,7 @@ export default function Timetable() {
         <button className="btn btn-primary" onClick={() => { setEditing(null); setShowNew(true); }} data-testid="new-block-btn"><Plus className="w-4 h-4" /> New block</button>
       </div>
 
-      {err && <div className="text-destructive text-sm">{err}</div>}
+      {err && <div role="alert" className="text-destructive text-sm">{err}</div>}
       <Link to="/planner" className="text-sm action-link">View dated Planner</Link>
 
       {loading ? (
@@ -81,19 +81,13 @@ export default function Timetable() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <button className="action-link text-left" onClick={() => { setEditing(b); setShowNew(true); }}>{b.title}</button>
-                        <button
-                          className="btn btn-ghost btn-icon text-muted-foreground"
-                          aria-label={`Delete ${b.title}`}
-                          onClick={() => remove(b.timetable_id)}
-                          data-testid={`block-delete-${b.timetable_id}`}
-                          title="Delete"
-                        ><Trash2 className="w-3 h-3" /></button>
                       </div>
                       <div className="mt-1 inline-flex items-center gap-1 opacity-80">
                         <Clock className="w-3 h-3" /> {b.start_time} to {b.end_time}
                       </div>
                       {sub && <div className="mt-0.5 opacity-80">{sub.name}</div>}
                       {b.recurrence === "none" && <div className="mt-1">{b.needs_date ? "Choose a date to show in Planner" : `${b.date}${b.end_date && b.end_date !== b.date ? ` → ${b.end_date}` : ""}`}</div>}
+                      <details className="mt-1"><summary className="min-h-11 cursor-pointer py-3 text-muted-foreground" aria-label={`Block options for ${b.title}`}>Block options</summary><button className="btn btn-ghost text-destructive" aria-label={`Delete ${b.title}`} onClick={() => remove(b.timetable_id)} data-testid={`block-delete-${b.timetable_id}`}><Trash2 className="w-4 h-4" />Delete block</button></details>
                     </div>
                   );
                 })}
