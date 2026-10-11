@@ -1,95 +1,135 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { http, formatError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, Users, ShieldCheck } from "lucide-react";
 import CircleSchedule from "@/components/CircleSchedule";
-import AcademicSelector from "@/components/AcademicSelector";
+import CircleGoals from "@/components/CircleGoals";
+import Modal from "@/components/Modal";
+import { CircleActions, CircleShare, CircleJoin } from "@/components/CircleControls";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Circles() {
-  const [params] = useSearchParams();
   const { user } = useAuth();
-  const [circles, setCircles] = useState([]);
-  const [selected, setSelected] = useState(params.get("circle"));
-  const [detail, setDetail] = useState(null);
+  return <CircleLibrary key={user?.user_id || "guest"} user={user} />;
+}
+
+function CircleLibrary({ user }) {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const selected = params.get("circle");
+  const [circles, setCircles] = useState(null);
+  const [version, setVersion] = useState(0);
+  const [dialog, setDialog] = useState(null);
   const [name, setName] = useState("");
-  const [goal, setGoal] = useState("");
-  const [goalLink, setGoalLink] = useState({ subject_id: null, unit_id: null, lesson_id: null });
-  const [goalTask, setGoalTask] = useState("");
-  const [ownTasks, setOwnTasks] = useState([]);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const lock = useRef(false);
+  const live = useRef(true);
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  useEffect(() => { live.current = true; return () => { live.current = false; }; }, []);
   const [pendingInvite] = useState(() => {
     try { const value = JSON.parse(sessionStorage.getItem("syllo.circleInvite")); return /^[A-Za-z0-9_-]{30,64}$/.test(value?.token) ? value : null; } catch { return null; }
   });
-  async function load(id = selected) {
-    if (id !== detail?.id) setDetail(null);
-    const { data } = await http.get("/circles");
-    setCircles(data);
-    if (id && data.some(c => c.id === id)) setDetail((await http.get(`/circles/${id}`)).data);
-    else { setSelected(null); setDetail(null); }
-  }
-  useEffect(() => { load().catch(e => setError(formatError(e))).finally(() => setLoading(false)); }, []);
-  useEffect(() => { if (selected) http.get("/tasks").then(r => setOwnTasks(r.data)).catch(() => setOwnTasks([])); }, [selected]);
-  async function act(action) {
-    if (busy) return;
-    setBusy(true); setError(""); setNotice("");
-    try { await action(); } catch (e) { setError(formatError(e)); } finally { setBusy(false); }
-  }
-  return <section className="max-w-4xl space-y-6" data-testid="circles-page">
-    <header><h1 className="page-title">Circles</h1><p className="text-muted-foreground mt-2">A small study group, on your terms. No public feed or rankings.</p></header>
-    {pendingInvite && (
-      <section aria-labelledby="pending-circle-heading" className="rounded-xl border border-primary/30 bg-accent/60 p-5 sm:p-6">
-        <div className="flex items-start gap-4">
-          <div aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground"><Users className="h-5 w-5" /></div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Invitation waiting</p>
-            <h2 id="pending-circle-heading" className="mt-1 text-xl font-semibold leading-snug">You have a circle invitation</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">See who you’ll study with before joining. Your notes and tasks stay private.</p>
-            <Link className="btn btn-primary mt-4 min-h-11 w-full justify-center gap-2 sm:w-auto" to={`/join/${pendingInvite.token}?ref=${encodeURIComponent(pendingInvite.ref || "")}`}>View invitation<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
-          </div>
-        </div>
-      </section>
-    )}
-    {error && <p role="alert" className="text-destructive">{error}</p>}
-    {notice && <p role="status">{notice}</p>}
-    {loading ? <p role="status">Loading your circles…</p> : <>
-      <form className="flex flex-col sm:flex-row gap-3 sm:items-end" onSubmit={e => { e.preventDefault(); act(async () => { const { data } = await http.post("/circles", { title: name }); setName(""); setSelected(data.id); await load(data.id); }); }}>
-        <label className="block sm:max-w-sm w-full"><span className="field-label">Circle name</span><input className="input" maxLength={80} required value={name} onChange={e => setName(e.target.value)} placeholder="Name your study circle" /></label>
-        <button className="btn btn-primary" disabled={busy || !name.trim()}>Create circle</button>
-      </form>
-      {!circles.length && <p className="empty-state">Create a private circle and invite a few friends. Your notes and tasks stay personal.</p>}
-      <nav aria-label="Your circles" className="flex flex-wrap gap-2">{circles.map(c => <button key={c.id} aria-pressed={selected === c.id} className={`btn ${selected === c.id ? "btn-primary" : "btn-outline"}`} disabled={busy} onClick={() => act(async () => { setSelected(c.id); await load(c.id); })}>{c.name}</button>)}</nav>
+  useEffect(() => {
+    let live = true;
+    http.get("/circles").then(result => { if (live) { setCircles(result.data); setError(""); } }).catch(error => { if (live) setError(formatError(error)); });
+    return () => { live = false; };
+  }, [version]);
+  const create = async event => {
+    event.preventDefault(); if (lock.current) return;
+    lock.current = true; setBusy(true); setError("");
+    try { const { data } = await http.post("/circles", { title: name.trim() }); if (!live.current || selectedRef.current) return; setDialog(null); setName(""); setVersion(n => n + 1); navigate(`/circles?circle=${encodeURIComponent(data.id)}`); }
+    catch (error) { setError(formatError(error)); }
+    finally { lock.current = false; setBusy(false); }
+  };
+  if (selected) return <CircleWorkspace key={selected} id={selected} user={user} onLibraryChange={() => setVersion(n => n + 1)} />;
+  return <section className="mx-auto w-full max-w-5xl space-y-6" data-testid="circles-page">
+    <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-primary">Better together</p><h1 className="page-title mt-2">Circles</h1><p className="mt-2 text-muted-foreground">Your small study group. Make a plan, share a goal, show up together.</p></div><div className="flex flex-wrap gap-2"><button className="btn btn-primary min-h-11" onClick={() => { setError(""); setDialog("create"); }}><Plus aria-hidden="true" size={16} />Create circle</button><button className="btn btn-outline min-h-11" onClick={() => setDialog("join")}>Join with link</button></div></header>
+    {pendingInvite && <section aria-labelledby="pending-circle-heading" className="rounded-2xl border border-primary/30 bg-accent/60 p-5"><p className="text-xs font-semibold text-primary">Invitation waiting</p><h2 id="pending-circle-heading" className="mt-1 text-lg font-semibold">You have a circle invitation</h2><p className="mt-2 text-sm text-muted-foreground">Check your invitation before joining. Your notes and tasks stay private.</p><Link className="btn btn-primary min-h-11 mt-4" to={`/join/${pendingInvite.token}?ref=${encodeURIComponent(pendingInvite.ref || "")}`}>View invitation<ArrowRight aria-hidden="true" size={16} /></Link></section>}
+    {error && !dialog && <p role="alert" className="text-destructive">{error} <button className="btn btn-outline" onClick={() => setVersion(n => n + 1)}>Try again</button></p>}
+    {circles === null ? <p role="status">Loading your circles…</p> : !circles.length ? <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center"><Users aria-hidden="true" className="mx-auto mb-4 text-primary" size={36} /><h2 className="font-display text-2xl">Find your study people</h2><p className="mx-auto mt-3 max-w-md text-muted-foreground">Create a private circle and invite a few friends. Your notes and tasks stay personal.</p><ol className="mt-6 flex flex-col justify-center gap-3 text-sm sm:flex-row sm:gap-8"><li>1. Invite your friends</li><li>2. Plan your next session</li><li>3. Study at your own pace</li></ol></div> : <nav aria-label="Your circles" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{circles.map(circle => <Link key={circle.id} to={`/circles?circle=${encodeURIComponent(circle.id)}`} className="group flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-primary"><Users aria-hidden="true" size={24} className="mb-5 text-primary" /><h2 className="break-words text-lg font-semibold">{circle.name}</h2><p className="mt-1 text-sm text-muted-foreground">{circle.owner_id === user?.user_id ? "Created by you" : "Member"}</p><span className="mt-6 flex items-center justify-between text-sm font-medium text-primary">Open circle<ArrowRight aria-hidden="true" size={18} /></span></Link>)}</nav>}
+    <p className="flex items-start gap-2 text-sm text-muted-foreground"><ShieldCheck aria-hidden="true" size={18} className="shrink-0" />Personal notes stay yours. You choose whether to share study time or availability.</p>
+    {dialog === "join" && <CircleJoin onClose={() => setDialog(null)} />}
+    {dialog === "create" && <Modal title="Create a circle" description="Give your group a name. Invite friends after creating it." onClose={() => { if (!busy) setDialog(null); }}><form onSubmit={create} className="space-y-4"><label className="block text-sm font-medium">Circle name<input className="input mt-2" maxLength={80} required value={name} disabled={busy} onChange={event => setName(event.target.value)} placeholder="e.g. Physics friends" /></label>{error && <p role="alert" className="text-destructive text-sm">{error}</p>}<button className="btn btn-primary min-h-11 w-full" disabled={busy || !name.trim()}>{busy ? "Creating…" : "Create circle"}</button></form></Modal>}
+  </section>;
+}
+
+function CircleWorkspace({ id, user, onLibraryChange }) {
+  const [circle, setCircle] = useState(null);
+  const [version, setVersion] = useState(0);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [share, setShare] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const lock = useRef(false);
+  const live = useRef(true);
+  useEffect(() => { live.current = true; return () => { live.current = false; }; }, []);
+  const tab = ["sessions", "goals", "members"].includes(params.get("tab")) ? params.get("tab") : "sessions";
+  useEffect(() => {
+    let live = true;
+    http.get(`/circles/${id}`).then(result => { if (live) { setCircle(result.data); setError(""); } }).catch(error => { if (live) setError(formatError(error)); });
+    return () => { live = false; };
+  }, [id, version]);
+  const refresh = () => setVersion(n => n + 1);
+  const act = async action => {
+    if (lock.current) return; lock.current = true; setBusy(true); setError(""); setNotice("");
+    let saved = false;
+    try {
+      await action(); saved = true;
+      if (!live.current) return;
+      const { data } = await http.get(`/circles/${id}`);
+      if (live.current) setCircle(data);
+    } catch (error) {
+      if (live.current) { if (saved) { setCircle(null); setShare(false); } setError(saved ? `Change saved, but the circle couldn’t refresh. ${formatError(error)}` : formatError(error)); }
+    } finally { lock.current = false; if (live.current) setBusy(false); }
+  };
+  const remove = () => {
+    const owner = circle.owner_id === user.user_id;
+    if (window.confirm(owner ? "Delete this circle, its shared goals and study sessions? Personal notes, tasks and recorded study time are kept." : "Leave this circle and remove your shared goals? Personal notes, tasks and recorded study time are kept.")) act(async () => { await http.delete(owner ? `/circles/${id}` : `/circles/${id}/members/${user.user_id}`); if (live.current) { onLibraryChange(); navigate("/circles"); } });
+  };
+  return <section className="mx-auto w-full max-w-5xl space-y-6" data-testid="circles-page">
+    <Link className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground" to="/circles"><ArrowLeft aria-hidden="true" size={16} />All circles</Link>
+    {error && <p role="alert" className="text-destructive">{error} <button className="btn btn-outline" onClick={refresh}>Try again</button></p>}{notice && <p role="status" className="text-sm">{notice}</p>}
+    {!circle ? !error && <p role="status">Opening circle…</p> : <>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><h1 className="page-title break-words">{circle.name}</h1><p className="mt-2 text-sm text-muted-foreground">{circle.members.length} {circle.members.length === 1 ? "member" : "members"} · Your private study group</p></div><button className={`btn min-h-11 shrink-0 ${circle.members.length < 2 ? "btn-primary" : "btn-outline"}`} disabled={busy} onClick={() => setShare(true)}><Users aria-hidden="true" size={16} />Invite friends</button></header>
+      <Tabs value={tab} onValueChange={value => { const next = new URLSearchParams(params); next.set("tab", value); setParams(next, { replace: true }); }}>
+        <TabsList aria-label="Circle sections" className="grid h-auto w-full grid-cols-3 sm:max-w-md"><TabsTrigger value="sessions" className="min-h-11">Sessions</TabsTrigger><TabsTrigger value="goals" className="min-h-11">Goals</TabsTrigger><TabsTrigger value="members" className="min-h-11">Members</TabsTrigger></TabsList>
+        <TabsContent value="sessions" className="mt-6"><CircleSchedule circle={circle} user={user} /></TabsContent>
+        <TabsContent value="goals" className="mt-6"><CircleGoals circle={circle} user={user} busy={busy} act={act} error={error} /></TabsContent>
+        <TabsContent value="members" className="mt-6"><h2 className="text-lg font-semibold">Your study group</h2><p className="mt-1 text-sm text-muted-foreground">Invite people you trust. Up to 30 members in each circle.</p><ul className="mt-4 divide-y divide-border rounded-xl border border-border bg-card px-4">{circle.members.map(member => <li key={member.id} className="flex min-w-0 items-center gap-3 py-4"><span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent font-medium text-primary">{member.name.slice(0, 1).toUpperCase()}</span><div className="min-w-0 flex-1"><p className="break-words font-medium">{member.name}{member.id === user.user_id ? " (you)" : ""}{member.id === circle.owner_id ? " · Owner" : ""}</p><p className="text-sm text-muted-foreground">{member.weekly_minutes == null ? "Study time private" : `${member.weekly_minutes} min this week (UTC)`}</p></div>{circle.owner_id === user.user_id && member.id !== user.user_id && <CircleActions label={`Options for ${member.name}`} disabled={busy} items={[{ label: "Remove member", destructive: true, action: () => { if (window.confirm(`Remove ${member.name} from this circle? Their personal study data is kept.`)) act(() => http.delete(`/circles/${id}/members/${member.id}`)); } }]} />}</li>)}</ul></TabsContent>
+      </Tabs>
+      <details className="rounded-xl border border-border bg-card"><summary className="min-h-11 cursor-pointer px-4 py-3 text-sm font-medium">Circle settings</summary><div className="space-y-4 border-t border-border p-4"><p className="text-sm text-muted-foreground">Your sharing preferences apply only to this circle.</p><label className="flex min-h-11 items-start gap-3 text-sm"><input className="mt-1" type="checkbox" checked={!!circle.share_weekly_time} disabled={busy} onChange={event => { const checked = event.target.checked; act(() => http.patch(`/circles/${id}/privacy`, { share_weekly_time: checked })); }} /><span>Share my total focus time this week (UTC)<small className="block text-muted-foreground">Off by default. Members see your weekly total, never your study history.</small></span></label><label className="flex min-h-11 items-start gap-3 text-sm"><input className="mt-1" type="checkbox" checked={!!circle.share_availability} disabled={busy} onChange={event => { const checked = event.target.checked; act(() => http.patch(`/circles/${id}/privacy`, { share_availability: checked })); }} /><span>Share my availability for common-time suggestions<small className="block text-muted-foreground">Off by default. Only matching slots are shared, never calendar details.</small></span></label><Link className="action-link inline-flex min-h-11 items-center text-sm" to="/settings">Set my available hours</Link><p className="text-sm text-muted-foreground">Accepted sessions appear in your Planner and optional daily reminders. <Link className="action-link" to="/settings">Manage reminders</Link></p><div className="flex items-center justify-between gap-3 border-t border-border pt-4"><span className="text-sm text-muted-foreground">{circle.owner_id === user.user_id ? "Manage this circle" : "Your membership"}</span><CircleActions label="Circle management" disabled={busy} items={[...(circle.owner_id === user.user_id ? [{ label: "Replace invite link", action: () => { if (window.confirm("Replace this invite link? The old link will stop working.")) act(async () => { await http.post(`/circles/${id}/rotate-invite`); setNotice("Invite replaced. Share the new link from Invite friends."); }); } }] : []), { label: circle.owner_id === user.user_id ? "Delete circle" : "Leave circle", destructive: true, action: remove }]} /></div></div></details>
+      {share && <CircleShare circle={circle} onClose={() => setShare(false)} />}
     </>}
-    {detail && <div className="space-y-6 border-t border-border pt-6">
-      <div className="flex flex-wrap gap-3 items-center justify-between"><h2 className="font-serif text-2xl">{detail.name}</h2><button className="btn btn-outline" disabled={busy} onClick={() => act(async () => { await navigator.clipboard.writeText(detail.invite_url); setNotice("Invite link copied. Share it only with people you trust."); })}>Copy invite link</button></div>
-      <p className="text-sm text-muted-foreground">Anyone with the link can request to join. A new signup uses your existing friend-code allowance; joining or rejoining never earns extra helps.</p>
-      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={detail.share_weekly_time} disabled={busy} onChange={e => { const checked = e.target.checked; act(async () => { await http.patch(`/circles/${selected}/privacy`, { share_weekly_time: checked }); await load(); }); }} />Share my total focus time this week (UTC). Off by default.</label>
-      <CircleSchedule key={detail.id} circle={detail} user={user} onRefresh={() => load(detail.id)} />
-      <section><h3 className="font-medium mb-2">Members · {detail.members.length}/30</h3><ul className="divide-y divide-border">{detail.members.map(m => <li key={m.id} className="flex flex-wrap items-center gap-3 py-3"><span>{m.name}{m.id === user.user_id ? " (you)" : ""}</span><span className="text-sm text-muted-foreground">{m.weekly_minutes === null ? "Study time private" : `${m.weekly_minutes} min this week`}</span>{detail.owner_id === user.user_id && m.id !== user.user_id && <button className="btn btn-ghost ml-auto text-xs" disabled={busy} onClick={() => { if (window.confirm(`Remove ${m.name} from this circle?`)) act(async () => { await http.delete(`/circles/${selected}/members/${m.id}`); await load(); }); }}>Remove</button>}</li>)}</ul></section>
-      <section><h3 className="font-medium">Our next steps</h3><p className="text-sm text-muted-foreground mt-1">Share a goal, not your private notes. Only you can mark your goal complete.</p>
-        <details className="my-3 text-sm"><summary className="cursor-pointer">Link my goal to personal work (only visible to me)</summary><AcademicSelector value={goalLink} onChange={setGoalLink} disabled={busy} /><label>My task<select className="input mt-2" value={goalTask} onChange={e => setGoalTask(e.target.value)}><option value="">No task</option>{ownTasks.map(t => <option key={t.task_id} value={t.task_id}>{t.title}</option>)}</select></label></details>
-        <form className="flex flex-wrap gap-2 my-3" onSubmit={e => { e.preventDefault(); act(async () => { await http.post(`/circles/${selected}/goals`, { title: goal, lesson_id: goalLink.lesson_id, task_id: goalTask || null }); setGoal(""); setGoalLink({ subject_id: null, unit_id: null, lesson_id: null }); setGoalTask(""); await load(); }); }}><input className="input max-w-sm" aria-label="Study goal" maxLength={160} required value={goal} onChange={e => setGoal(e.target.value)} placeholder="For example: practise three limits" /><button className="btn btn-outline" disabled={busy || !goal.trim()}>Share goal</button></form>
-        {!detail.goals.length && <p className="text-muted-foreground text-sm py-3">What would you like to work on together?</p>}
-        <ul className="divide-y divide-border">{detail.goals.map(g => <li key={g.id} className="flex gap-3 py-3 items-center"><input type="checkbox" aria-label={`Complete ${g.title}`} checked={g.completed} disabled={busy || g.user_id !== user.user_id} onChange={e => { const completed = e.target.checked; act(async () => { await http.patch(`/circles/${selected}/goals/${g.id}`, { completed }); await load(); }); }} /><span className={g.completed ? "line-through text-muted-foreground" : ""}>{g.title}<small className="block text-muted-foreground">{detail.members.find(m => m.id === g.user_id)?.name}</small></span>{g.user_id === user.user_id && <button className="btn btn-ghost text-xs ml-auto" disabled={busy} onClick={() => { if (window.confirm(`Delete goal ${g.title}? Any linked personal task is kept.`)) act(async () => { await http.delete(`/circles/${selected}/goals/${g.id}`); await load(); }); }}>Remove goal</button>}</li>)}</ul>
-        {detail.goals.filter(g => g.user_id === user.user_id && (g.lesson_id || g.task_id)).map(g => <div key={g.id} className="text-xs flex gap-3 py-2"><span>{g.title}:</span>{g.lesson_id && <Link className="action-link" to={`/lessons/${g.lesson_id}`}>My lesson</Link>}{g.task_id && <Link className="action-link" to={`/tasks?task=${g.task_id}`}>My task</Link>}</div>)}
-      </section>
-      <footer className="flex flex-wrap gap-3 border-t border-border pt-4">{detail.owner_id === user.user_id ? <><button className="btn btn-outline" disabled={busy} onClick={() => { if (window.confirm("Replace this invite link? The old link will stop working.")) act(async () => { await http.post(`/circles/${selected}/rotate-invite`); await load(); setNotice("Invite replaced."); }); }}>Replace invite link</button><button className="btn btn-ghost text-destructive" disabled={busy} onClick={() => { if (window.confirm("Delete this circle and its shared goals? Personal study data will stay untouched.")) act(async () => { await http.delete(`/circles/${selected}`); await load(); }); }}>Delete circle</button></> : <button className="btn btn-outline" disabled={busy} onClick={() => { if (window.confirm("Leave this circle and remove your shared goals?")) act(async () => { await http.delete(`/circles/${selected}/members/${user.user_id}`); await load(); }); }}>Leave circle</button>}</footer>
-    </div>}
   </section>;
 }
 
 export function CircleInvite() {
   const { token } = useParams();
-  const [params] = useSearchParams();
   const { user } = useAuth();
+  return <InviteLanding key={`${token}:${user?.user_id || "guest"}`} token={token} user={user} />;
+}
+function InviteLanding({ token, user }) {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [invite, setInvite] = useState(null);
   const [error, setError] = useState("");
+  const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState(false);
-  useEffect(() => { http.get(`/circles/invite/${encodeURIComponent(token)}`).then(r => setInvite(r.data)).catch(e => setError(formatError(e))); }, [token]);
+  const lock = useRef(false);
+  const live = useRef(true);
+  useEffect(() => { live.current = true; return () => { live.current = false; }; }, []);
+  useEffect(() => { let live = true; setError(""); http.get(`/circles/invite/${encodeURIComponent(token)}`).then(result => { if (live) setInvite(result.data); }).catch(error => { if (live) setError(formatError(error)); }); return () => { live = false; }; }, [token, version]);
   const ref = params.get("ref") || invite?.referral_code || "";
   const remember = () => sessionStorage.setItem("syllo.circleInvite", JSON.stringify({ token, ref }));
-  return <main className="min-h-screen grid place-items-center p-6"><section className="max-w-md space-y-5"><Link to="/" className="font-serif text-2xl">syllo</Link><h1 className="page-title">{invite ? `Join ${invite.name}` : "A study circle invitation"}</h1><p className="text-muted-foreground">Study alongside your friends. Your notes and tasks stay private, and sharing study time is optional.</p>{error && <p role="alert" className="text-destructive">{error}</p>}{!invite && !error && <p role="status">Checking invitation…</p>}{invite && (user ? <button className="btn btn-primary" disabled={busy} onClick={async () => { setBusy(true); try { await http.post(`/circles/invite/${token}/join`); sessionStorage.removeItem("syllo.circleInvite"); window.location.assign("/circles"); } catch(e) { setError(formatError(e)); setBusy(false); } }}>Join circle</button> : <div className="flex flex-wrap gap-3"><Link className="btn btn-primary" to={`/register?ref=${encodeURIComponent(ref)}`} onClick={remember}>Create free account</Link><Link className="btn btn-outline" to="/login" onClick={remember}>Sign in</Link></div>)}</section></main>;
+  const join = async () => {
+    if (lock.current) return; lock.current = true; setBusy(true); setError("");
+    try { const { data } = await http.post(`/circles/invite/${encodeURIComponent(token)}/join`); if (!live.current) return; sessionStorage.removeItem("syllo.circleInvite"); navigate(`/circles?circle=${encodeURIComponent(data.id)}`, { replace: true }); }
+    catch (error) { if (live.current) setError(formatError(error)); } finally { lock.current = false; if (live.current) setBusy(false); }
+  };
+  return <main className="min-h-screen grid place-items-center bg-muted/30 px-4 py-8"><section className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"><Link to="/" className="font-serif text-2xl">syllo</Link><div className="mt-8 mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-accent text-primary"><Users aria-hidden="true" size={28} /></div><p className="text-xs font-semibold uppercase tracking-widest text-primary">You’re invited to study together</p><h1 className="page-title mt-3 break-words">{invite ? `Join ${invite.name}` : "A study circle invitation"}</h1><p className="mt-4 text-muted-foreground">Plan sessions, share goals and keep each other going.</p><div className="my-6 rounded-xl bg-muted p-4 text-sm leading-relaxed">Your notes and tasks stay private. Sharing study time and availability is optional. Joining makes you a member immediately.</div>{error && <div role="alert" className="mb-4 text-sm text-destructive">{error}{!invite && <><p className="mt-2">The link may have been replaced. Ask your friend for a new one.</p><button className="btn btn-outline min-h-11 mt-3" onClick={() => setVersion(n => n + 1)}>Check again</button></>}</div>}{!invite && !error && <p role="status">Checking invitation…</p>}{invite && (user ? <button className="btn btn-primary min-h-11 w-full" disabled={busy} onClick={join}>{busy ? "Joining…" : "Join circle"}</button> : <div className="space-y-3"><Link className="btn btn-primary min-h-11 w-full" to={`/register?ref=${encodeURIComponent(ref)}`} onClick={remember}>Create free account</Link><Link className="btn btn-outline min-h-11 w-full" to="/login" onClick={remember}>Sign in</Link></div>)}</section></main>;
 }

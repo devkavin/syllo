@@ -59,6 +59,7 @@ export default function Today() {
   const lesson = desk.lesson;
   const firstUse = quiet && data.subjects_count === 0 && desk.history.data?.length === 0 && desk.timetable.data?.length === 0 && !desk.history.failed && !desk.timetable.failed;
   const focusHref = lesson ? `/timer?lesson=${encodeURIComponent(lesson.lesson_id)}` : "/timer";
+  const dueReviewCount = (data?.reviews_due || []).filter(review => new Date(review.next_review_at).getTime() <= Date.now()).length;
   const remainingTasks = (data?.tasks || []).filter(t => !t.completed && !(next?.kind === "task" && next.item.task_id === t.task_id));
   const remainingReviews = (data?.reviews_due || []).filter(r => !(next?.kind === "review" && next.item.review_id === r.review_id));
   const schedule = (data?.agenda || []).filter(item => item.ends_at);
@@ -101,7 +102,7 @@ export default function Today() {
             <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
               {next.kind === "practice" ? <Link to="/reviews" className="btn btn-primary">Practice due questions</Link> : next.kind === "focus" ? <Link to={focusHref} className="btn btn-primary">{lesson ? "Continue studying" : "Start Focus"}</Link> :
                 next.kind === "task" ? <button className="btn btn-primary" onClick={() => openWork(next.item, true)}>Work on task</button> :
-                next.kind === "review" || next.item.kind === "circle_study" ? <Link to={next.href} className="btn btn-primary">{next.kind === "review" ? "Review lesson" : "Start session"}</Link> :
+                next.kind === "review" || next.item.kind === "circle_study" ? <Link to={next.href} className="btn btn-primary">{next.kind === "review" ? `Review ${dueReviewCount} due ${dueReviewCount === 1 ? "topic" : "topics"}` : "Start session"}</Link> :
                 <button className="btn btn-primary" onClick={() => openWork(next.item)}>{next.item.kind === "class" ? "Open class" : "Open activity"}</button>}
               {next.kind === "task" && completion(next.item)}
               {next.kind !== "focus" && <Link to={studyFocusHref(next.item)} className="btn btn-ghost">Start Focus</Link>}

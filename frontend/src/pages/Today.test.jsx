@@ -17,6 +17,11 @@ beforeEach(() => {
   vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-10-06T06:00:00Z"));
 });
 afterEach(() => vi.restoreAllMocks());
+it("labels the primary review action with the actual number of due topics", async () => {
+  day = { ...emptyDay, reviews_due: [{ review_id: "r", lesson_id: "l", lesson_title: "Limits", next_review_at: "2026-10-01T06:00:00Z" }, { review_id: "r2", lesson_id: "l2", lesson_title: "Waves", next_review_at: "2026-10-01T07:00:00Z" }] };
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  expect(await screen.findByRole("link", { name: "Review 2 due topics" })).toHaveAttribute("href", "/reviews?review=r");
+});
 it("recommends due questions and mistakes on a quiet day", async () => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? day : url === "/study/due-summary" ? { due_count: 4, questions_count: 3, mistakes_count: 1 } : [] }));
   render(<MemoryRouter><Today /></MemoryRouter>);
@@ -117,7 +122,7 @@ it("shows each task and review once, with a direct completion action", async () 
 it("keeps a recurring review visible after its previous completion", async () => {
   day = { ...emptyDay, reviews_due: [{ review_id: "r", lesson_id: "limits", lesson_title: "Limits", next_review_at: "2026-10-06T05:00:00Z", completed_at: "2026-10-03T05:00:00Z", state: "due" }] };
   render(<MemoryRouter><Today /></MemoryRouter>);
-  expect(await screen.findByRole("link", { name: "Review lesson" })).toHaveAttribute("href", "/reviews?review=r");
+  expect(await screen.findByRole("link", { name: "Review 1 due topic" })).toHaveAttribute("href", "/reviews?review=r");
 });
 
 it("hands keyboard focus from Add to the study dialog and restores Add on Escape", async () => {

@@ -29,7 +29,7 @@ describe("circle invitations and sandbox checkout", () => {
     http.get.mockResolvedValue({ data: [] });
     render(<MemoryRouter><Circles /></MemoryRouter>);
     expect(await screen.findByText(/Create a private circle and invite a few friends/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create circle" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create circle" })).toBeEnabled();
     expect(http.post).not.toHaveBeenCalled();
   });
   it("remembers an invite without automatically joining or registering", async () => {

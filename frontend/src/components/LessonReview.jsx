@@ -70,6 +70,7 @@ export default function LessonReview({ review, onSaved, backHref = "/reviews" })
       <p>{alreadyUpdated ? "This schedule was updated by an earlier save or another device. Its saved date has been kept." : `You revisited ${review.lesson_title || "this lesson"}.`}</p>
       <p className="text-sm text-muted-foreground">Next review: {formatStudyTime(saved.next_review_at, timezone, true, true)}.</p>
       <Link className="btn btn-primary" to={backHref}>Continue to reviews</Link>
+      <details className="border-t border-border pt-2"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium">More study options</summary><Link className="action-link inline-flex min-h-11 items-center" to={`/timer?lesson=${encodeURIComponent(review.lesson_id)}`}>Continue studying this lesson</Link></details>
     </div> : <>
       <header className="space-y-2">
         <p className="text-xs font-medium text-muted-foreground">{checking ? "2 · Check and rate" : "1 · Recall from memory"}</p>

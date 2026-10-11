@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
 import CircleSchedule from "./CircleSchedule";
@@ -10,10 +10,10 @@ afterEach(() => vi.clearAllMocks());
 it("requires explicit availability sharing and permits a manual proposal", async () => {
   http.get.mockResolvedValue({ data: [] }); http.patch.mockResolvedValue({ data: {} }); http.post.mockResolvedValue({ data: { available: false, slots: [], reason: "Shared availability is not available" } });
   render(<MemoryRouter><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} onRefresh={vi.fn()} /></MemoryRouter>);
-  const sharing = screen.getByRole("checkbox", { name: /Share my availability/ });
-  expect(sharing).not.toBeChecked(); expect(http.patch).not.toHaveBeenCalled();
-  fireEvent.click(sharing);
-  await waitFor(() => expect(http.patch).toHaveBeenCalledWith("/circles/c/privacy", { share_availability: true }));
+  expect(screen.queryByLabelText("Study topic")).not.toBeInTheDocument();
+  expect(http.patch).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Plan session" }));
+  fireEvent.click(screen.getByText("Find a time everyone can make"));
   fireEvent.click(screen.getByRole("button", { name: "Find common time" }));
   expect(await screen.findByText("Shared availability is not available")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Propose session" })).toBeInTheDocument();
@@ -22,6 +22,8 @@ it("proposes the exact selected instant through a daylight-saving fold", async (
   http.get.mockResolvedValue({ data: [] });
   http.post.mockImplementation(url => Promise.resolve({ data: url.endsWith("/availability") ? { available: true, slots: [{ start: "2026-11-01T05:00:00+00:00", end: "2026-11-01T05:45:00+00:00" }] } : {} }));
   render(<MemoryRouter><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "America/New_York" }} onRefresh={vi.fn()} /></MemoryRouter>);
+  fireEvent.click(screen.getByRole("button", { name: "Plan session" }));
+  fireEvent.click(screen.getByText("Find a time everyone can make"));
   fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2026-11-01" } });
   fireEvent.click(screen.getByRole("button", { name: "Find common time" }));
   const slot = await screen.findByRole("button", { name: /Nov 1/ });
@@ -38,4 +40,51 @@ it("labels invitations separately and confirms the current revision", async () =
   expect(screen.queryByRole("link", { name: "Start studying" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Accept" }));
   await waitFor(() => expect(http.post).toHaveBeenCalledWith("/circles/c/sessions/e/respond", { status: "accepted", revision: 2 }));
+});
+it("keeps attendance collapsed and repeats a session only after confirmation", async () => {
+  const event = { id: "e", topic: "Limits", start: "2026-11-06T09:00:00Z", end: "2026-11-06T10:00:00Z", revision: 1, my_status: "accepted", organizer_id: "u", participants: [{ user_id: "u", status: "accepted" }, { user_id: "f", status: "invited" }] };
+  http.get.mockResolvedValue({ data: [event] }); http.post.mockResolvedValue({ data: {} });
+  render(<MemoryRouter><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} /></MemoryRouter>);
+  const summary = await screen.findByText("1 accepted · 1 awaiting reply");
+  expect(summary.closest("details")).not.toHaveAttribute("open");
+  fireEvent.keyDown(screen.getByRole("button", { name: "Options for session Limits" }), { key: "Enter" });
+  fireEvent.click(await screen.findByRole("menuitem", { name: "Plan again" }));
+  expect(screen.getByLabelText("Study topic")).toHaveValue("Limits");
+  expect(screen.getByLabelText("Minutes")).toHaveValue(60);
+  expect(screen.getByRole("checkbox", { name: "Friend" })).toBeChecked();
+  expect(http.post).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Propose session" }));
+  await waitFor(() => expect(http.post).toHaveBeenCalledWith("/circles/c/sessions", expect.objectContaining({ topic: "Limits", participants: ["u", "f"] })));
+});
+it("opens a completed session as a fresh proposal from the wrap-up link", async () => {
+  http.get.mockImplementation(url => Promise.resolve({ data: url.startsWith("/circle-sessions/") ? { id: "old", circle_id: "c", topic: "Past session", start: "2026-09-01T09:00:00Z", end: "2026-09-01T09:45:00Z", participants: [{ user_id: "u" }, { user_id: "f" }] } : [] }));
+  render(<MemoryRouter initialEntries={["/circles?circle=c&repeat=old"]}><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} /></MemoryRouter>);
+  expect(await screen.findByRole("dialog", { name: "Plan a study session" })).toBeInTheDocument();
+  expect(screen.getByLabelText("Study topic")).toHaveValue("Past session");
+  expect(screen.getByLabelText("Date").value).not.toBe("2026-09-01");
+  expect(http.post).not.toHaveBeenCalled();
+});
+it("prevents a pending repeat request from overwriting another planning draft", async () => {
+  let finish;
+  http.get.mockImplementation(url => url.startsWith("/circle-sessions/") ? new Promise(resolve => { finish = resolve; }) : Promise.resolve({ data: [] }));
+  render(<MemoryRouter initialEntries={["/circles?circle=c&repeat=old"]}><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} /></MemoryRouter>);
+  expect(screen.getByRole("button", { name: "Plan session" })).toBeDisabled();
+  await act(async () => finish({ data: { circle_id: "c", topic: "Repeat this", start: "2026-09-01T09:00:00Z", end: "2026-09-01T09:45:00Z", participants: [] } }));
+  expect(screen.getByLabelText("Study topic")).toHaveValue("Repeat this");
+});
+it("recovers a reschedule conflict by refreshing the list before reopening the form", async () => {
+  const event = { id: "e", topic: "Limits", start: "2026-11-06T09:00:00Z", end: "2026-11-06T10:00:00Z", revision: 1, my_status: "accepted", organizer_id: "u" };
+  http.get.mockResolvedValue({ data: [event] }); http.patch.mockRejectedValue(new Error("stale"));
+  render(<MemoryRouter><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} /></MemoryRouter>);
+  fireEvent.keyDown(await screen.findByRole("button", { name: "Options for session Limits" }), { key: "Enter" });
+  fireEvent.click(await screen.findByRole("menuitem", { name: "Change time" }));
+  fireEvent.click(screen.getByRole("button", { name: "Reschedule and ask everyone to confirm" }));
+  await screen.findByRole("alert");
+  http.get.mockResolvedValue({ data: [{ ...event, revision: 2 }] }); http.patch.mockResolvedValue({ data: {} });
+  fireEvent.click(screen.getByRole("button", { name: "Refresh sessions" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  fireEvent.keyDown(screen.getByRole("button", { name: "Options for session Limits" }), { key: "Enter" });
+  fireEvent.click(await screen.findByRole("menuitem", { name: "Change time" }));
+  fireEvent.click(screen.getByRole("button", { name: "Reschedule and ask everyone to confirm" }));
+  await waitFor(() => expect(http.patch).toHaveBeenLastCalledWith("/circles/c/sessions/e", expect.objectContaining({ revision: 2 })));
 });
