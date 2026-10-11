@@ -48,7 +48,7 @@ export default function NotebookFocus({ notebook, beforeStart }) {
   return <section aria-label="Notebook focus" className="rounded-lg border border-border bg-background/70 px-3 py-2 mb-5">
     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
       <Timer className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
-      <div className="min-w-0 flex-1 text-sm">
+      <div className="min-w-0 flex-1 basis-40 text-sm">
         {timer ? <><span className="font-mono tabular-nums font-semibold">{formatTimer(shared.displaySeconds)}</span><span className="text-muted-foreground ml-2">{timer.status === "paused" ? "Paused" : timer.mode === "stopwatch" ? "Studying" : ["short", "long"].includes(timer.mode) ? "Break" : "Focus"}</span></> : <span className="text-muted-foreground">{presetPending ? "Loading focus preset…" : `Make room to study · ${minutes} min`}</span>}
       </div>
       <button className="btn btn-primary text-sm" disabled={timer ? disabled : startDisabled} onClick={() => change(!timer ? "start" : timer.status === "running" ? "pause" : "resume")} aria-label={!timer ? "Start focus" : timer.status === "running" ? "Pause focus" : "Resume focus"}>

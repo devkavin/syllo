@@ -3,27 +3,99 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, useNavigate } from "react-router-dom";
 import { afterEach, it, expect, vi } from "vitest";
 import Notebooks from "./Notebooks";
+import AppShell from "@/components/AppShell";
 import { http } from "@/lib/api";
 vi.mock("@/lib/api", () => ({ http: { get: vi.fn(), patch: vi.fn(), post: vi.fn(), delete: vi.fn() }, formatError: String }));
 vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: { user_id: "student" } }) }));
 vi.mock("@/components/NotebookFocus", () => ({ default: () => null }));
 vi.mock("@/components/ActiveFocusBar", () => ({ default: () => <div aria-label="Active focus session">Focus in progress</div> }));
 vi.mock("@/components/NotebookPractice", () => ({ default: () => null }));
+vi.mock("@/components/ReminderCentre", () => ({ default: () => null }));
 vi.mock("@/lib/theme", () => ({ useTheme: () => ({ theme: "light" }) }));
 vi.mock("@/lib/usage", () => ({ useUsage: () => ({ setRemaining: vi.fn() }) }));
 // The real editor is exercised in NotebookEditor.test; isolate page autosave here.
 vi.mock("@/components/NotebookEditor", () => ({ default: ({ notebook, onChange }) => <textarea aria-label="Notebook notes" defaultValue={notebook.content || ""} onChange={e => onChange({ content: e.target.value, rich_content: [{ type: "paragraph", content: [{ type: "text", text: e.target.value, styles: {} }] }] })} /> }));
+async function openNotebookList() {
+  fireEvent.click(screen.getByRole("button", { name: "Notebooks", exact: true }));
+  await screen.findByRole("dialog", { name: "Notebooks", exact: true });
+}
+async function chooseNotebook(id) {
+  await openNotebookList();
+  fireEvent.click(await screen.findByTestId(`notebook-item-${id}`));
+  await waitFor(() => expect(screen.queryByRole("dialog", { name: "Notebooks", exact: true })).not.toBeInTheDocument());
+}
+
 afterEach(() => { vi.useRealTimers(); vi.clearAllMocks(); vi.restoreAllMocks(); sessionStorage.clear(); localStorage.clear(); });
+
+it("expands the notebook without replacing the editor, draft or selection, and exits with Escape", async () => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  const notebook = { notebook_id: "wide", title: "Wide notes", content: "Original", revision: 2 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  render(<MemoryRouter initialEntries={["/notebooks"]}><AppShell><Notebooks /></AppShell></MemoryRouter>);
+  const editor = await screen.findByRole("textbox", { name: "Notebook notes" });
+  fireEvent.change(editor, { target: { value: "My pending draft" } });
+  editor.focus(); editor.setSelectionRange(3, 10);
+  fireEvent.click(screen.getByRole("button", { name: "Expand notebook" }));
+  expect(screen.getByTestId("notebooks-page")).toHaveAttribute("data-expanded", "true");
+  expect(screen.queryByRole("navigation", { name: "Mobile navigation" })).not.toBeInTheDocument();
+  expect(screen.queryByTestId("desktop-sidebar")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toBe(editor);
+  expect(editor).toHaveValue("My pending draft");
+  expect(editor.selectionStart).toBe(3); expect(editor.selectionEnd).toBe(10);
+  fireEvent.keyDown(editor, { key: "Escape" });
+  expect(screen.getByTestId("notebooks-page")).toHaveAttribute("data-expanded", "false");
+  expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toBe(editor);
+});
+
+it("opens the notebook list only when requested and closes the drawer before leaving expanded view", async () => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  const notebook = { notebook_id: "drawer", title: "My notebook", content: "Notes", revision: 1 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  const editor = await screen.findByRole("textbox", { name: "Notebook notes" });
+  fireEvent.click(screen.getByRole("button", { name: "Expand notebook" }));
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Notebooks", exact: true }));
+  expect(await screen.findByRole("dialog", { name: "Notebooks", exact: true })).toBeVisible();
+  fireEvent.keyDown(document.activeElement, { key: "Escape" });
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(screen.getByRole("button", { name: "Exit expanded view" })).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toBe(editor);
+});
 it("saves title and content together instead of dropping a pending title", async () => {
   const notebook = { notebook_id: "nb", title: "Old", content: "", subject_id: null };
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
   http.patch.mockImplementation((url, patch) => Promise.resolve({ data: { ...notebook, ...patch } }));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
-  fireEvent.click(await screen.findByText("Old"));
+  await screen.findByRole("textbox", { name: "Notebook notes" });
   const content = await screen.findByRole("textbox", { name: "Notebook notes" });
   fireEvent.change(screen.getByTestId("notebook-title-input"), { target: { value: "Limits" } });
   fireEvent.change(content, { target: { value: "Limit definition" } });
   await waitFor(() => expect(http.patch).toHaveBeenCalledWith("/notebooks/nb", expect.objectContaining({ title: "Limits", content: "Limit definition", rich_content: expect.any(Array) })), { timeout: 2000 });
+});
+
+it("keeps a requested Trash drawer open while automatically selecting the first notebook", async () => {
+  const notebook = { notebook_id: "trash-route", title: "Active notebook", content: "Notes", revision: 1 };
+  const trashed = { notebook_id: "trashed-route", title: "Discarded notes", revision: 2 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : url === "/notebooks?trash=true" ? [trashed] : notebook }));
+  render(<MemoryRouter initialEntries={["/notebooks?trash=1"]}><Notebooks /></MemoryRouter>);
+  expect(await screen.findByRole("button", { name: "Restore Discarded notes" })).toBeVisible();
+  await waitFor(() => expect(screen.getByTestId("notebook-title-input")).toHaveValue("Active notebook"));
+  expect(screen.getByRole("dialog", { name: "Notebooks", exact: true })).toBeVisible();
+});
+
+it("opens Trash on query-only navigation without replacing the current editor", async () => {
+  const notebook = { notebook_id: "trash-query", title: "Active notebook", content: "Notes", revision: 1 };
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" || url === "/notebooks?trash=true" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  function Page() { const navigate = useNavigate(); return <><button onClick={() => navigate("/notebooks?notebook=trash-query&trash=1")}>Open notebook Trash</button><Notebooks /></>; }
+  render(<MemoryRouter initialEntries={["/notebooks?notebook=trash-query"]}><Page /></MemoryRouter>);
+  const editor = await screen.findByRole("textbox", { name: "Notebook notes" });
+  fireEvent.click(screen.getByRole("button", { name: "Open notebook Trash" }));
+  expect(await screen.findByRole("dialog", { name: "Notebooks", exact: true })).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Close notebooks" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(screen.getByRole("textbox", { name: "Notebook notes" })).toBe(editor);
 });
 
 it("keeps the same editor, draft and selection when switching Write and Practice modes", async () => {
@@ -64,9 +136,9 @@ it("switches cached notebooks offline while restoring the durable account draft 
   const page = <MemoryRouter><Notebooks /></MemoryRouter>;
   const view = render(page);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Pending A notes" } });
-  fireEvent.click(screen.getByTestId("notebook-item-cached-b"));
+  await chooseNotebook("cached-b");
   await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Saved B"));
-  fireEvent.click(screen.getByTestId("notebook-item-cached-a"));
+  await chooseNotebook("cached-a");
   await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Pending A notes"));
   expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Saved on device · pending sync");
   expect(http.patch).not.toHaveBeenCalled();
@@ -86,7 +158,7 @@ it("keeps the current offline draft if another tab overwrites it while the next 
   http.patch.mockRejectedValue(new Error("Offline"));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "My pending notes" } });
-  fireEvent.click(screen.getByTestId("notebook-item-delayed-b"));
+  await chooseNotebook("delayed-b");
   await waitFor(() => expect(resolveB).toBeTypeOf("function"));
   const otherDraft = JSON.stringify({ baseRevision: 3, patch: { content: "Other tab notes" } });
   localStorage.setItem("syllo.draft.account.student.notebook.delayed-a", otherDraft);
@@ -112,7 +184,7 @@ it("blocks offline switching when the pending draft could not be saved on the de
   http.patch.mockRejectedValue(new Error("Offline"));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Keep my unpersisted notes" } });
-  fireEvent.click(screen.getByTestId("notebook-item-storage-b"));
+  await chooseNotebook("storage-b");
   expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Keep my unpersisted notes");
   expect(screen.getByTestId("notebook-autosave-indicator")).toHaveTextContent("Not saved · Retry");
@@ -127,7 +199,7 @@ it("requires a confirmed server save before online switching even with a durable
   http.patch.mockRejectedValue(new Error("Server unavailable"));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Awaiting server confirmation" } });
-  fireEvent.click(screen.getByTestId("notebook-item-online-b"));
+  await chooseNotebook("online-b");
   expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Awaiting server confirmation");
   expect(http.get).not.toHaveBeenCalledWith("/notebooks/online-b");
@@ -142,7 +214,7 @@ it("requires recovery before offline switching away from a conflicting durable d
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b] : url === "/notebooks/conflict-b" ? b : a }));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   expect(await screen.findByRole("textbox", { name: "Notebook notes" })).toHaveValue("Conflicting notes");
-  fireEvent.click(screen.getByTestId("notebook-item-conflict-b"));
+  await chooseNotebook("conflict-b");
   expect(await screen.findByText("Save or retry your current draft before switching notebooks.")).toBeVisible();
   expect(screen.getByRole("button", { name: "Save recovered copy" })).toBeVisible();
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Conflicting notes");
@@ -169,7 +241,7 @@ it("retries an unavailable cached note while preserving the current offline draf
   http.patch.mockRejectedValue(new Error("Offline"));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Draft remains safe" } });
-  fireEvent.click(screen.getByTestId("notebook-item-retry-b"));
+  await chooseNotebook("retry-b");
   expect(await screen.findByRole("alert")).toHaveTextContent("This note is not cached");
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Draft remains safe");
   available = true;
@@ -219,9 +291,9 @@ it("keeps the latest selected notebook when fetches arrive out of order", async 
   http.get.mockImplementation(url => url === "/notebooks/b" ? new Promise(resolve => { resolveB = resolve; }) : Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [a, b, c] : url === "/notebooks/c" ? c : a }));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   await screen.findByRole("textbox", { name: "Notebook notes" });
-  fireEvent.click(screen.getByTestId("notebook-item-b"));
+  await chooseNotebook("b");
   await act(async () => {});
-  fireEvent.click(screen.getByTestId("notebook-item-c"));
+  await chooseNotebook("c");
   await waitFor(() => expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("C"));
   await act(async () => resolveB({ data: b }));
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("C");
@@ -233,12 +305,13 @@ it("saves paper and font preferences together while preserving notes", async () 
   http.patch.mockImplementation((url, patch) => Promise.resolve({ data: { ...notebook, ...patch } }));
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   expect(await screen.findByRole("textbox", { name: "Notebook notes" })).toHaveValue("Cells");
-  fireEvent.click(screen.getByText("Page settings"));
+  fireEvent.click(screen.getByRole("button", { name: "Notebook options" }));
   expect(screen.getByLabelText("Notebook paper")).toHaveValue("ruled");
   expect(screen.getByLabelText("Notebook font")).toHaveValue("serif");
   fireEvent.change(screen.getByLabelText("Notebook paper"), { target: { value: "dotted" } });
   fireEvent.change(screen.getByLabelText("Notebook font"), { target: { value: "mono" } });
   await waitFor(() => expect(http.patch).toHaveBeenCalledWith("/notebooks/rich", expect.objectContaining({ paper_style: "dotted", font_style: "mono" })), { timeout: 2000 });
+  fireEvent.click(screen.getByRole("button", { name: "Close notebook options" }));
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Cells");
   expect(screen.getByTestId("notebook-editor")).toHaveAttribute("data-paper-style", "dotted");
 });
@@ -292,6 +365,7 @@ it("restores a trashed notebook with revision protection", async () => {
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/notebooks?trash=true" ? [notebook] : url === "/notebooks/trash" ? notebook : [] }));
   http.post.mockResolvedValue({ data: { ...notebook, revision: 7 } });
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  await openNotebookList();
   fireEvent.click(screen.getByText("Trash"));
   fireEvent.click(await screen.findByRole("button", { name: "Restore Deleted notes" }));
   await waitFor(() => expect(http.post).toHaveBeenCalledWith("/notebooks/trash/restore", { expected_revision: 6 }));
@@ -363,11 +437,21 @@ it("refreshes the deleted revision before offering an immediate Trash restore", 
   vi.spyOn(window, "confirm").mockReturnValue(true);
   render(<MemoryRouter><Notebooks /></MemoryRouter>);
   fireEvent.change(await screen.findByRole("textbox", { name: "Notebook notes" }), { target: { value: "Latest notes" } });
+  await openNotebookList();
   fireEvent.click(screen.getByText("Trash"));
   await screen.findByText("Trash is empty.");
+  fireEvent.click(screen.getByRole("button", { name: "Close notebooks" }));
   fireEvent.click(screen.getByText("Notebook options"));
   fireEvent.click(screen.getByRole("button", { name: "Move to Trash" }));
-  fireEvent.click(await screen.findByRole("button", { name: "Restore Keep notes" }));
+  await waitFor(() => expect(http.delete).toHaveBeenCalledWith("/notebooks/delete-restore"));
+  await waitFor(() => expect(screen.getByRole("button", { name: "New notebook" })).toBeEnabled());
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.getByRole("button", { name: "Notebooks", exact: true })).toHaveFocus());
+  await openNotebookList();
+  const trashMenu = screen.getByText("Trash");
+  if (!trashMenu.closest("details").open) fireEvent.click(trashMenu);
+  await waitFor(() => expect(screen.getByRole("button", { name: "Restore Keep notes" })).toBeEnabled());
+  fireEvent.click(screen.getByRole("button", { name: "Restore Keep notes" }));
   await waitFor(() => expect(http.post).toHaveBeenCalledWith("/notebooks/delete-restore/restore", { expected_revision: 5 }));
   expect(screen.getByRole("textbox", { name: "Notebook notes" })).toHaveValue("Latest notes");
 });

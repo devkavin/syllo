@@ -10,6 +10,23 @@ vi.mock("@/lib/usage", () => ({ useUsage: () => ({ usage: null }) }));
 
 const token = "abcdefghijklmnopqrstuvwxyz123456";
 const renderShell = () => render(<MemoryRouter><AppShell><h1>Today</h1></AppShell></MemoryRouter>);
+it("lets desktop navigation collapse to a labeled icon rail and remembers the preference", () => {
+  localStorage.removeItem("syllo.sidebarCollapsed");
+  const view = renderShell();
+  fireEvent.click(screen.getByRole("button", { name: "Collapse navigation" }));
+  expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "true");
+  expect(screen.getByRole("link", { name: "Notebooks", exact: true })).toHaveAttribute("href", "/notebooks");
+  view.unmount(); renderShell();
+  expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "true");
+  fireEvent.click(screen.getByRole("button", { name: "Expand navigation" }));
+  expect(screen.getByTestId("desktop-sidebar")).toHaveAttribute("data-collapsed", "false");
+  localStorage.removeItem("syllo.sidebarCollapsed");
+});
+
+it("removes the content width cap only on the notebook route", () => {
+  render(<MemoryRouter initialEntries={["/notebooks"]}><AppShell><h1>Notebook</h1></AppShell></MemoryRouter>);
+  expect(screen.getByTestId("workspace-container")).not.toHaveClass("max-w-6xl");
+});
 it("provides compact mobile study navigation and a labeled More menu", async () => {
   renderShell();
   const mobile = screen.getByRole("navigation", { name: "Mobile navigation" });
@@ -87,6 +104,7 @@ it("keeps secondary study destinations behind Library while preserving their rou
 
 it("keeps the library open on a secondary destination so the current route is visible", () => {
   render(<MemoryRouter initialEntries={["/notebooks"]}><AppShell><h1>Notes</h1></AppShell></MemoryRouter>);
+  fireEvent.click(screen.getByRole("button", { name: "Expand navigation" }));
   expect(screen.getByRole("button", { name: "Library" })).toHaveAttribute("aria-expanded", "true");
   expect(screen.getByRole("link", { name: "Notebooks" })).toHaveAttribute("aria-current", "page");
 });

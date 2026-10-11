@@ -50,5 +50,13 @@
 .notebook-writing .notebook-callout[data-kind="warning"] { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 9%, transparent); }
 .notebook-writing .notebook-callout select { font: inherit; font-size: 12px; font-weight: 600; background: transparent; color: inherit; margin-bottom: 6px; cursor: pointer; }
 .notebook-writing .notebook-callout-content { min-height: 1.5em; }
+.notebook-paper .notebook-writing { min-width: 0; max-width: 100%; }
+.notebook-paper .bn-editor { overflow-wrap: anywhere; }
+.notebook-paper .bn-editor pre { max-width: 100%; overflow-x: auto; }
+@media (max-width: 639px) {
+  /* Keep room for block handles without consuming a large part of the phone width. */
+  .notebook-writing .bn-editor { padding-left: 1.5rem; padding-right: .25rem; }
+  .notebook-paper { border-radius: .75rem; }
+}
 .notebook-writing sup { vertical-align: super; font-size: .75em; }
 .notebook-writing sub { vertical-align: sub; font-size: .75em; }

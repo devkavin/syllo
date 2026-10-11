@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { http, formatError } from "@/lib/api";
-import { Plus, FileText, Trash2, Loader2, Check, Sparkles, X } from "lucide-react";
+import { Plus, FileText, Trash2, Loader2, Check, Sparkles, X, PanelLeftOpen, Maximize2, Minimize2 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { subjectClasses } from "@/lib/palette";
 import { useUsage } from "@/lib/usage";
@@ -18,6 +18,8 @@ import NotebookHistory from "@/components/NotebookHistory";
 import NewNoteDialog from "@/components/NewNoteDialog";
 import { useAuth } from "@/lib/auth";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useNotebookLayout } from "@/lib/workspaceLayout";
 
 export default function Notebooks() {
   const accountId = useAuth()?.user?.user_id;
@@ -26,10 +28,36 @@ export default function Notebooks() {
 
 function NotebookWorkspace({ accountId }) {
   const [params, setParams] = useSearchParams();
+  const { expanded, setExpanded } = useNotebookLayout();
+  const [listOpen, setListOpen] = useState(() => params.get("trash") === "1");
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const scrollBeforeLayout = useRef(null);
+  const notebookMenuTrigger = useRef(null);
+  const optionsTrigger = useRef(null);
+  const changeExpanded = useCallback(value => { scrollBeforeLayout.current = window.scrollY; setExpanded(value); }, [setExpanded]);
+  useLayoutEffect(() => {
+    if (scrollBeforeLayout.current !== null) {
+      window.scrollTo({ top: scrollBeforeLayout.current, behavior: "instant" });
+      scrollBeforeLayout.current = null;
+    }
+  }, [expanded]);
   const location = useLocation();
   const requestedId = params.get("notebook");
+  const requestedTrash = params.get("trash") === "1";
+  const trashIntent = useRef(requestedTrash);
+  trashIntent.current = requestedTrash;
+  useEffect(() => { if (requestedTrash) setListOpen(true); }, [requestedTrash, location.key]);
   const requestedNew = params.get("new") === "1";
   const [newNoteOpen, setNewNoteOpen] = useState(false);
+  useEffect(() => {
+    if (!expanded) return;
+    const exitOnEscape = event => {
+      if (event.key === "Escape" && !event.defaultPrevented && !event.isComposing && !listOpen && !optionsOpen && !newNoteOpen &&
+          event.target?.tagName !== "SELECT" && !document.querySelector('[role="dialog"], [role="menu"], [role="listbox"]')) changeExpanded(false);
+    };
+    window.addEventListener("keydown", exitOnEscape);
+    return () => window.removeEventListener("keydown", exitOnEscape);
+  }, [expanded, listOpen, optionsOpen, newNoteOpen, changeExpanded]);
   const commandNavigation = useRef(null);
   const commandActive = useRef(true);
   const [list, setList] = useState([]);
@@ -107,23 +135,25 @@ function NotebookWorkspace({ accountId }) {
     const id = requestedId || (!activeId ? list[0]?.notebook_id : null);
     if (!id || id === activeId) return;
     if (busy) { deferredSelection.current = id; return; }
-    void selectNotebook(id);
+    void selectNotebook(id, { fromRoute: true });
   }, [requestedId, loaded]);
   useEffect(() => {
     if (!busy && deferredSelection.current) {
       const id = deferredSelection.current; deferredSelection.current = null;
-      if (id !== activeId) void selectNotebook(id);
+      if (id !== activeId) void selectNotebook(id, { fromRoute: true });
     }
   }, [busy]);
 
-  const adoptNotebook = data => {
+  const adoptNotebook = (data, { keepMenuOpen = false } = {}) => {
+    if (!keepMenuOpen) setListOpen(false);
+    setOptionsOpen(false);
     deferredSelection.current = null;
     setNotebook(data); setActiveId(data.notebook_id); setSummary(null); setErr(""); setLoadError(null);
     setHistory(null); setHistoryLoading(false); setHistoryError(""); setRecoveryError(""); setEditorVersion(0); setPracticeOpen(false); setMode("write");
-    setParams(previous => { const next = new URLSearchParams(previous); next.set("notebook", data.notebook_id); return next; }, { replace: true });
+    setParams(previous => { const next = new URLSearchParams(previous); next.set("notebook", data.notebook_id); if (!keepMenuOpen) next.delete("trash"); return next; }, { replace: true });
   };
 
-  const selectNotebook = async (id) => {
+  const selectNotebook = async (id, { fromRoute = false } = {}) => {
     const request = ++selectionRequest.current;
     const canKeepDeviceDraft = navigator.onLine === false && autosave.canKeepDeviceDraft();
     if (activeId && id !== activeId && !canKeepDeviceDraft && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
@@ -136,7 +166,7 @@ function NotebookWorkspace({ accountId }) {
       const draftStillSafe = navigator.onLine === false && autosave.canKeepDeviceDraft();
       if (activeId && id !== activeId && !draftStillSafe && !(await autosave.flush())) { setErr("Save or retry your current draft before switching notebooks."); return; }
       if (request !== selectionRequest.current) return;
-      adoptNotebook(data);
+      adoptNotebook(data, { keepMenuOpen: fromRoute && trashIntent.current });
     } catch (e) { if (request === selectionRequest.current) setLoadError({ message: formatError(e), notebookId: id }); }
   };
 
@@ -237,13 +267,15 @@ function NotebookWorkspace({ accountId }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 min-h-[75vh]" data-testid="notebooks-page">
-      <aside className="lg:w-60 shrink-0">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="font-serif text-2xl">Notebooks</h1>
-          <button className="btn btn-outline btn-icon" disabled={busy} onClick={newNotebook} data-testid="new-notebook-btn" aria-label="New notebook" title="New notebook"><Plus className="w-4 h-4" /></button>
-        </div>
-        <div className="space-y-1 max-h-48 lg:max-h-none overflow-y-auto">
+    <div className="flex flex-col gap-3 min-h-[75dvh] w-full min-w-0" data-testid="notebooks-page" data-expanded={expanded}>
+      <h1 className="sr-only">Notebooks</h1>
+      <div className={`notebook-workspace-toolbar sticky ${expanded ? "top-0" : "top-16 md:top-0"} z-30 flex items-center gap-2 bg-background/95 border-b border-border py-2 backdrop-blur-sm`}>
+      <Sheet open={listOpen} onOpenChange={setListOpen}>
+        <SheetTrigger asChild><button ref={notebookMenuTrigger} className="btn btn-outline min-h-11" aria-label="Notebooks"><PanelLeftOpen className="w-4 h-4" /><span>Notebooks</span></button></SheetTrigger>
+        <SheetContent side="left" className="w-80 max-w-[90vw] p-4 overflow-y-auto" closeLabel="Close notebooks" aria-describedby={undefined}>
+      <aside className="pt-8">
+        <SheetTitle className="font-serif text-2xl mb-4">Notebooks</SheetTitle>
+        <div className="space-y-1">
           {loadingList && <p role="status" className="text-sm text-muted-foreground py-3">Loading notebooks…</p>}
           {!loadingList && !loadError && list.length === 0 && <div className="text-sm text-muted-foreground py-6 text-center">Start with a blank page.</div>}
           {list.map((nb) => {
@@ -253,7 +285,7 @@ function NotebookWorkspace({ accountId }) {
             return (
               <button
                 key={nb.notebook_id}
-                onClick={() => selectNotebook(nb.notebook_id)}
+                onClick={() => { setListOpen(false); void selectNotebook(nb.notebook_id); }}
                 disabled={busy}
                 aria-pressed={active}
                 data-testid={`notebook-item-${nb.notebook_id}`}
@@ -280,18 +312,25 @@ function NotebookWorkspace({ accountId }) {
           </div>
         </details>
       </aside>
+        </SheetContent>
+      </Sheet>
+      <button className="btn btn-ghost btn-icon min-h-11" disabled={busy} onClick={newNotebook} data-testid="new-notebook-btn" aria-label="New notebook" title="New notebook"><Plus className="w-4 h-4" /></button>
+      <button className="btn btn-ghost min-h-11 ml-auto" aria-label={expanded ? "Exit expanded view" : "Expand notebook"} aria-pressed={expanded} onMouseDown={event => event.preventDefault()} onClick={() => changeExpanded(!expanded)}>
+        {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}{expanded ? <><span className="sm:hidden">Exit</span><span className="hidden sm:inline">Exit expanded view</span></> : <span>Expand</span>}
+      </button>
+      </div>
 
       <section className="flex-1 min-w-0">
         {!notebook && <ActiveFocusBar userId={accountId} />}
         {!notebook ? (
           <div className="card h-full grid place-items-center p-10 text-center text-muted-foreground">
             <div>
-              <div className="font-serif text-xl mb-1">Pick a notebook</div>
+              <div className="font-serif text-xl mb-1">{loaded && list.length === 0 ? "Start with a blank page." : "Pick a notebook"}</div>
               <div className="text-sm">Or create a new one to start writing.</div>
             </div>
           </div>
         ) : (
-          <div inert={busy || undefined} aria-busy={busy} className="notebook-paper paper card p-4 sm:p-6 lg:p-8 min-h-[70vh] flex flex-col relative" data-testid="notebook-editor" data-paper-style={notebook.paper_style || "plain"} data-font-style={notebook.font_style || "sans"} ref={editorRef}>
+          <div inert={busy || undefined} aria-busy={busy} className="notebook-paper paper card p-3 sm:p-4 lg:p-5 min-h-[70dvh] flex flex-col relative min-w-0" data-testid="notebook-editor" data-paper-style={notebook.paper_style || "plain"} data-font-style={notebook.font_style || "sans"} ref={editorRef}>
             <NotebookFocus notebook={notebook} beforeStart={autosave.flush} />
             {autosave.conflict && <NotebookRecovery busy={busy} error={recoveryError} onCopy={recoverCopy} onLoadServer={loadServer} />}
             <div className="flex flex-wrap gap-3 items-center justify-between mb-4 text-sm text-muted-foreground">
@@ -306,18 +345,18 @@ function NotebookWorkspace({ accountId }) {
                   {saveState === "failed" && <button className="action-link min-h-11" onClick={autosave.retry}>{deviceDraftSaved ? "Saved on device · pending sync" : "Not saved · Retry"}</button>}
                   {saveState === "conflict" && <span className="text-amber-700 dark:text-amber-300">Draft needs recovery</span>}
                 </span>
-                <details key={activeId} className="relative"><summary className="btn btn-ghost cursor-pointer text-sm">Notebook options</summary><div className="absolute right-0 z-30 mt-2 w-80 max-w-[calc(100vw-3rem)] max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-background p-4 shadow-lg space-y-3">
+                <Sheet open={optionsOpen} onOpenChange={setOptionsOpen}><SheetTrigger asChild><button ref={optionsTrigger} aria-label="Notebook options" className="btn btn-ghost min-h-11 text-sm"><span className="sm:hidden">Options</span><span className="hidden sm:inline">Notebook options</span></button></SheetTrigger><SheetContent onCloseAutoFocus={event => { event.preventDefault(); const trigger = optionsTrigger.current; if (trigger?.isConnected && !trigger.closest("[inert]")) trigger.focus(); else notebookMenuTrigger.current?.focus(); }} side="right" className="w-96 max-w-[95vw] overflow-y-auto p-4 pt-12" closeLabel="Close notebook options" aria-describedby={undefined}><SheetTitle className="mb-4">Notebook options</SheetTitle><div className="space-y-3">
                   <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
                   <fieldset className="border-t border-border pt-3 space-y-2"><legend className="text-xs text-muted-foreground">Page settings</legend><div className="flex flex-wrap gap-3">
                     <label className="flex items-center gap-2">Paper<select aria-label="Notebook paper" className="input w-auto! text-sm" value={notebook.paper_style || "plain"} onChange={e => autosave.update({ paper_style: e.target.value })}><option value="plain">Plain</option><option value="ruled">Ruled</option><option value="dotted">Dotted</option></select></label>
                     <label className="flex items-center gap-2">Font<select aria-label="Notebook font" className="input w-auto! text-sm" value={notebook.font_style || "sans"} onChange={e => autosave.update({ font_style: e.target.value })}><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select></label>
                   </div></fieldset>
-                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={loadHistory}>Version history</button>
-                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={exportNotebook}>Export JSON</button>
-                  <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => removeNotebook(notebook.notebook_id)} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>
-                  <button className="btn btn-outline w-full justify-start text-sm" onClick={summarize} disabled={summarizing} data-testid="notebook-summarize-btn" aria-label="Summarize with Study Companion" title="Summarize with Study Companion">{summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Summarize</button>
+                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void loadHistory(); }}>Version history</button>
+                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); exportNotebook(); }}>Export JSON</button>
+                  <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => { setOptionsOpen(false); void removeNotebook(notebook.notebook_id); }} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>
+                  <button className="btn btn-outline w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void summarize(); }} disabled={summarizing} data-testid="notebook-summarize-btn" aria-label="Summarize with Study Companion" title="Summarize with Study Companion">{summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Summarize</button>
                   <AiPrivacyNote />
-                </div></details>
+                </div></SheetContent></Sheet>
               </div>
             </div>
             {saveState === "failed" && autosave.error && <p className="mb-3 text-xs text-muted-foreground">{autosave.error}</p>}

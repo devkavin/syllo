@@ -7,10 +7,11 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import ActiveFocusBar from "@/components/ActiveFocusBar";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import ReminderCentre from "@/components/ReminderCentre";
+import { WorkspaceLayoutContext } from "@/lib/workspaceLayout";
 import {
   Sun, Moon, Home, BookOpen, NotebookPen, ListTodo,
   Timer, BarChart3, Settings, LogOut, Menu, GraduationCap,
-  Calendar, Sparkles, Search as SearchIcon, ShieldCheck, ChevronDown, Users,
+  Calendar, Sparkles, Search as SearchIcon, ShieldCheck, ChevronDown, Users, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -32,7 +33,7 @@ const NAV = [
   { to: "/circles", label: "Circles", icon: Users, testid: "nav-circles" },
 ];
 
-function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
+function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false }) {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const { usage } = useUsage();
@@ -44,40 +45,40 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
   const libraryOpen = libraryExpanded || libraryActive;
   const libraryId = useId();
   const primaryItems = ["/today", "/subjects", "/planner", "/timer", "/analytics"].map(to => NAV.find(item => item.to === to));
-  const navItem = ({ to, label, icon: Icon, testid }) => <NavLink key={to} to={to} data-testid={testid} onClick={onNavigate}
-    className={({ isActive }) => `flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/60"}`}>
-    <Icon className="w-4 h-4 shrink-0" />{label}
+  const navItem = ({ to, label, icon: Icon, testid }) => <NavLink key={to} to={to} data-testid={testid} onClick={onNavigate} aria-label={label} title={collapsed ? label : undefined}
+    className={({ isActive }) => `flex min-h-11 items-center gap-3 ${collapsed ? "justify-center px-2" : "px-3"} py-2.5 rounded-lg text-sm transition-colors ${isActive ? "bg-accent text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent/60"}`}>
+    <Icon className="w-4 h-4 shrink-0" /><span className={collapsed ? "sr-only" : undefined}>{label}</span>
   </NavLink>;
   return <div className="flex min-h-full flex-col">
-    <div className="px-5 pt-6 pb-5 shrink-0">
+    <div className={`${collapsed ? "px-3" : "px-5"} pt-6 pb-5 shrink-0`}>
       <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-4 h-4" /></div>
-        <div><div className="font-display font-semibold text-xl leading-none tracking-tight">syllo</div><div className="text-xs text-muted-foreground mt-1">Your study space</div></div></div>
+        <div className={collapsed ? "sr-only" : undefined}><div className="font-display font-semibold text-xl leading-none tracking-tight">syllo</div><div className="text-xs text-muted-foreground mt-1">Your study space</div></div></div>
     </div>
-    <div className="px-3 pb-4 space-y-1 shrink-0">
-      <button className="btn btn-outline w-full justify-start text-muted-foreground" onClick={() => { onOpenSearch?.(); onNavigate?.(); }} data-testid="sidebar-search-btn">
-        <SearchIcon className="w-4 h-4" /><span>Search</span><kbd className="ml-auto text-xs font-mono border border-border rounded-sm px-1.5 py-0.5">{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K"}</kbd>
+    <div className={`${collapsed ? "px-2" : "px-3"} pb-4 space-y-1 shrink-0`}>
+      <button aria-label="Search" title={collapsed ? "Search" : undefined} className={`btn btn-outline w-full ${collapsed ? "justify-center px-2" : "justify-start"} text-muted-foreground`} onClick={() => { onOpenSearch?.(); onNavigate?.(); }} data-testid="sidebar-search-btn">
+        <SearchIcon className="w-4 h-4 shrink-0" /><span className={collapsed ? "sr-only" : undefined}>Search</span>{!collapsed && <kbd className="ml-auto text-xs font-mono border border-border rounded-sm px-1.5 py-0.5">{/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ K" : "Ctrl K"}</kbd>}
       </button>
-      <button className="btn btn-ghost w-full justify-start" onClick={() => { onOpenAi?.(); onNavigate?.(); }} data-testid="sidebar-ai-btn"><Sparkles className="w-4 h-4" /><span>Study Companion</span></button>
+      <button aria-label="Study Companion" title={collapsed ? "Study Companion" : undefined} className={`btn btn-ghost w-full ${collapsed ? "justify-center px-2" : "justify-start"}`} onClick={() => { onOpenAi?.(); onNavigate?.(); }} data-testid="sidebar-ai-btn"><Sparkles className="w-4 h-4 shrink-0" /><span className={collapsed ? "sr-only" : undefined}>Study Companion</span></button>
     </div>
-    <nav aria-label="Workspace" className="px-3 flex-1 space-y-0.5">
+    <nav aria-label="Workspace" className={`${collapsed ? "px-2" : "px-3"} flex-1 space-y-0.5`}>
       {primaryItems.map(navItem)}
       <div className="border-t border-border mt-4! pt-3">
-        <button className={`btn btn-ghost w-full justify-start ${libraryActive ? "font-semibold" : "text-muted-foreground"}`} aria-expanded={libraryOpen} aria-controls={libraryId} onClick={() => setLibraryExpanded(value => !value)}>
+        {!collapsed && <button className={`btn btn-ghost w-full justify-start ${libraryActive ? "font-semibold" : "text-muted-foreground"}`} aria-expanded={libraryOpen} aria-controls={libraryId} onClick={() => setLibraryExpanded(value => !value)}>
           <NotebookPen className="w-4 h-4" /><span>Library</span><ChevronDown className={`ml-auto h-4 w-4 transition-transform ${libraryOpen ? "rotate-180" : ""}`} />
-        </button>
-        {libraryOpen && <div id={libraryId} className="ml-4 pl-2 border-l border-border space-y-0.5">{libraryItems.map(navItem)}</div>}
+        </button>}
+        {(collapsed || libraryOpen) && <div id={libraryId} className={collapsed ? "space-y-0.5" : "ml-4 pl-2 border-l border-border space-y-0.5"}>{libraryItems.map(navItem)}</div>}
         {navItem(NAV.find(item => item.to === "/circles"))}
         {user?.role === "admin" && navItem({ to: "/admin", label: "Admin", icon: ShieldCheck, testid: "nav-admin" })}
       </div>
     </nav>
-    <div className="p-3 mt-4 border-t border-border shrink-0 space-y-1">
-      <Link to="/upgrade" className="flex min-h-11 items-center justify-between gap-2 px-3 rounded-lg text-xs text-muted-foreground hover:bg-accent" data-testid="sidebar-plan-card" onClick={onNavigate}>
-        <span>{usage?.plan?.name || "Freshman"}</span><span>{usage?.credits_remaining ?? 0} helps</span>
+    <div className={`${collapsed ? "p-2" : "p-3"} mt-4 border-t border-border shrink-0 space-y-1`}>
+      <Link to="/upgrade" aria-label={collapsed ? "Plan and usage" : undefined} title={collapsed ? "Plan and usage" : undefined} className={`flex min-h-11 items-center ${collapsed ? "justify-center px-2" : "justify-between px-3"} gap-2 rounded-lg text-xs text-muted-foreground hover:bg-accent`} data-testid="sidebar-plan-card" onClick={onNavigate}>
+        {collapsed ? <GraduationCap className="w-4 h-4" /> : <><span>{usage?.plan?.name || "Freshman"}</span><span>{usage?.credits_remaining ?? 0} helps</span></>}
       </Link>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild><button className="btn btn-ghost w-full justify-start" aria-label="Account menu">
+        <DropdownMenuTrigger asChild><button className={`btn btn-ghost w-full ${collapsed ? "justify-center px-1" : "justify-start"}`} aria-label="Account menu" title="Account menu">
           <span className="w-7 h-7 shrink-0 rounded-full bg-secondary grid place-items-center text-xs">{(user?.name || "?")[0]?.toUpperCase()}</span>
-          <span className="truncate">{user?.name || "Account"}</span><ChevronDown className="ml-auto w-4 h-4 shrink-0" />
+          {!collapsed && <><span className="truncate">{user?.name || "Account"}</span><ChevronDown className="ml-auto w-4 h-4 shrink-0" /></>}
         </button></DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-56">
           <DropdownMenuLabel className="font-normal"><p className="text-sm font-medium truncate">{user?.name}</p><p className="text-xs text-muted-foreground break-all">{user?.email}</p></DropdownMenuLabel>
@@ -97,6 +98,19 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi }) {
 export default function AppShell({ children }) {
   const { pathname } = useLocation();
   const { user } = useAuth();
+  const notebookRoute = pathname.replace(/\/$/, "") === "/notebooks";
+  const [writingExpanded, setWritingExpanded] = useState(false);
+  const expanded = notebookRoute && writingExpanded;
+  const [sidebarPreference, setSidebarPreference] = useState(() => {
+    try { const value = localStorage.getItem("syllo.sidebarCollapsed"); return value === null ? null : value === "true"; }
+    catch { return null; }
+  });
+  const sidebarCollapsed = sidebarPreference ?? notebookRoute;
+  const toggleSidebar = () => {
+    const next = !sidebarCollapsed; setSidebarPreference(next);
+    try { localStorage.setItem("syllo.sidebarCollapsed", String(next)); } catch { /* Layout still works without storage. */ }
+  };
+  useEffect(() => { if (!notebookRoute) setWritingExpanded(false); }, [notebookRoute]);
   const [pendingCircle] = useState(() => {
     try {
       const invite = JSON.parse(sessionStorage.getItem("syllo.circleInvite"));
@@ -129,17 +143,19 @@ export default function AppShell({ children }) {
   }, []);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}><div className="min-h-screen flex bg-background text-foreground">
+    <WorkspaceLayoutContext.Provider value={{ expanded, setExpanded: setWritingExpanded }}>
+    <Sheet open={open} onOpenChange={setOpen}><div className="min-h-dvh flex bg-background text-foreground">
       <a className="skip-link" href="#main-content">Skip to content</a>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-60 lg:w-64 shrink-0 border-r border-border bg-card">
+      {!expanded && <aside data-testid="desktop-sidebar" data-collapsed={sidebarCollapsed} className={`hidden md:flex ${sidebarCollapsed ? "w-16" : "md:w-60 lg:w-64"} shrink-0 border-r border-border bg-card`}>
         <div className="w-full sticky top-0 h-screen overflow-y-auto">
-          <SidebarBody onOpenSearch={() => setSearchOpen(true)} onOpenAi={() => setAiOpen(true)} />
+          <button className="btn btn-ghost w-full min-h-11 rounded-none" aria-label={sidebarCollapsed ? "Expand navigation" : "Collapse navigation"} title={sidebarCollapsed ? "Expand navigation" : "Collapse navigation"} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar}>{sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <><PanelLeftClose className="w-4 h-4" /><span>Collapse navigation</span></>}</button>
+          <SidebarBody collapsed={sidebarCollapsed} onOpenSearch={() => setSearchOpen(true)} onOpenAi={() => setAiOpen(true)} />
         </div>
-      </aside>
+      </aside>}
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-30 h-16 border-b border-border bg-background flex items-center justify-between px-4">
+      {!expanded && <div className="md:hidden fixed top-0 inset-x-0 z-30 h-16 border-b border-border bg-background flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-primary text-primary-foreground grid place-items-center">
             <GraduationCap className="w-3.5 h-3.5" />
@@ -160,7 +176,7 @@ export default function AppShell({ children }) {
             <Menu className="w-5 h-5" />
           </button></SheetTrigger>
         </div>
-      </div>
+      </div>}
 
       {open && (
           <SheetContent side="left" className="w-80 max-w-[90vw] bg-card p-0 overflow-y-auto" closeLabel="Close menu" closeTestId="mobile-nav-close" aria-describedby={undefined}
@@ -170,8 +186,8 @@ export default function AppShell({ children }) {
           </SheetContent>
       )}
 
-      <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 pt-16 md:pt-0">
-        <div className="workspace max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 md:py-10 pb-24">
+      <main id="main-content" tabIndex={-1} className={`flex-1 min-w-0 ${expanded ? "" : "pt-16 md:pt-0"}`}>
+        <div data-testid="workspace-container" className={`workspace ${notebookRoute ? `w-full px-2 sm:px-4 lg:px-6 py-3 ${expanded ? "pb-[max(1rem,env(safe-area-inset-bottom))]" : "pb-24 md:pb-6"}` : "max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 md:py-10 pb-24"}`}>
           <ConnectionStatus />
           <ActiveFocusBar userId={user?.user_id} enabled={!pathname.startsWith("/timer") && !pathname.startsWith("/notebooks")} />
           <ReminderCentre key={user?.user_id || "anonymous"} userId={user?.user_id} />
@@ -200,15 +216,16 @@ export default function AppShell({ children }) {
         </div>
       </main>
 
-      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 inset-x-0 z-30 grid grid-cols-4 border-t border-border bg-background px-2 pb-[env(safe-area-inset-bottom)]">
+      {!expanded && <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 inset-x-0 z-30 grid grid-cols-4 border-t border-border bg-background px-2 pb-[env(safe-area-inset-bottom)]">
         {[{ to: "/today", label: "Today", icon: Home }, { to: "/notebooks", label: "Study", icon: NotebookPen }, { to: "/planner", label: "Planner", icon: Calendar }].map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} className={({ isActive }) => `min-h-16 flex flex-col items-center justify-center gap-1 text-xs rounded-lg ${isActive ? "text-primary font-semibold" : "text-muted-foreground"}`}><Icon className="h-5 w-5" />{label}</NavLink>)}
         <SheetTrigger asChild><button className="min-h-16 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground rounded-lg" aria-label="More destinations" onClick={event => { navigationOpener.current = event.currentTarget; }}><Menu className="h-5 w-5" />More</button></SheetTrigger>
-      </nav>
+      </nav>}
 
       <Suspense fallback={null}>
         {searchOpen && <SearchDialog open onClose={() => setSearchOpen(false)} fallbackFocusRef={mobileMenu} />}
         {aiOpen && <AiCompanion open onClose={() => setAiOpen(false)} fallbackFocusRef={mobileMenu} />}
       </Suspense>
     </div></Sheet>
+    </WorkspaceLayoutContext.Provider>
   );
 }
