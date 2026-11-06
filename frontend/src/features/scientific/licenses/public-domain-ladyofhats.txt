@@ -1,0 +1,31 @@
+Public-domain artwork evidence — LadyofHats anatomy sources
+
+Verified: 2026-10-27
+
+The following specific original Commons source pages identify the work as
+released worldwide into the public domain by the author, LadyofHats. They also
+state that where a public-domain release is not legally possible, the author
+grants anyone use for any purpose without conditions except those required by law.
+
+Digestive system diagram en.svg
+Author: Mariana Ruiz (LadyofHats); Jmarchn
+Source/license evidence:
+https://commons.wikimedia.org/wiki/File:Digestive_system_diagram_en.svg#Licensing
+Description-page revision reviewed: oldid=1289600711
+File revision: 2025-03-29T15:01:24Z
+Source SHA-256: dea8b480a212d90b484603737a1e90bd98714d80c1eb3b0395c43b6936eaa127
+Derivative modification: explicit Text and Arrows layers removed; anatomy retained.
+
+Respiratory system complete en.svg
+Author: Mariana Ruiz (LadyofHats); Jmarchn
+Source/license evidence:
+https://commons.wikimedia.org/wiki/File:Respiratory_system_complete_en.svg#Licensing
+File revision: 2023-03-06T16:18:05Z
+Source SHA-256: 2544b2013ada84edff87c9d16475da335a1a4161440e5bfb48925b3394f20909
+Derivative modification: explicit final annotation text, leader and panel paths
+removed; detailed airway, lung, vascular anatomy and magnification inset retained.
+
+These records apply only to the two pinned English originals. In particular,
+Respiratory system complete no labels.svg is a separately licensed ShareAlike
+derivative and was not used. This public-domain record is not a CC0 license
+conversion or a blanket license claim for Wikimedia Commons.

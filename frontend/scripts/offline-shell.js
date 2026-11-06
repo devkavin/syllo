@@ -7,7 +7,12 @@ export function offlineShell() {
     apply: "build",
     async generateBundle(_options, bundle) {
       // Cache the app entry and note editor's dependency graph, not every page.
-      const files = new Set(["/app.html", "/app.webmanifest", "/syllo-icon.svg"]);
+      const files = new Set([
+        "/app.html", "/app.webmanifest", "/favicon.ico", "/apple-touch-icon.png",
+        "/branding/favicon-32.png", "/branding/syllo-logo.png",
+        "/branding/syllo-icon-192.png", "/branding/syllo-icon-512.png",
+        "/branding/syllo-icon-maskable-512.png",
+      ]);
       const visited = new Set();
       const dynamicVisited = new Set();
       const include = (filename, withDynamic = false) => {

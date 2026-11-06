@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight, BookOpen, CalendarDays, Check, Clock3 } from "lucide-react";
+import AppIcon from "@/components/AppIcon";
 import { TODAY_STARTER } from "@/lib/studyPrompts";
 
 export default function Home() {
@@ -7,7 +8,7 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <a href="#main" className="sr-only focus:not-sr-only focus:block focus:p-4">Skip to content</a>
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
-        <a href="/" className="font-serif text-2xl tracking-tight" aria-label="Syllo home">syllo</a>
+        <a href="/" className="flex items-center gap-2 font-serif text-2xl tracking-tight" aria-label="Syllo home"><AppIcon />syllo</a>
         <nav aria-label="Main navigation" className="flex items-center gap-4 text-sm">
           <a href="/pricing" className="text-muted-foreground hover:text-foreground">Plans</a>
           <a href="/login" className="btn btn-outline">Sign in</a>
@@ -46,7 +47,7 @@ export default function Home() {
         </section>
         <section className="border-t border-border py-12 sm:py-16"><h2 className="font-serif text-3xl">Start with the work you have today.</h2><p className="mt-3 text-muted-foreground">Freshman is free. Explore the upcoming paid plans when you need more study helps.</p><div className="mt-6 flex flex-wrap gap-3"><a href="/register" className="btn btn-primary">Create your free account</a><a href="/pricing" className="btn btn-outline">See plans</a></div></section>
       </main>
-      <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-8 text-xs text-muted-foreground sm:px-8"><span>syllo · A personal academic workspace</span><nav aria-label="Footer" className="flex gap-5"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@syllo.kavinhq.com">Support</a></nav></footer>
+      <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-border px-5 py-8 text-xs text-muted-foreground sm:px-8"><span className="flex items-center gap-2"><AppIcon className="h-8 w-8" />syllo · A personal academic workspace</span><nav aria-label="Footer" className="flex gap-5"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@syllo.kavinhq.com">Support</a></nav></footer>
     </div>
   );
 }

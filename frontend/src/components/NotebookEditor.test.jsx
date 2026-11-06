@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import NotebookEditor from "./NotebookEditor";
 import { SuggestionMenu } from "@blocknote/core/extensions";
+import { createDocument, createObject } from "@/features/scientific/document";
 
 beforeAll(() => {
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(() => new DOMRect(0, 0, 400, 32));
@@ -84,4 +85,46 @@ it("offers equation, diagram and subject callout slash commands", async () => {
   expect(screen.getByText("Block Equation", { exact: true })).toBeInTheDocument();
   fireEvent.click(screen.getByText("Definition", { exact: true }));
   expect(editorRef.current.document[0]).toMatchObject({ type: "callout", props: { kind: "definition" } });
+});
+
+it("inserts an editable scientific figure between paragraphs and reopens it", async () => {
+  const editorRef = createRef(), onChange = vi.fn();
+  render(<NotebookEditor notebook={{ content: "Before\nAfter" }} theme="light" editorRef={editorRef} onChange={onChange} />);
+  fireEvent.click(screen.getByText("Insert", { exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Scientific Illustration" }));
+  expect(await screen.findByRole("dialog", {}, { timeout: 10000 })).toHaveTextContent("Scientific Illustration Studio");
+  expect(editorRef.current.document.map(b => b.type)).toEqual(["paragraph", "scientificIllustration", "paragraph"]);
+  fireEvent.click(screen.getByRole("button", { name: "Return to Notes" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Edit scientific illustration" }));
+  expect(await screen.findByRole("dialog", {}, { timeout: 10000 })).toBeVisible();
+});
+
+it("restores independent figure objects, caption and display size and duplicates safely", async () => {
+  const doc = createDocument("Cell figure"); doc.objects = [createObject("asset", { assetId: "mitochondrion" }), createObject("text", { text: "H₂O", rotation: 30 })];
+  const editorRef = createRef();
+  render(<NotebookEditor notebook={{ rich_content: [{ type: "scientificIllustration", props: { document: JSON.stringify(doc), caption: "Mitochondria", displayWidth: 75 } }, { type: "paragraph", content: "Continue writing" }] }} theme="light" editorRef={editorRef} onChange={vi.fn()} />);
+  expect(await screen.findByLabelText("Figure caption")).toHaveValue("Mitochondria");
+  expect(screen.getByLabelText("Figure display width")).toHaveValue("75");
+  fireEvent.click(screen.getByRole("button", { name: "Duplicate scientific illustration" }));
+  const figures = editorRef.current.document.filter(b => b.type === "scientificIllustration");
+  expect(figures).toHaveLength(2);
+  const copy = JSON.parse(figures[1].props.document);
+  expect(copy.objects[1]).toMatchObject({ text: "H₂O", rotation: 30 });
+  expect(copy.id).not.toBe(doc.id); expect(copy.objects[0].id).not.toBe(doc.objects[0].id);
+  expect(screen.getByText("Continue writing")).toBeVisible();
+});
+
+it("renders saved scientific vectors sharply even when a PNG thumbnail is available", async () => {
+  const doc = createDocument("Vector note figure"); doc.objects = [createObject("text", { text: "H₂O · editable vector label", rotation: 20 })];
+  render(<NotebookEditor notebook={{ rich_content: [{ type: "scientificIllustration", props: { document: JSON.stringify(doc), preview: "data:image/png;base64,iVBORw0KGgo=", caption: "Vector figure" } }] }} theme="light" onChange={vi.fn()} />);
+  const figure = await screen.findByTestId("scientific-note-figure");
+  expect([...figure.querySelectorAll("svg text tspan")].map(line => line.textContent).join(" ")).toBe("H₂O · editable vector label");
+  expect(figure.querySelector("img")).toBeNull();
+});
+
+it("shows saved figures in read-only review without edit controls", async () => {
+  const doc = createDocument("Read only figure"); doc.objects = [createObject("text", { text: "CO₂" })];
+  render(<NotebookEditor notebook={{ rich_content: [{ type: "scientificIllustration", props: { document: JSON.stringify(doc), caption: "Carbon dioxide" } }] }} theme="light" readOnly />);
+  expect(await screen.findByText("Carbon dioxide")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Edit scientific illustration" })).not.toBeInTheDocument();
 });

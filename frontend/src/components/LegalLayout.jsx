@@ -1,5 +1,5 @@
 import React from "react";
-import { GraduationCap } from "lucide-react";
+import AppIcon from "@/components/AppIcon";
 import { Link } from "react-router-dom";
 
 export default function LegalLayout({ title, summary, children }) {
@@ -8,9 +8,7 @@ export default function LegalLayout({ title, summary, children }) {
       <header className="border-b border-border bg-card/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2" aria-label="Syllo home">
-            <span className="w-8 h-8 rounded-lg bg-primary text-primary-foreground grid place-items-center">
-              <GraduationCap className="w-4 h-4" />
-            </span>
+            <AppIcon className="w-10 h-10" />
             <span className="font-serif text-lg">Syllo</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground" aria-label="Legal pages">

@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import ActiveFocusBar from "@/components/ActiveFocusBar";
 import ConnectionStatus from "@/components/ConnectionStatus";
 import ReminderCentre from "@/components/ReminderCentre";
+import AppIcon from "@/components/AppIcon";
 import { WorkspaceLayoutContext } from "@/lib/workspaceLayout";
 import { TimerAlarmProvider } from "@/components/TimerAlarm";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -54,7 +55,7 @@ function SidebarBody({ onNavigate, onOpenSearch, onOpenAi, collapsed = false, on
   return <div className="flex min-h-full flex-col">
     <div className={`${onToggleSidebar ? "px-2" : "px-5"} pt-4 pb-5 shrink-0 flex items-center gap-3`}>
       {onToggleSidebar && <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><button className="btn btn-outline btn-icon shrink-0" aria-label={collapsed ? "Show sidebar" : "Hide sidebar"} aria-expanded={!collapsed} onClick={onToggleSidebar}>{collapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}</button></TooltipTrigger><TooltipContent side="right">{collapsed ? "Show sidebar" : "Hide sidebar"}</TooltipContent></Tooltip></TooltipProvider>}
-      <div className={`flex items-center gap-2 ${collapsed ? "sr-only" : ""}`}><div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-4 h-4" /></div>
+      <div className={`flex items-center gap-2 ${collapsed ? "sr-only" : ""}`}><AppIcon className="w-10 h-10" />
         <div className={collapsed ? "sr-only" : undefined}><div className="font-display font-semibold text-xl leading-none tracking-tight">syllo</div><div className="text-xs text-muted-foreground mt-1">Your study space</div></div></div>
     </div>
     <div className={`${collapsed ? "px-2" : "px-3"} pb-4 space-y-1 shrink-0`}>
@@ -160,9 +161,7 @@ export default function AppShell({ children }) {
       {!expanded && <div className="md:hidden fixed top-0 inset-x-0 z-30 h-16 border-b border-border bg-background flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <SheetTrigger asChild><button ref={mobileMenu} className="btn btn-ghost btn-icon" data-testid="mobile-nav-open" aria-label="Open menu" onClick={event => { navigationOpener.current = event.currentTarget; }}><Menu className="w-5 h-5" /></button></SheetTrigger>
-          <div className="w-7 h-7 rounded-md bg-primary text-primary-foreground grid place-items-center">
-            <GraduationCap className="w-3.5 h-3.5" />
-          </div>
+          <AppIcon className="w-9 h-9" />
           <div className="font-serif text-lg">syllo</div>
         </div>
         <div className="flex items-center gap-1">

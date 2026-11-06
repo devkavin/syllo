@@ -4,6 +4,7 @@ import { http, formatError } from "@/lib/api";
 import { createCheckout } from "@/lib/billing";
 import { useUsage } from "@/lib/usage";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import AppIcon from "@/components/AppIcon";
 
 const PLANNED_PRICING = {
   scholar: { price_cents: 899, intro_offer: { price_cents: 699, months: 3 } },
@@ -59,6 +60,7 @@ export default function Upgrade() {
   return (
     <div className="space-y-8" data-testid="upgrade-page">
       <div className="space-y-2">
+        <AppIcon alt="Syllo" />
         <button onClick={() => nav(-1)} className="btn btn-ghost px-2! py-1! -ml-2 mb-2 text-xs" data-testid="upgrade-back"><ArrowLeft className="w-3.5 h-3.5" /> Back</button>
         <div className="section-title mb-2">Your plan</div>
         <h1 className="page-title">Study plans that fit your routine</h1>

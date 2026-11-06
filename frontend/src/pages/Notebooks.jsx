@@ -371,7 +371,7 @@ function NotebookWorkspace({ accountId }) {
               data-testid="notebook-title-input"
             />
             <div className="flex-1 min-w-0" ref={notesRef} hidden={mode !== "write"}>
-              <NotebookEditor key={`${activeId}.${editorVersion}`} notebook={notebook} theme={theme} editorRef={richEditorRef} onChange={autosave.update} />
+              <NotebookEditor key={`${activeId}.${editorVersion}`} notebook={notebook} accountId={accountId} theme={theme} editorRef={richEditorRef} onChange={autosave.update} saveNow={autosave.flush} saveState={saveState} saveError={autosave.error} />
             </div>
             {practiceOpen && <div id="notebook-practice" hidden={mode !== "practice"} className="mt-2"><NotebookPractice key={activeId} notebook={notebook} getSelectedText={getSelectedText} beforeStart={autosave.flush} /></div>}
             {mode === "write" && <ExplainPopover

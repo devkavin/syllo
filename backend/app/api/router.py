@@ -21,6 +21,7 @@ from backend.app.api.routes.referrals import router as referrals_router
 from backend.app.api.routes.search import router as search_router
 from backend.app.api.routes.sessions import router as sessions_router
 from backend.app.api.routes.focus_timer import router as focus_timer_router
+from backend.app.api.routes.illustrations import router as illustrations_router
 from backend.app.api.routes.tasks import router as tasks_router
 from backend.app.api.routes.study_questions import router as study_questions_router
 from backend.app.api.routes.revision_plans import router as revision_plans_router
@@ -46,6 +47,7 @@ api_router.include_router(study_dashboard_router)
 api_router.include_router(planner_router)
 api_router.include_router(sessions_router)
 api_router.include_router(focus_timer_router)
+api_router.include_router(illustrations_router)
 api_router.include_router(search_router)
 api_router.include_router(progress_router)
 api_router.include_router(ai_router)

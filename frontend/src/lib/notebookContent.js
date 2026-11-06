@@ -19,7 +19,14 @@ export function notebookText(blocks) {
   return blocks.map(block => {
     const content = block.type === "table"
       ? (block.content?.rows || []).map(row => row.cells.map(inlineText).join("\t")).join("\n")
-      : inlineText(block.content) || block.props?.caption || "";
+      : block.type === "scientificIllustration" ? illustrationText(block) : inlineText(block.content) || block.props?.caption || "";
     return block.children?.length ? `${content}\n${notebookText(block.children)}` : content;
   }).join("\n");
+}
+
+function illustrationText(block) {
+  try {
+    const doc = JSON.parse(block.props.document);
+    return [block.props.caption || doc.title, ...(doc.objects || []).filter(obj => obj.type === "text").map(obj => obj.text)].filter(Boolean).join("\n");
+  } catch { return block.props?.caption || "Scientific illustration"; }
 }

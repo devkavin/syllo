@@ -41,7 +41,7 @@ export default function ReminderCentre({ userId }) {
           if (!current() || !allowed()) return;
           const registration = await navigator.serviceWorker?.getRegistration?.();
           if (!current() || !allowed()) return;
-          const options = { body: `${digest.total_count} things to review in your daily digest.`, tag: `syllo-reminders-${userId}-${digest.date}` };
+          const options = { body: `${digest.total_count} things to review in your daily digest.`, tag: `syllo-reminders-${userId}-${digest.date}`, icon: "/branding/syllo-icon-192.png" };
           if (registration?.showNotification) await registration.showNotification("Your Syllo reminders", options);
           else await showBrowserAlert("Your Syllo reminders", options);
           if (live) localStorage.setItem(sentKey, "true");

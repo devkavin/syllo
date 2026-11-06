@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { http, formatError } from "@/lib/api";
 import { SUBJECT_COLORS, SUBJECT_COLOR_IDS } from "@/lib/palette";
 import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import AppIcon from "@/components/AppIcon";
 
 const STARTER_SUBJECTS = [
   { name: "Mathematics", color: "dusty_blue" },
@@ -53,6 +54,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-background text-foreground grid place-items-center p-4">
       <div className="w-full max-w-lg space-y-6 fade-in" data-testid="onboarding-page">
+        <AppIcon className="h-14 w-14 mx-auto" alt="Syllo" />
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {[0,1,2].map((i) => (
             <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-accent"}`} />

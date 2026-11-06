@@ -1,7 +1,7 @@
 /* Generated precache values are filled by the production build. No user data here. */
 const CACHE = "syllo-shell-__SYLLO_VERSION__";
 const PRECACHE = __SYLLO_PRECACHE__;
-const staticAsset = url => url.origin === self.location.origin && !url.search && (url.pathname.startsWith("/assets/") || ["/syllo-icon.svg", "/app.webmanifest"].includes(url.pathname));
+const staticAsset = url => url.origin === self.location.origin && !url.search && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/branding/") || ["/favicon.ico", "/apple-touch-icon.png", "/app.webmanifest"].includes(url.pathname));
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)));

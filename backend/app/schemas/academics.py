@@ -6,13 +6,14 @@ from typing import Literal
 from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, Field, field_validator, model_validator
+from backend.app.schemas.illustrations import validate_illustration
 
 
 # Match the pinned BlockNote 0.55 defaults and notebook academic extensions.
 NOTEBOOK_BLOCK_TYPES = frozenset({
     "audio", "bulletListItem", "checkListItem", "codeBlock", "divider", "file",
     "heading", "image", "numberedListItem", "paragraph", "quote", "table",
-    "toggleListItem", "video", "mathBlock", "diagram", "callout",
+    "toggleListItem", "video", "mathBlock", "diagram", "callout", "scientificIllustration",
 })
 NOTEBOOK_INLINE_TYPES = frozenset({"text", "link", "math"})
 NOTEBOOK_STYLE_TYPES = frozenset({
@@ -98,6 +99,11 @@ class NotebookDocument(BaseModel):
                 raise ValueError("Block children must be a list")
             pending.extend((child, depth + 1) for child in children)
             content = block.get("content")
+            if block["type"] == "scientificIllustration":
+                validate_illustration(block.get("props", {}))
+                if content is not None or children:
+                    raise ValueError("Figures cannot contain inline content or nested blocks")
+                continue
             if block["type"] in {"mathBlock", "diagram"}:
                 cls.validate_source_content(content)
                 continue

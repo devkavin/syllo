@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Microscope } from "lucide-react";
 
 const symbolGroups = {
   Greek: ["α", "β", "γ", "δ", "ε", "θ", "λ", "μ", "π", "ρ", "σ", "φ", "ω", "Δ", "Σ", "Ω"],
@@ -54,7 +55,7 @@ function headingOutline(blocks) {
 const preserveSelection = event => event.preventDefault();
 const closeMenu = event => { event.currentTarget.closest("details").open = false; };
 
-export default function NotebookStudyTools({ editor }) {
+export default function NotebookStudyTools({ editor, onIllustration }) {
   const [outline, setOutline] = useState(() => headingOutline(editor.document));
   const [styles, setStyles] = useState(() => editor.getActiveStyles());
 
@@ -90,6 +91,7 @@ export default function NotebookStudyTools({ editor }) {
   }
 
   return <div role="toolbar" aria-label="Notebook study tools" className="flex flex-wrap items-center gap-2 border-b border-border pb-3 mb-3 text-sm">
+    {onIllustration && <details className="relative"><summary className="btn btn-ghost cursor-pointer">Insert</summary><div className="absolute left-0 top-full z-30 mt-1 w-64 rounded-lg border border-border bg-popover p-2 shadow-md"><button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={event => { closeMenu(event); onIllustration(); }}><Microscope size={17} />Scientific Illustration</button><p className="px-3 py-2 text-xs text-muted-foreground">Scientific vectors, labels and templates. No AI credits.</p></div></details>}
     <details className="relative">
       <summary className="btn btn-ghost cursor-pointer">Symbols</summary>
       <div className="absolute left-0 top-full z-30 mt-1 w-72 max-w-[80vw] rounded-lg border border-border bg-popover p-3 shadow-md">

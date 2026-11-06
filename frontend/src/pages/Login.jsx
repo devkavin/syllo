@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { formatError } from "@/lib/api";
-import { GraduationCap } from "lucide-react";
 import AppearancePicker from "@/components/AppearancePicker";
 
 export default function Login() {
@@ -25,7 +24,7 @@ export default function Login() {
       <form onSubmit={submit} className="card p-8 w-full max-w-sm space-y-4 fade-in" data-testid="login-form">
         <AppearancePicker />
         <div className="text-center mb-2">
-          <div className="w-10 h-10 mx-auto rounded-lg bg-primary text-primary-foreground grid place-items-center"><GraduationCap className="w-5 h-5" /></div>
+          <img src="/branding/syllo-logo.png" alt="Syllo — Your Genius Buddy" width="640" height="640" className="w-40 h-40 mx-auto rounded-xl object-contain" />
           <h1 className="font-serif text-2xl mt-3">Welcome back</h1>
           <p className="text-muted-foreground text-sm mt-1">Sign in to your study space.</p>
         </div>

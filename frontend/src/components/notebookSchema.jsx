@@ -3,6 +3,7 @@ import { BlockNoteSchema } from "@blocknote/core";
 import { createReactBlockSpec, createReactStyleSpec } from "@blocknote/react";
 import { createReactMathBlockSpec, createReactInlineMathSpec } from "@blocknote/math-block";
 import { createReactDiagramBlockSpec } from "@blocknote/diagram-block";
+import { scientificIllustrationBlock } from "@/features/scientific/ScientificIllustrationBlock";
 
 export const calloutKinds = ["note", "definition", "formula", "example", "warning"];
 
@@ -22,7 +23,7 @@ const callout = createReactBlockSpec({
 });
 
 export const notebookSchema = BlockNoteSchema.create().extend({
-  blockSpecs: { mathBlock: createReactMathBlockSpec(), diagram: createReactDiagramBlockSpec(), callout: callout() },
+  blockSpecs: { mathBlock: createReactMathBlockSpec(), diagram: createReactDiagramBlockSpec(), callout: callout(), scientificIllustration: scientificIllustrationBlock() },
   inlineContentSpecs: { math: createReactInlineMathSpec() },
   styleSpecs: {
     superscript: createReactStyleSpec({ type: "superscript", propSchema: "boolean" }, { render: ({ contentRef }) => <sup ref={contentRef} /> }),

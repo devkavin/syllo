@@ -1,0 +1,1370 @@
+[
+  {
+    "id": "mitochondrion",
+    "name": "Mitochondrion",
+    "category": "Cell Biology",
+    "tags": [
+      "organelle",
+      "respiration"
+    ],
+    "author": "jaiganesh",
+    "authorUrl": "https://github.com/jaiganeshjg",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/mitochondria.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/mitochondria.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "mitochondrion.svg",
+    "sourceSha256": "b6c2b31a6db8baa3952c0ebf9efce6cee0dc78e887064f227fa2bf3ee7d5cc0f",
+    "aspectRatio": 0.95237,
+    "sha256": "f4a6d2523e19891b00eebad2a92f49136d6621bc9ece862005dec84f35fe5ea4"
+  },
+  {
+    "id": "ribosome",
+    "name": "Ribosome",
+    "category": "Cell Biology",
+    "tags": [
+      "translation",
+      "protein"
+    ],
+    "author": "jaiganesh",
+    "authorUrl": "https://github.com/jaiganeshjg",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/ribosome.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/ribosome.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "ribosome.svg",
+    "sourceSha256": "0a1d58901bf40efd3d937203d63531bf295b06ce1fcceb53b08cc7e1463ca80f",
+    "aspectRatio": 1.01454,
+    "sha256": "a7673e59dfb2dc5b4ae018a5f8df628e0d872e63501d394ee9681afcbe7e9434"
+  },
+  {
+    "id": "endoplasmic-reticulum",
+    "name": "Endoplasmic reticulum",
+    "category": "Cell Biology",
+    "tags": [
+      "organelle",
+      "ER"
+    ],
+    "author": "jaiganesh",
+    "authorUrl": "https://github.com/jaiganeshjg",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/Endoplasmic_Reticulum.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/Endoplasmic_Reticulum.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "endoplasmic-reticulum.svg",
+    "sourceSha256": "6df87901340447075e1785ada85fb309b54e81fa4cf1efc60716ffcbbd161a3c",
+    "aspectRatio": 0.49265,
+    "sha256": "70324beb4af76cfbced88468ff7d770fd292a2d21b1a02d258230b2d77d37474"
+  },
+  {
+    "id": "proteasome",
+    "name": "Proteasome",
+    "category": "Molecular Biology",
+    "tags": [
+      "protein",
+      "degradation"
+    ],
+    "author": "jaiganesh",
+    "authorUrl": "https://github.com/jaiganeshjg",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/proteasome.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/jaiganesh/proteasome.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "proteasome.svg",
+    "sourceSha256": "bb361400b119534c7c6446a0dd58bdc9874dfac33c39fb4c6797c9914143f7ea",
+    "aspectRatio": 0.81507,
+    "sha256": "c48962a701098b0c97b30646cdac61774142f2fe8879bb27b751d7dd2b4b3039"
+  },
+  {
+    "id": "phospholipid",
+    "name": "Phospholipid",
+    "category": "Cell Biology",
+    "tags": [
+      "membrane",
+      "bilayer",
+      "lipid"
+    ],
+    "author": "Cléber-Gomes",
+    "authorUrl": "https://github.com/clebohr",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_membrane/Cl%C3%A9ber-Gomes/Phospholipid.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_membrane/Cl%C3%A9ber-Gomes/Phospholipid.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "phospholipid.svg",
+    "sourceSha256": "c634a7c477737c1f70736a303203a17847a31c9320fddcfcb622c3dd1442e848",
+    "aspectRatio": 0.57094,
+    "sha256": "29c77a5660b5a1224071b53639f94b2f7323f593e5bc7e25b43488239d7bb349"
+  },
+  {
+    "id": "animal-cell",
+    "name": "Animal cell",
+    "category": "Cell Biology",
+    "tags": [
+      "eukaryote",
+      "cell"
+    ],
+    "author": "Marnie-Maddock",
+    "authorUrl": "https://github.com/MarnieMaddock",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cell1.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cell1.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "animal-cell.svg",
+    "sourceSha256": "5021b71fdd602fbca6f488d0e59f49fece197937d05f3ec56745a3dd457f74ed",
+    "aspectRatio": 1.75383,
+    "sha256": "ed36f7944888a546d6fe51ebd8d7da9ad34d33a8b85c5e9550ea9337aaf2a843"
+  },
+  {
+    "id": "plant-cell",
+    "name": "Plant cell",
+    "category": "Cell Biology",
+    "tags": [
+      "chloroplast",
+      "vacuole",
+      "cell wall"
+    ],
+    "author": "Durvesh-Burhade-&-Niliksha-Patel",
+    "authorUrl": "https://github.com/OfficialBurhadeDurvesh",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_types/Durvesh-Burhade-%26-Niliksha-Patel/Structure_of_Plant_Cell.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_types/Durvesh-Burhade-%26-Niliksha-Patel/Structure_of_Plant_Cell.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "plant-cell.svg",
+    "sourceSha256": "155e4499c3df36ba1f291268045405906e8e5a0b88dbf07c5fca156f2afc5c5e",
+    "aspectRatio": 0.70707,
+    "sha256": "e7ecd68c4872d395f89659bf7a94d77f87253e1b220626baaa78de097ab0f65d"
+  },
+  {
+    "id": "dna-double-helix",
+    "name": "DNA double helix",
+    "category": "Molecular Biology",
+    "tags": [
+      "genetics",
+      "nucleic acid"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/DNA_double_helix.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/DNA_double_helix.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "dna-double-helix.svg",
+    "sourceSha256": "8f75f329eb5c1f616df8b0ef68f513e43bcb030fa6f9008ff1e1e0110cc45c3b",
+    "aspectRatio": 0.77273,
+    "sha256": "35d5c63f91a9ffa0631d189f80b4c4b538b258a1f04d37dd25998d5d22bd3634"
+  },
+  {
+    "id": "transfer-rna",
+    "name": "Transfer RNA",
+    "category": "Molecular Biology",
+    "tags": [
+      "tRNA",
+      "translation"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/tRNA_secondary_structure.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/James-Lloyd/tRNA_secondary_structure.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "transfer-rna.svg",
+    "sourceSha256": "70d5046dfcaa50265db23487b6077f6359be40ac0b35d798a63f3bbb8e5ba0fc",
+    "aspectRatio": 0.77273,
+    "sha256": "dbe5d55a9e018ef4f604de2bf6ba9c4bed7cafe4e96f3ffd473f724c7eecbc54"
+  },
+  {
+    "id": "histone-complex",
+    "name": "Histone complex",
+    "category": "Molecular Biology",
+    "tags": [
+      "chromatin",
+      "DNA"
+    ],
+    "author": "ASE",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/ASE/histone_complex.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/ASE/histone_complex.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "histone-complex.svg",
+    "sourceSha256": "2705d71019ba7945eeb69f2e1cb5d9a4ab77b2623d15625e3147d6b2224b9e8b",
+    "aspectRatio": 1.0,
+    "sha256": "0fea3b3c03fc2ad82824b8e16ffe162a3ed6d7aeb548ab37b6e892e01a3ecc08"
+  },
+  {
+    "id": "zinc-finger-protein",
+    "name": "Zinc finger protein",
+    "category": "Molecular Biology",
+    "tags": [
+      "protein",
+      "DNA binding"
+    ],
+    "author": "Simon Dürr",
+    "authorUrl": "https://twitter.com/simonduerr",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/Simon_D%C3%BCrr/zincfinger.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Intracellular_components/Simon_D%C3%BCrr/zincfinger.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "zinc-finger-protein.svg",
+    "sourceSha256": "9747c7995142e654e1ab7d9bc6e7fc484090340cc0acfb7efc9c9cbd3fec3f91",
+    "aspectRatio": 1.21592,
+    "sha256": "721ac9a07a73824d277f5f133d0cdab7c41955960d2cd7aaa6129636915e546d"
+  },
+  {
+    "id": "calcium-channel",
+    "name": "Calcium channel",
+    "category": "Molecular Biology",
+    "tags": [
+      "membrane",
+      "ion",
+      "protein"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Receptors_channels/Marcel_Tisch/calcium_channel.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Receptors_channels/Marcel_Tisch/calcium_channel.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "calcium-channel.svg",
+    "sourceSha256": "9f55fd6e4b5681948c649452fe4daa8fa8998045aab3c771865400a6ac80d3d0",
+    "aspectRatio": 1.11318,
+    "sha256": "7b5ad842b18767016b968b3a611a026773dccb0ba7f418343c3c85461c2c6407"
+  },
+  {
+    "id": "human-heart",
+    "name": "Human heart",
+    "category": "Anatomy",
+    "tags": [
+      "cardiovascular",
+      "organ"
+    ],
+    "author": "Mariana RuizVillareal",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Tissues/Mariana_RuizVillareal/Human_heart.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Tissues/Mariana_RuizVillareal/Human_heart.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "human-heart.svg",
+    "sourceSha256": "73316375eb78f57cde7f06d237988cb76efdbec51e0a7b3d8b8d63b91618d906",
+    "aspectRatio": 1.47436,
+    "sha256": "4089159e5b066725f66cd668a17dc55873885ba7bb78c95412743368f7f03fd6"
+  },
+  {
+    "id": "pyramidal-neuron",
+    "name": "Pyramidal neuron",
+    "category": "Anatomy",
+    "tags": [
+      "nervous system",
+      "brain"
+    ],
+    "author": "Fabian-Mikulasch",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Fabian-Mikulasch/Pyramidal_Neuron.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Fabian-Mikulasch/Pyramidal_Neuron.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "pyramidal-neuron.svg",
+    "sourceSha256": "128551d2aa862550a5a099aafa41496fe3de6fd0089303318c4e87daceb265c3",
+    "aspectRatio": 0.60494,
+    "sha256": "f88eefb6ee407fb579d7733054cb8615c5ed59f8ce9176a8ed310be63bbc3361"
+  },
+  {
+    "id": "red-blood-cell",
+    "name": "Red blood cell",
+    "category": "Anatomy",
+    "tags": [
+      "erythrocyte",
+      "blood"
+    ],
+    "author": "EwaOz",
+    "authorUrl": "https://linktr.ee/ehvah",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/EwaOz/redbloodcell.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/EwaOz/redbloodcell.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "red-blood-cell.svg",
+    "sourceSha256": "cf4967ea3ada79e0adf2990b9062b7b6cc2cbb324061a17ddf097b69d6f3ee58",
+    "aspectRatio": 1.0,
+    "sha256": "c2f6b194eeb97a137a3eb5975bba7f788eaea242c3d04266f5483bff347a71a0"
+  },
+  {
+    "id": "smooth-muscle-cell",
+    "name": "Smooth muscle cell",
+    "category": "Anatomy",
+    "tags": [
+      "tissue",
+      "muscle"
+    ],
+    "author": "Daniel-Marcos",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Daniel-Marcos/Smooth_muscle_cell_v2.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Daniel-Marcos/Smooth_muscle_cell_v2.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "smooth-muscle-cell.svg",
+    "sourceSha256": "6d8ef86303c1ed7d6395f059340d4ff5eb5728abd4c91236c706e295ddebc3ed",
+    "aspectRatio": 1.0,
+    "sha256": "2bfa78430c1d0d37851b6f6ed2d04415fefa54c4e3a0e20321a1394b7b6f94d1"
+  },
+  {
+    "id": "light-microscope",
+    "name": "Light microscope",
+    "category": "Laboratory",
+    "tags": [
+      "microscopy",
+      "equipment"
+    ],
+    "author": "Derek-Croote",
+    "authorUrl": "https://derekcroote.com",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/microscope-cartoon.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/microscope-cartoon.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "light-microscope.svg",
+    "sourceSha256": "3e08df9594346d745d8380f0b68f257308cad5cb94252a0d5fa93d3ea1ac6412",
+    "aspectRatio": 1.0,
+    "sha256": "26674b89554d6819a6cee48b253c7d6544123699e1111a7e7cbe8d3e49ec1dac"
+  },
+  {
+    "id": "micropipette",
+    "name": "Micropipette",
+    "category": "Laboratory",
+    "tags": [
+      "liquid",
+      "equipment"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/James-Lloyd/Pipette.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/James-Lloyd/Pipette.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "micropipette.svg",
+    "sourceSha256": "04f7a03d50413d1f0b70eb4c0234e3b0b57f32c9b5588ebe1ac40f84ff4cb232",
+    "aspectRatio": 0.77273,
+    "sha256": "319766da5e3d2dd1c4ffa687916d16b5fb9af3941e0472ed38ee3b80861cba1d"
+  },
+  {
+    "id": "erlenmeyer-flask",
+    "name": "Erlenmeyer flask",
+    "category": "Laboratory",
+    "tags": [
+      "glassware",
+      "solution"
+    ],
+    "author": "KeHan",
+    "authorUrl": "https://github.com/kehantan",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/erlenmeyer_filled.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/erlenmeyer_filled.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "erlenmeyer-flask.svg",
+    "sourceSha256": "49433d0a3e60d5c5db462a4cd493a2efe9befa481af5b9648f955a8463a2f0fe",
+    "aspectRatio": 0.70707,
+    "sha256": "891dacdcefa49d85c3dd1ced640ab98e3960111290f17ad6d84edaf38a9f5fef"
+  },
+  {
+    "id": "beakers",
+    "name": "Beakers",
+    "category": "Laboratory",
+    "tags": [
+      "glassware",
+      "solution"
+    ],
+    "author": "Xavax",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User_talk:Xavax",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Beakers.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Beakers.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "beakers.svg",
+    "sourceSha256": "2bd67b8dc6fd6a7958cc1b9eb3e2ff24573f44e83b45381d6688db0ce2099a84",
+    "aspectRatio": 1.65315,
+    "sha256": "3039bc8222825702ea8b94d95daa4996570d9e1a7534c4cb225abca0a56e4ebe"
+  },
+  {
+    "id": "round-bottom-flask",
+    "name": "Round bottom flask",
+    "category": "Laboratory",
+    "tags": [
+      "chemistry",
+      "glassware"
+    ],
+    "author": "Derek-Croote",
+    "authorUrl": "https://derekcroote.com",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/round-bottomed-flask-cartoon.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/round-bottomed-flask-cartoon.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "round-bottom-flask.svg",
+    "sourceSha256": "ab3497866edec68f0354b87736dc339808759fe0167b21abb1fad5bce17d92e2",
+    "aspectRatio": 1.0,
+    "sha256": "8a2d3be67b84ba19f271f9fd3610c24281fa9d9aed7277fae721b3ade5d28e9a"
+  },
+  {
+    "id": "qpcr-instrument",
+    "name": "qPCR instrument",
+    "category": "Laboratory",
+    "tags": [
+      "DNA",
+      "PCR",
+      "equipment"
+    ],
+    "author": "KeHan",
+    "authorUrl": "https://github.com/kehantan",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/qpcr_machine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/qpcr_machine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "qpcr-instrument.svg",
+    "sourceSha256": "e79c69dffc68dd9e37887b69178b2128fd335292f3b3613b87c79764e20fe614",
+    "aspectRatio": 1.08164,
+    "sha256": "6ea62f15e97df8262eb4e3cf8c997e3d8527604bb0c588a6efa5695961d7d0d9"
+  },
+  {
+    "id": "cell-membrane",
+    "name": "Cell membrane",
+    "category": "Cell Biology",
+    "tags": [
+      "phospholipid",
+      "bilayer"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/cell_membrane.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/cell_membrane.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-26",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained in metadata.",
+    "file": "cell-membrane.svg",
+    "sourceSha256": "ef8d79481de17c095ff33218a56bb03a922114cfcdf8a40a9d3e38c58c02162f",
+    "aspectRatio": 1.00011,
+    "sha256": "75fa91e34251c3bffb0c04d26392cc17791a770b1f6f1d28537e793b9818afc0"
+  },
+  {
+    "id": "etc-complex-i",
+    "name": "Complex I",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes path3845 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-complex-i.svg",
+    "aspectRatio": 0.56471,
+    "sha256": "e75a1cdf69d8e0f81673cd658e89eaaa77bce6763692a17ce590e9c2878ebcf9"
+  },
+  {
+    "id": "etc-complex-ii",
+    "name": "Complex II",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes path3849 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-complex-ii.svg",
+    "aspectRatio": 0.44444,
+    "sha256": "9868ea061d9fe4180c408daade395cd10359476be8a434afb376167913a3d3aa"
+  },
+  {
+    "id": "etc-complex-iii",
+    "name": "Complex III",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes path3847 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-complex-iii.svg",
+    "aspectRatio": 0.65537,
+    "sha256": "339bb8267c3500b0787f1e6f21c7cfc3cf0407662c469559c40d68caa38a0663"
+  },
+  {
+    "id": "etc-complex-iv",
+    "name": "Complex IV",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes path4479 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-complex-iv.svg",
+    "aspectRatio": 0.65244,
+    "sha256": "ec02b2836ae6fdf4da324ac187270b66d28ba18b6adf1a2ac3b1952da2f3a831"
+  },
+  {
+    "id": "etc-atp-synthase",
+    "name": "ATP synthase",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes g4614 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-atp-synthase.svg",
+    "aspectRatio": 0.56107,
+    "sha256": "bda9d71eff9dc3bcf32008ddd8eaddbb24d8720b46371773c908491eca2b4115"
+  },
+  {
+    "id": "etc-bilayer",
+    "name": "Phospholipid bilayer",
+    "category": "Cell Biology",
+    "tags": [
+      "electron transport chain",
+      "ETC",
+      "respiration",
+      "mitochondria",
+      "schematic"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); T-Fork",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Electron_transport_chain.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Electron_transport_chain.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-26",
+    "revision": "2011-12-06T14:49:00Z",
+    "sourceSha256": "c151a4e2b861436f98245787c8e4b5ffd4aa5921a7c20c110692cbbb37b7bca8",
+    "modifications": "Isolated source SVG nodes g3241, g3543 into an independent vector component; removed original labels and flow arrows; recolored to a muted scientific palette; normalized XML. Schematic artwork, not a molecular structure.",
+    "file": "etc-bilayer.svg",
+    "aspectRatio": 5.86466,
+    "sha256": "31d92ae867b1ac637ce9703fa2d5808287ef451fa1f9fff45ecf7d6989d62d72"
+  },
+  {
+    "id": "animal-cell-detailed",
+    "name": "Animal cell, detailed",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology"
+    ],
+    "tags": [
+      "eukaryote",
+      "organelles",
+      "cytoskeleton"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Animal_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Animal_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9a8280ab46a28c0be147902274f597cd7b05303b57dfd1efd589d6e362643523",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Removed semantic text, source Spore label and external RDFa links; source credit/descriptions retained in metadata. Disambiguated unreferenced repeated semantic IDs; biological paths unchanged.",
+    "file": "animal-cell-detailed.svg",
+    "internalLabels": false,
+    "landmarks": [
+      {
+        "name": "Nucleus",
+        "u": 0.4815,
+        "v": 0.53312
+      },
+      {
+        "name": "Golgi apparatus",
+        "u": 0.65494,
+        "v": 0.26271
+      },
+      {
+        "name": "Lysosome",
+        "u": 0.41289,
+        "v": 0.2753
+      }
+    ],
+    "landmarkNotes": "Annotation guides from reviewed source geometry and organelle group centers; schematic, not diagnostic measurements.",
+    "aspectRatio": 1.19048,
+    "sha256": "7aa123c03d7fb61e8c052f34fd2a5df1816ad05d12a9e225e99099423053a9f6"
+  },
+  {
+    "id": "plant-cell-detailed",
+    "name": "Plant cell, detailed",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Cell Biology"
+    ],
+    "tags": [
+      "chloroplast",
+      "vacuole",
+      "cell wall",
+      "organelles"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Plant_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Plant_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "82655ed0d6e66b82d84c5b128f670a114bf17c39afc8c4cc31942d84a9688f71",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Removed semantic text, source Spore label and external RDFa links; source credit/descriptions retained in metadata. Disambiguated unreferenced repeated semantic IDs; biological paths unchanged.",
+    "file": "plant-cell-detailed.svg",
+    "internalLabels": false,
+    "landmarks": [
+      {
+        "name": "Nucleus",
+        "u": 0.67549,
+        "v": 0.49962
+      },
+      {
+        "name": "Golgi apparatus",
+        "u": 0.61269,
+        "v": 0.29484
+      },
+      {
+        "name": "Chloroplast",
+        "u": 0.34913,
+        "v": 0.31735
+      },
+      {
+        "name": "Central vacuole",
+        "u": 0.39954,
+        "v": 0.49221
+      }
+    ],
+    "landmarkNotes": "Annotation guides from reviewed source geometry and organelle group centers; schematic, not diagnostic measurements.",
+    "aspectRatio": 1.19048,
+    "sha256": "ef644988a87e8a443cccc95a5bc440c463da46d7c08c8bf5efdc79a09d34da40"
+  },
+  {
+    "id": "bacterium",
+    "name": "Bacterium",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Cell Biology"
+    ],
+    "tags": [
+      "prokaryote",
+      "flagellum",
+      "bacterial cell"
+    ],
+    "author": "Pauline Franz",
+    "authorUrl": "https://twitter.com/_paulinefranz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Pauline_Franz/generic-bacterium.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Pauline_Franz/generic-bacterium.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "2984b266eedfad88aed6701fb0f5d3d1a11dbbdc88326a0f160e170d32df21bf",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "bacterium.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.29037,
+    "sha256": "6378a17e680c716d6a661a217aec334dc4a008f481397b5fd548eb0bd92ea75b"
+  },
+  {
+    "id": "restriction-enzyme",
+    "name": "Restriction enzyme",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biochemistry"
+    ],
+    "tags": [
+      "endonuclease",
+      "DNA",
+      "protein"
+    ],
+    "author": "Simon Dürr",
+    "authorUrl": "https://twitter.com/simonduerr",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Simon_D%C3%BCrr/restriction_enzyme.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Simon_D%C3%BCrr/restriction_enzyme.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "941c505894ab674c58c173125491eee3c4cfab7d123c78ac6aa3ec62590026d2",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "restriction-enzyme.svg",
+    "internalLabels": true,
+    "aspectRatio": 2.2063,
+    "sha256": "9656473b9be37df6a010f08f725160292a743339d89c298c524a7011dfe53b44"
+  },
+  {
+    "id": "rna-hairpin",
+    "name": "RNA hairpin",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biochemistry"
+    ],
+    "tags": [
+      "RNA",
+      "nucleic acid",
+      "secondary structure"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_hairpin_loop.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_hairpin_loop.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "da41b621ebabd30d659780554f0776df1511d6d7e4718639d6d7af319321b53b",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "rna-hairpin.svg",
+    "internalLabels": false,
+    "aspectRatio": 0.5138,
+    "sha256": "d8347f0b1e7cf6c82aad7939b8e230f062992c277b9b6c617b2b7d95583697c1"
+  },
+  {
+    "id": "folded-protein",
+    "name": "Folded protein ribbon",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry"
+    ],
+    "tags": [
+      "protein",
+      "folding",
+      "ribbon",
+      "tertiary structure"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Protein_colored.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Protein_colored.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "46091fdfab2f2b511843d5c158b467dcf6bcc3197c67bed9e23eff6b83196701",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "folded-protein.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "8d750b9cbfa94755370fbe42a12d28d6a812af65fa7059ee5338aa9f9da63fb8"
+  },
+  {
+    "id": "amino-acid-backbone",
+    "name": "Amino acid backbone",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry"
+    ],
+    "tags": [
+      "amino acid",
+      "chemical structure",
+      "protein"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/amino_acid_backbone.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/amino_acid_backbone.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "b5e54c6f63a39b151763038889d532435ea634c19189092f13fb38709b7abe08",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "amino-acid-backbone.svg",
+    "internalLabels": true,
+    "aspectRatio": 1.23293,
+    "sha256": "beba35bfeefb4b55f58893a56b62ba430372d1b8e81b65e59cb7e602ecb24aab"
+  },
+  {
+    "id": "nuclear-pore-complex",
+    "name": "Nuclear pore complex",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Genetics"
+    ],
+    "tags": [
+      "nucleus",
+      "nuclear envelope",
+      "transport"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Nuclear_pore_complex.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/Nuclear_pore_complex.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "c7d8d01a295f86d0f7e602d0dab1c4dcae1a4298e475f85f116de5b7d9cb0352",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Selected the source Illustrator SVG fallback group; omitted Adobe-only editor references and private editor payload; biological paths unchanged.",
+    "file": "nuclear-pore-complex.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "d731a11c93382cd5ece09ea07c40c9561c0c1b8b4e2e5a527eddece8db840066"
+  },
+  {
+    "id": "motor-neuron",
+    "name": "Motor neuron",
+    "category": "Neuroscience",
+    "subjects": [
+      "Neuroscience",
+      "Human Physiology"
+    ],
+    "tags": [
+      "axon",
+      "dendrite",
+      "nervous system"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Motor_neuron.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Motor_neuron.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "43af216ca57b504842a8cac2c3f26e90e085cc618948fc9fefd62a666f14f6df",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Selected the source Illustrator SVG fallback group; omitted Adobe-only editor references and private editor payload; biological paths unchanged.",
+    "file": "motor-neuron.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "467ac7e2288be4370fb54f1cfe71ca8a6c3a6f0f4ed0f711e92f9e2c4bb9e0f4"
+  },
+  {
+    "id": "interneuron",
+    "name": "Interneuron",
+    "category": "Neuroscience",
+    "subjects": [
+      "Neuroscience",
+      "Human Physiology"
+    ],
+    "tags": [
+      "neuron",
+      "dendrite",
+      "nervous system"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Interneuron.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Interneuron.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "d1663a0377c2f3aa8604c8ac7014073df5585380c33c0750f8aee940064ade1d",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Selected the source Illustrator SVG fallback group; omitted Adobe-only editor references and private editor payload; biological paths unchanged.",
+    "file": "interneuron.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "936a142bfad80c4ea82fa502fcbdf7838eb6f3f9d374bf8c51b99f92c689e191"
+  },
+  {
+    "id": "sensory-neuron",
+    "name": "Sensory neuron",
+    "category": "Neuroscience",
+    "subjects": [
+      "Neuroscience",
+      "Human Physiology"
+    ],
+    "tags": [
+      "axon",
+      "sensory",
+      "nervous system"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Sensory_neuron.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Human_physiology/DBCLS/Sensory_neuron.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a29334ca7c361e8fd41fe5662365486b72768e5dd1879255e8a0209232525569",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata. Selected the source Illustrator SVG fallback group; omitted Adobe-only editor references and private editor payload; biological paths unchanged.",
+    "file": "sensory-neuron.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "d9179a8712b3fc9b6b0e67bb4c2f793c3c2756f72c7519139ed57b3ec52ee241"
+  },
+  {
+    "id": "bacterial-ribosome-mrna",
+    "name": "Bacterial ribosome with mRNA",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Genetics",
+      "Biochemistry"
+    ],
+    "tags": [
+      "translation",
+      "ribosome",
+      "mRNA"
+    ],
+    "author": "Rahel-Khdhr",
+    "authorUrl": "https://linktr.ee/rahe1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Rahel-Khdhr/Bacterial_Ribosomes_with_mRNA.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Rahel-Khdhr/Bacterial_Ribosomes_with_mRNA.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4c842539fdd07b823ead39756dd1467aa69ea59cf8c0529062ff921e9835295c",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "bacterial-ribosome-mrna.svg",
+    "internalLabels": false,
+    "aspectRatio": 3.70667,
+    "sha256": "91227cdad99ac7c90f3f27bf6e7b5a0a182acc4229c4fde8e0c5e0823609bcdb"
+  },
+  {
+    "id": "membrane-receptor",
+    "name": "Membrane receptor",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Cell Biology",
+      "Human Physiology"
+    ],
+    "tags": [
+      "receptor",
+      "signaling",
+      "membrane"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Receptors_channels/Helicase_11/simple_receptor_2.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Receptors_channels/Helicase_11/simple_receptor_2.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "18fd91a243537313e52f908ad0dbf341e8f82b20a64ce28dd0e9884d41654eaf",
+    "modifications": "Removed editor-specific XML and normalized SVG; original licensing metadata retained as escaped metadata.",
+    "file": "membrane-receptor.svg",
+    "internalLabels": false,
+    "aspectRatio": 0.52595,
+    "sha256": "4324521b724b68e8be21290dc1f99f76f4e7d6ab9061b85654ad3abc020d84cb"
+  },
+  {
+    "id": "digestive-system",
+    "name": "Human digestive system",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Digestive_system_diagram_en.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Digestive_system_diagram_en.svg",
+    "revision": "2025-03-29T15:01:24Z",
+    "sourceSha256": "dea8b480a212d90b484603737a1e90bd98714d80c1eb3b0395c43b6936eaa127",
+    "tags": [
+      "digestive tract",
+      "gastrointestinal",
+      "liver",
+      "stomach",
+      "intestine"
+    ],
+    "category": "Human Anatomy",
+    "subjects": [
+      "Human Anatomy",
+      "Human Physiology"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); Jmarchn",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "license": "Public-Domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Digestive_system_diagram_en.svg#Licensing",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-27",
+    "internalLabels": false,
+    "modifications": "Removed only explicit source layers layer2 (Text) and layer3 (Arrows, including label panels); anatomy paths retained unchanged. Normalized XML; original metadata retained as escaped text.",
+    "file": "digestive-system.svg",
+    "landmarks": [
+      {
+        "name": "Liver",
+        "u": 0.378,
+        "v": 0.551
+      },
+      {
+        "name": "Stomach",
+        "u": 0.629,
+        "v": 0.552
+      },
+      {
+        "name": "Gallbladder",
+        "u": 0.402,
+        "v": 0.589
+      },
+      {
+        "name": "Pancreas",
+        "u": 0.488,
+        "v": 0.643
+      },
+      {
+        "name": "Esophagus",
+        "u": 0.5165,
+        "v": 0.3417
+      },
+      {
+        "name": "Transverse colon",
+        "u": 0.502,
+        "v": 0.711
+      },
+      {
+        "name": "Ascending colon",
+        "u": 0.367,
+        "v": 0.803
+      },
+      {
+        "name": "Descending colon",
+        "u": 0.68,
+        "v": 0.826
+      },
+      {
+        "name": "Rectum",
+        "u": 0.512,
+        "v": 0.918
+      }
+    ],
+    "landmarkNotes": "Annotation guides from reviewed source geometry and organelle group centers; schematic, not diagnostic measurements.",
+    "aspectRatio": 0.70767,
+    "sha256": "5e58979f467ff2a608ea4ca83e4663d07bb49ac4f13fa474e0a53e659d23e5bc"
+  },
+  {
+    "id": "respiratory-system",
+    "name": "Human respiratory system",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Respiratory_system_complete_en.svg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Respiratory_system_complete_en.svg",
+    "revision": "2023-03-06T16:18:05Z",
+    "sourceSha256": "2544b2013ada84edff87c9d16475da335a1a4161440e5bfb48925b3394f20909",
+    "tags": [
+      "lungs",
+      "airway",
+      "alveoli",
+      "diaphragm",
+      "gas exchange"
+    ],
+    "category": "Human Anatomy",
+    "subjects": [
+      "Human Anatomy",
+      "Human Physiology"
+    ],
+    "author": "Mariana Ruiz (LadyofHats); Jmarchn",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User:LadyofHats",
+    "source": "Wikimedia Commons",
+    "license": "Public-Domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Respiratory_system_complete_en.svg#Licensing",
+    "attributionRequired": false,
+    "verifiedAt": "2026-10-27",
+    "internalLabels": false,
+    "modifications": "Removed only the explicit final text group and 31 annotation leader/panel paths (zero-based source root children 153–183); retained anatomical paths and the source alveolar magnification inset unchanged. Normalized XML; original metadata retained as escaped text.",
+    "file": "respiratory-system.svg",
+    "landmarks": [
+      {
+        "name": "Nasal cavity",
+        "u": 0.35823,
+        "v": 0.15008
+      },
+      {
+        "name": "Trachea",
+        "u": 0.45676,
+        "v": 0.42042
+      },
+      {
+        "name": "Main bronchi",
+        "u": 0.44214,
+        "v": 0.53789
+      },
+      {
+        "name": "Diaphragm",
+        "u": 0.27228,
+        "v": 0.82209
+      },
+      {
+        "name": "Alveoli",
+        "u": 0.90961,
+        "v": 0.34863
+      },
+      {
+        "name": "Capillary beds",
+        "u": 0.83835,
+        "v": 0.17692
+      },
+      {
+        "name": "Right lung",
+        "u": 0.375,
+        "v": 0.631
+      },
+      {
+        "name": "Left lung",
+        "u": 0.606,
+        "v": 0.631
+      }
+    ],
+    "landmarkNotes": "Annotation guides from reviewed source geometry and organelle group centers; schematic, not diagnostic measurements.",
+    "aspectRatio": 0.9386,
+    "sha256": "5bde8a759fe8b280b7e02e2359b752555fac225bc7e8eb4253889135c995bd7b"
+  },
+  {
+    "id": "nucleus",
+    "name": "Cell nucleus",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Genetics"
+    ],
+    "tags": [
+      "nucleus",
+      "nuclear envelope",
+      "nucleolus",
+      "organelle"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Animal_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Animal_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9a8280ab46a28c0be147902274f597cd7b05303b57dfd1efd589d6e362643523",
+    "modifications": "Isolated source organelle group SL0191; source-defined geometry and grayscale palette unchanged. Removed semantic text and RDFa links while retaining all source credit/descriptions as escaped metadata. New viewBox bounds isolate the organelle with padding.",
+    "file": "nucleus.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.0,
+    "sha256": "15ff2ad64ae4777d53d292846a6ebefff16cf14d49c87265c2afe04ea1030e61"
+  },
+  {
+    "id": "chloroplast",
+    "name": "Chloroplast",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Cell Biology",
+      "Biochemistry"
+    ],
+    "tags": [
+      "chloroplast",
+      "photosynthesis",
+      "thylakoid",
+      "organelle"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Plant_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Plant_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-10-27",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "82655ed0d6e66b82d84c5b128f670a114bf17c39afc8c4cc31942d84a9688f71",
+    "modifications": "Isolated source organelle group SL0049, its first vector child group (index 0); source-defined geometry and grayscale palette unchanged. Removed semantic text and RDFa links while retaining all source credit/descriptions as escaped metadata. New viewBox bounds isolate the organelle with padding.",
+    "file": "chloroplast.svg",
+    "internalLabels": false,
+    "aspectRatio": 1.13333,
+    "sha256": "93fc2a5d5e236b39f695d15781c898c7926a2a0c881f5bc243b9505a0d1e141a"
+  }
+]
