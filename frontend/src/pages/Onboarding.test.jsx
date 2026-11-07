@@ -26,7 +26,7 @@ it("lets a student explore without creating subjects, notes or a timetable", asy
   fireEvent.click(screen.getByRole("button", { name: "Explore on my own" }));
   await waitFor(() => expect(auth.updateMe).toHaveBeenCalledWith({ onboarded: true }));
   expect(post).not.toHaveBeenCalled();
-  expect(screen.getByTestId("location")).toHaveTextContent("/today");
+  await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("/today"));
 });
 
 it("saves an unlinked first note and manual recall question then opens that exact notebook", async () => {

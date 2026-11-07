@@ -8,7 +8,7 @@ export const MAX_OBJECTS = 600;
 export const uid = () => crypto.randomUUID();
 export const assetById = Object.assign(Object.create(null), Object.fromEntries(catalog.map(asset => [asset.id, asset])));
 export const categories = [...new Set(catalog.map(asset => asset.category))];
-const files = import.meta.glob("./assets/*.svg", { eager: true, query: "?url", import: "default" });
+const files = import.meta.glob("./assets/*.svg", { eager: true, query: "?url&no-inline", import: "default" });
 export const assetUrl = id => assetById[id] ? files[`./assets/${assetById[id].file}`] : undefined;
 export { catalog };
 

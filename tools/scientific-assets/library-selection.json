@@ -1,0 +1,2921 @@
+{
+  "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "audience": "School/A-level and introductory university biology",
+  "assets": [
+    {
+      "name": "alanine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "alanine",
+      "title": "Alanine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Alanine"
+      ]
+    },
+    {
+      "name": "arginine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "arginine",
+      "title": "Arginine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Arginine"
+      ]
+    },
+    {
+      "name": "asparagine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "asparagine",
+      "title": "Asparagine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Asparagine"
+      ]
+    },
+    {
+      "name": "aspartic_acid",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "aspartic-acid",
+      "title": "Aspartic acid",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Aspartic acid"
+      ]
+    },
+    {
+      "name": "cysteine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "cysteine",
+      "title": "Cysteine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Cysteine"
+      ]
+    },
+    {
+      "name": "glutamic_acid",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "glutamic-acid",
+      "title": "Glutamic acid",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Glutamic acid"
+      ]
+    },
+    {
+      "name": "glutamine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "glutamine",
+      "title": "Glutamine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Glutamine"
+      ]
+    },
+    {
+      "name": "glycine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "glycine",
+      "title": "Glycine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Glycine"
+      ]
+    },
+    {
+      "name": "histidine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "histidine",
+      "title": "Histidine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Histidine"
+      ]
+    },
+    {
+      "name": "isoleucine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "isoleucine",
+      "title": "Isoleucine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Isoleucine"
+      ]
+    },
+    {
+      "name": "lysine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "lysine",
+      "title": "Lysine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Lysine"
+      ]
+    },
+    {
+      "name": "methionine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "methionine",
+      "title": "Methionine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Methionine"
+      ]
+    },
+    {
+      "name": "phenylalanine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "phenylalanine",
+      "title": "Phenylalanine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Phenylalanine"
+      ]
+    },
+    {
+      "name": "proline",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "proline",
+      "title": "Proline",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Proline"
+      ]
+    },
+    {
+      "name": "serine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "serine",
+      "title": "Serine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Serine"
+      ]
+    },
+    {
+      "name": "threonine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "threonine",
+      "title": "Threonine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Threonine"
+      ]
+    },
+    {
+      "name": "tryptophan",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "tryptophan",
+      "title": "Tryptophan",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Tryptophan"
+      ]
+    },
+    {
+      "name": "tyrosine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "tyrosine",
+      "title": "Tyrosine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Tyrosine"
+      ]
+    },
+    {
+      "name": "valine",
+      "category": "Amino-Acids",
+      "license": "cc-0",
+      "author": "B--Gideon-Bergheim",
+      "id": "valine",
+      "title": "Valine",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Amino-Acids",
+        "Valine"
+      ]
+    },
+    {
+      "name": "adp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "adp",
+      "title": "Adp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Adp"
+      ]
+    },
+    {
+      "name": "amp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "amp",
+      "title": "Amp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Amp"
+      ]
+    },
+    {
+      "name": "atp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "atp",
+      "title": "Atp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Atp"
+      ]
+    },
+    {
+      "name": "camp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "camp",
+      "title": "Camp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Camp"
+      ]
+    },
+    {
+      "name": "cgmp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "cgmp",
+      "title": "Cgmp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Cgmp"
+      ]
+    },
+    {
+      "name": "gdp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "gdp",
+      "title": "Gdp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Gdp"
+      ]
+    },
+    {
+      "name": "gmp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "gmp",
+      "title": "Gmp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Gmp"
+      ]
+    },
+    {
+      "name": "gtp",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "gtp",
+      "title": "Gtp",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Gtp"
+      ]
+    },
+    {
+      "name": "inorganic-phosphate",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Simon Dürr",
+      "id": "inorganic-phosphate",
+      "title": "Inorganic phosphate",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Nucleic acids",
+        "Inorganic phosphate"
+      ]
+    },
+    {
+      "name": "alpha-helix",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "alpha-helix",
+      "title": "Alpha helix",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Alpha helix"
+      ]
+    },
+    {
+      "name": "Protein_primary_structure",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "protein-primary-structure",
+      "title": "Protein primary structure",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Protein primary structure"
+      ]
+    },
+    {
+      "name": "Protein_secondary_structure",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "protein-secondary-structure",
+      "title": "Protein secondary structure",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Protein secondary structure"
+      ]
+    },
+    {
+      "name": "Protein_tertiary_structure",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "protein-tertiary-structure",
+      "title": "Protein tertiary structure",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Protein tertiary structure"
+      ]
+    },
+    {
+      "name": "Protein_quaternary_structure",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "protein-quaternary-structure",
+      "title": "Protein quaternary structure",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Protein quaternary structure"
+      ]
+    },
+    {
+      "name": "F-actin",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "Hugo-Wioland",
+      "id": "f-actin",
+      "title": "F actin",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "F actin"
+      ]
+    },
+    {
+      "name": "Rubisco",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "Margot Riggi",
+      "id": "rubisco",
+      "title": "Rubisco",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Rubisco"
+      ]
+    },
+    {
+      "name": "Rubisco-activity",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "Margot Riggi",
+      "id": "rubisco-activity",
+      "title": "Rubisco activity",
+      "topic": "Biochemistry",
+      "tags": [
+        "Biochemistry",
+        "Intracellular components",
+        "Rubisco activity"
+      ]
+    },
+    {
+      "name": "adenine",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "adenine",
+      "title": "Adenine",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Adenine"
+      ]
+    },
+    {
+      "name": "cytosine",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "cytosine",
+      "title": "Cytosine",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Cytosine"
+      ]
+    },
+    {
+      "name": "guanine",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "guanine",
+      "title": "Guanine",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Guanine"
+      ]
+    },
+    {
+      "name": "thymine",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "thymine",
+      "title": "Thymine",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Thymine"
+      ]
+    },
+    {
+      "name": "uracil",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "uracil",
+      "title": "Uracil",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Uracil"
+      ]
+    },
+    {
+      "name": "nucleotide-a-0",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "nucleotide-a-0",
+      "title": "Nucleotide a 0",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Nucleotide a 0"
+      ]
+    },
+    {
+      "name": "nucleotide-c-0",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "nucleotide-c-0",
+      "title": "Nucleotide c 0",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Nucleotide c 0"
+      ]
+    },
+    {
+      "name": "nucleotide-g-0",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "nucleotide-g-0",
+      "title": "Nucleotide g 0",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Nucleotide g 0"
+      ]
+    },
+    {
+      "name": "nucleotide-t-0",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "nucleotide-t-0",
+      "title": "Nucleotide t 0",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Nucleotide t 0"
+      ]
+    },
+    {
+      "name": "nucleotide-u-0",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Emmett Leddin",
+      "id": "nucleotide-u-0",
+      "title": "Nucleotide u 0",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Nucleotide u 0"
+      ]
+    },
+    {
+      "name": "ssDNA-single-stranded",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Samuel-Nestor-Meckoni",
+      "id": "ssdna-single-stranded",
+      "title": "SsDNA single stranded",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "SsDNA single stranded"
+      ]
+    },
+    {
+      "name": "RNA_bulge",
+      "category": "Nucleic_acids",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "rna-bulge",
+      "title": "RNA bulge",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "RNA bulge"
+      ]
+    },
+    {
+      "name": "RNA_internal_loop",
+      "category": "Nucleic_acids",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "rna-internal-loop",
+      "title": "RNA internal loop",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "RNA internal loop"
+      ]
+    },
+    {
+      "name": "chromatin-histones",
+      "category": "Nucleic_acids",
+      "license": "cc-0",
+      "author": "Pauline Franz",
+      "id": "chromatin-histones",
+      "title": "Chromatin histones",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Nucleic acids",
+        "Chromatin histones"
+      ]
+    },
+    {
+      "name": "linear_chromatin",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "Margot Riggi",
+      "id": "linear-chromatin",
+      "title": "Linear chromatin",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Intracellular components",
+        "Linear chromatin"
+      ]
+    },
+    {
+      "name": "transcription-factor-rna",
+      "category": "Intracellular_components",
+      "license": "cc-by-4.0",
+      "author": "Margot Riggi",
+      "id": "transcription-factor-rna",
+      "title": "Transcription factor rna",
+      "topic": "Molecular Biology",
+      "tags": [
+        "Molecular Biology",
+        "Intracellular components",
+        "Transcription factor rna"
+      ]
+    },
+    {
+      "name": "CRISPR_Cas9",
+      "category": "Genetics",
+      "license": "cc-0",
+      "author": "Marcel Tisch",
+      "id": "crispr-cas9",
+      "title": "CRISPR Cas9",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "CRISPR Cas9"
+      ]
+    },
+    {
+      "name": "CRISPR_plasmid",
+      "category": "Genetics",
+      "license": "cc-0",
+      "author": "Marcel Tisch",
+      "id": "crispr-plasmid",
+      "title": "CRISPR plasmid",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "CRISPR plasmid"
+      ]
+    },
+    {
+      "name": "Chromosome",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "chromosome",
+      "title": "Chromosome",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Chromosome"
+      ]
+    },
+    {
+      "name": "Karyotype",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "karyotype",
+      "title": "Karyotype",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Karyotype"
+      ]
+    },
+    {
+      "name": "Duplication",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "duplication",
+      "title": "Duplication",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Duplication"
+      ]
+    },
+    {
+      "name": "Insertion",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "insertion",
+      "title": "Insertion",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Insertion"
+      ]
+    },
+    {
+      "name": "Inversion",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "inversion",
+      "title": "Inversion",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Inversion"
+      ]
+    },
+    {
+      "name": "Isochromosome",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "isochromosome",
+      "title": "Isochromosome",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Isochromosome"
+      ]
+    },
+    {
+      "name": "deletion",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "deletion",
+      "title": "Deletion",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Deletion"
+      ]
+    },
+    {
+      "name": "translocation",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "translocation",
+      "title": "Translocation",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Translocation"
+      ]
+    },
+    {
+      "name": "SNP",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "snp",
+      "title": "SNP",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "SNP"
+      ]
+    },
+    {
+      "name": "STR",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "str",
+      "title": "STR",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "STR"
+      ]
+    },
+    {
+      "name": "damaged_DNA",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "Rahel-Khdhr",
+      "id": "damaged-dna",
+      "title": "Damaged DNA",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Damaged DNA"
+      ]
+    },
+    {
+      "name": "Chromatin_domain",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "ChenxinLi",
+      "id": "chromatin-domain",
+      "title": "Chromatin domain",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Chromatin domain"
+      ]
+    },
+    {
+      "name": "Promoter_enhancer_loop",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "ChenxinLi",
+      "id": "promoter-enhancer-loop",
+      "title": "Promoter enhancer loop",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Promoter enhancer loop"
+      ]
+    },
+    {
+      "name": "Promoter_enhancer_loop_TF",
+      "category": "Genetics",
+      "license": "cc-by-4.0",
+      "author": "ChenxinLi",
+      "id": "promoter-enhancer-loop-tf",
+      "title": "Promoter enhancer loop TF",
+      "topic": "Genetics",
+      "tags": [
+        "Genetics",
+        "Genetics",
+        "Promoter enhancer loop TF"
+      ]
+    },
+    {
+      "name": "IgA",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "iga",
+      "title": "IgA",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "IgA"
+      ]
+    },
+    {
+      "name": "IgD",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "igd",
+      "title": "IgD",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "IgD"
+      ]
+    },
+    {
+      "name": "IgE",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "ige",
+      "title": "IgE",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "IgE"
+      ]
+    },
+    {
+      "name": "IgG",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "igg",
+      "title": "IgG",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "IgG"
+      ]
+    },
+    {
+      "name": "IgM",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "igm",
+      "title": "IgM",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "IgM"
+      ]
+    },
+    {
+      "name": "Lymphocyte",
+      "category": "Cell_types",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "lymphocyte",
+      "title": "Lymphocyte",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Cell types",
+        "Lymphocyte"
+      ]
+    },
+    {
+      "name": "B-cell_1",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "El-Jayawant",
+      "id": "b-cell-1",
+      "title": "B cell 1",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "B cell 1"
+      ]
+    },
+    {
+      "name": "bone_marrow",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "El-Jayawant",
+      "id": "bone-marrow",
+      "title": "Bone marrow",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Bone marrow"
+      ]
+    },
+    {
+      "name": "germinal_center",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "El-Jayawant",
+      "id": "germinal-center",
+      "title": "Germinal center",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Germinal center"
+      ]
+    },
+    {
+      "name": "plasma_cell",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "El-Jayawant",
+      "id": "plasma-cell",
+      "title": "Plasma cell",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Plasma cell"
+      ]
+    },
+    {
+      "name": "plasmablast",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "El-Jayawant",
+      "id": "plasmablast",
+      "title": "Plasmablast",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Plasmablast"
+      ]
+    },
+    {
+      "name": "MHC2",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "mhc2",
+      "title": "MHC2",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "MHC2"
+      ]
+    },
+    {
+      "name": "mhc1",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "mhc1",
+      "title": "Mhc1",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Mhc1"
+      ]
+    },
+    {
+      "name": "neutrophil",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "neutrophil",
+      "title": "Neutrophil",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Neutrophil"
+      ]
+    },
+    {
+      "name": "eosinophil",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "eosinophil",
+      "title": "Eosinophil",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Eosinophil"
+      ]
+    },
+    {
+      "name": "t_cell_receptor",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "t-cell-receptor",
+      "title": "T cell receptor",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "T cell receptor"
+      ]
+    },
+    {
+      "name": "Antibody_c1q",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Sebastian-Reinig",
+      "id": "antibody-c1q",
+      "title": "Antibody c1q",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Antibody c1q"
+      ]
+    },
+    {
+      "name": "mast_cell_1",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Sebastian-Reinig",
+      "id": "mast-cell-1",
+      "title": "Mast cell 1",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Mast cell 1"
+      ]
+    },
+    {
+      "name": "mast_cell_degranulation_1",
+      "category": "Blood_Immunology",
+      "license": "cc-by-4.0",
+      "author": "Sebastian-Reinig",
+      "id": "mast-cell-degranulation-1",
+      "title": "Mast cell degranulation 1",
+      "topic": "Immunology",
+      "tags": [
+        "Immunology",
+        "Blood Immunology",
+        "Mast cell degranulation 1"
+      ]
+    },
+    {
+      "name": "incubator",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "KeHan",
+      "id": "incubator",
+      "title": "Incubator",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Incubator"
+      ]
+    },
+    {
+      "name": "sonicator",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "KeHan",
+      "id": "sonicator",
+      "title": "Sonicator",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Sonicator"
+      ]
+    },
+    {
+      "name": "vortex_mixer",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "KeHan",
+      "id": "vortex-mixer",
+      "title": "Vortex mixer",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Vortex mixer"
+      ]
+    },
+    {
+      "name": "water_bath",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "KeHan",
+      "id": "water-bath",
+      "title": "Water bath",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Water bath"
+      ]
+    },
+    {
+      "name": "chromatography",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Graham-Delafield",
+      "id": "chromatography",
+      "title": "Chromatography",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Chromatography"
+      ]
+    },
+    {
+      "name": "flow-cytometer-cell-sorter",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Derek-Croote",
+      "id": "flow-cytometer-cell-sorter",
+      "title": "Flow cytometer cell sorter",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Flow cytometer cell sorter"
+      ]
+    },
+    {
+      "name": "simple-syringe-cartoon",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Derek-Croote",
+      "id": "simple-syringe-cartoon",
+      "title": "Simple syringe cartoon",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Simple syringe cartoon"
+      ]
+    },
+    {
+      "name": "bioreactor",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Marcel Tisch",
+      "id": "bioreactor",
+      "title": "Bioreactor",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Bioreactor"
+      ]
+    },
+    {
+      "name": "microfluids_chip",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Marcel Tisch",
+      "id": "microfluids-chip",
+      "title": "Microfluids chip",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Microfluids chip"
+      ]
+    },
+    {
+      "name": "recording_pipette",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Marcel Tisch",
+      "id": "recording-pipette",
+      "title": "Recording pipette",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Recording pipette"
+      ]
+    },
+    {
+      "name": "Low_speed_centrifuge",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "centrifuge",
+      "title": "Low speed centrifuge",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Low speed centrifuge"
+      ]
+    },
+    {
+      "name": "autoclave",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "autoclave",
+      "title": "Autoclave",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Autoclave"
+      ]
+    },
+    {
+      "name": "cleanbench",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "cleanbench",
+      "title": "Cleanbench",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Cleanbench"
+      ]
+    },
+    {
+      "name": "confocal-scanning-laser-microscope-CSLM",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "confocal-scanning-laser-microscope-cslm",
+      "title": "Confocal scanning laser microscope CSLM",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Confocal scanning laser microscope CSLM"
+      ]
+    },
+    {
+      "name": "desktop_electron_microscope",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "desktop-electron-microscope",
+      "title": "Desktop electron microscope",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Desktop electron microscope"
+      ]
+    },
+    {
+      "name": "freezer",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "freezer",
+      "title": "Freezer",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Freezer"
+      ]
+    },
+    {
+      "name": "microscope-stereo",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "microscope-stereo",
+      "title": "Microscope stereo",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Microscope stereo"
+      ]
+    },
+    {
+      "name": "microtube-closed",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "microtube-closed",
+      "title": "Microtube closed",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Microtube closed"
+      ]
+    },
+    {
+      "name": "mortar-2",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "mortar-2",
+      "title": "Mortar 2",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Mortar 2"
+      ]
+    },
+    {
+      "name": "ph-meter",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "ph-meter",
+      "title": "Ph meter",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Ph meter"
+      ]
+    },
+    {
+      "name": "pipette-stand",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "pipette-stand",
+      "title": "Pipette stand",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Pipette stand"
+      ]
+    },
+    {
+      "name": "pipette-tip-box",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "pipette-tip-box",
+      "title": "Pipette tip box",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Pipette tip box"
+      ]
+    },
+    {
+      "name": "plate-reader",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "plate-reader",
+      "title": "Plate reader",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Plate reader"
+      ]
+    },
+    {
+      "name": "shaker",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "shaker",
+      "title": "Shaker",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Shaker"
+      ]
+    },
+    {
+      "name": "thermalcycler-pcr",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "thermalcycler-pcr",
+      "title": "Thermalcycler pcr",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Thermalcycler pcr"
+      ]
+    },
+    {
+      "name": "transmission-electron-microscope-tem",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "transmission-electron-microscope-tem",
+      "title": "Transmission electron microscope tem",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Transmission electron microscope tem"
+      ]
+    },
+    {
+      "name": "tube-rack",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "tube-rack",
+      "title": "Tube rack",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Tube rack"
+      ]
+    },
+    {
+      "name": "tweezers_no5",
+      "category": "Lab_apparatus",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "tweezers-no5",
+      "title": "Tweezers no5",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Tweezers no5"
+      ]
+    },
+    {
+      "name": "agarose-gel",
+      "category": "Microbiology",
+      "license": "cc-0",
+      "author": "OpenClipart",
+      "id": "agarose-gel",
+      "title": "Agarose gel",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Microbiology",
+        "Agarose gel"
+      ]
+    },
+    {
+      "name": "glass-rod",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "OpenClipart",
+      "id": "glass-rod",
+      "title": "Glass rod",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Glass rod"
+      ]
+    },
+    {
+      "name": "laboratory-stands",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "OpenClipart",
+      "id": "laboratory-stands",
+      "title": "Laboratory stands",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Laboratory stands"
+      ]
+    },
+    {
+      "name": "dropper-plastic",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "OpenClipart",
+      "id": "dropper-plastic",
+      "title": "Dropper plastic",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Dropper plastic"
+      ]
+    },
+    {
+      "name": "laboratory-scissor-jack",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "OpenClipart",
+      "id": "laboratory-scissor-jack",
+      "title": "Laboratory scissor jack",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Laboratory scissor jack"
+      ]
+    },
+    {
+      "name": "Graduated_Cylinder_tall_form_250ml",
+      "category": "Lab_apparatus",
+      "license": "cc-0",
+      "author": "Xavax",
+      "id": "graduated-cylinder-tall-form-250ml",
+      "title": "Graduated Cylinder tall form 250ml",
+      "topic": "Laboratory",
+      "tags": [
+        "Laboratory",
+        "Lab apparatus",
+        "Graduated Cylinder tall form 250ml"
+      ]
+    },
+    {
+      "name": "healthy_liver",
+      "category": "Human_physiology",
+      "license": "cc-0",
+      "author": "Jan-Clusmann",
+      "id": "healthy-liver",
+      "title": "Healthy liver",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Healthy liver"
+      ]
+    },
+    {
+      "name": "Arteries_and_veins",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "arteries-and-veins",
+      "title": "Arteries and veins",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Arteries and veins"
+      ]
+    },
+    {
+      "name": "Continuous_capillary",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "continuous-capillary",
+      "title": "Continuous capillary",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Continuous capillary"
+      ]
+    },
+    {
+      "name": "Fenestrated_capillary",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "fenestrated-capillary",
+      "title": "Fenestrated capillary",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Fenestrated capillary"
+      ]
+    },
+    {
+      "name": "Sinusoidal_capillary",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "sinusoidal-capillary",
+      "title": "Sinusoidal capillary",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Sinusoidal capillary"
+      ]
+    },
+    {
+      "name": "Ear_structure",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "ear-structure",
+      "title": "Ear structure",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Ear structure"
+      ]
+    },
+    {
+      "name": "Horizontal_section_of_tracheal",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "horizontal-section-of-tracheal",
+      "title": "Horizontal section of tracheal",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Horizontal section of tracheal"
+      ]
+    },
+    {
+      "name": "Structure_of_lymph_nodes",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "structure-of-lymph-nodes",
+      "title": "Structure of lymph nodes",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Structure of lymph nodes"
+      ]
+    },
+    {
+      "name": "White_Adipocyte",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "Rahel-Khdhr",
+      "id": "white-adipocyte",
+      "title": "White Adipocyte",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "White Adipocyte"
+      ]
+    },
+    {
+      "name": "Anterior_view_of_knee_joint",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "anterior-view-of-knee-joint",
+      "title": "Anterior view of knee joint",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Anterior view of knee joint"
+      ]
+    },
+    {
+      "name": "Anterior_view_of_the_elbow_joint",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "anterior-view-of-the-elbow-joint",
+      "title": "Anterior view of the elbow joint",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Anterior view of the elbow joint"
+      ]
+    },
+    {
+      "name": "Anterior_view_of_the_shoulder_joint",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "anterior-view-of-the-shoulder-joint",
+      "title": "Anterior view of the shoulder joint",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "Anterior view of the shoulder joint"
+      ]
+    },
+    {
+      "name": "view_of_thoracic_skelton",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "view-of-thoracic-skelton",
+      "title": "View of thoracic skelton",
+      "topic": "Human Anatomy",
+      "tags": [
+        "Human Anatomy",
+        "Human physiology",
+        "View of thoracic skelton"
+      ]
+    },
+    {
+      "name": "Cerebellum_dorsal_view",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "cerebellum-dorsal-view",
+      "title": "Cerebellum dorsal view",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Cerebellum dorsal view"
+      ]
+    },
+    {
+      "name": "Division_of_the_cerebellum",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "division-of-the-cerebellum",
+      "title": "Division of the cerebellum",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Division of the cerebellum"
+      ]
+    },
+    {
+      "name": "Frontal_plane_of_the_brain_amygdala",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "frontal-plane-of-the-brain-amygdala",
+      "title": "Frontal plane of the brain amygdala",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Frontal plane of the brain amygdala"
+      ]
+    },
+    {
+      "name": "Frontal_plane_of_the_brain_hippocampus",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "frontal-plane-of-the-brain-hippocampus",
+      "title": "Frontal plane of the brain hippocampus",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Frontal plane of the brain hippocampus"
+      ]
+    },
+    {
+      "name": "Horizontal_plane_of_the_brain",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "horizontal-plane-of-the-brain",
+      "title": "Horizontal plane of the brain",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Horizontal plane of the brain"
+      ]
+    },
+    {
+      "name": "Corticospinal_tract",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "corticospinal-tract",
+      "title": "Corticospinal tract",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Corticospinal tract"
+      ]
+    },
+    {
+      "name": "Corticobulbar_tract",
+      "category": "Human_physiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "corticobulbar-tract",
+      "title": "Corticobulbar tract",
+      "topic": "Neuroscience",
+      "tags": [
+        "Neuroscience",
+        "Human physiology",
+        "Corticobulbar tract"
+      ]
+    },
+    {
+      "name": "Yeast",
+      "category": "Microbiology",
+      "license": "cc-0",
+      "author": "Ewa-Oz",
+      "id": "yeast",
+      "title": "Yeast",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Yeast"
+      ]
+    },
+    {
+      "name": "Phage",
+      "category": "Microbiology",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "phage",
+      "title": "Phage",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Phage"
+      ]
+    },
+    {
+      "name": "Conidia",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "Andi-Wilson",
+      "id": "conidia",
+      "title": "Conidia",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Conidia"
+      ]
+    },
+    {
+      "name": "Germlings",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "Andi-Wilson",
+      "id": "germlings",
+      "title": "Germlings",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Germlings"
+      ]
+    },
+    {
+      "name": "Mycelium",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "Andi-Wilson",
+      "id": "mycelium",
+      "title": "Mycelium",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Mycelium"
+      ]
+    },
+    {
+      "name": "Bacillus_subtilis",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "bacillus-subtilis",
+      "title": "Bacillus subtilis",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacillus subtilis"
+      ]
+    },
+    {
+      "name": "Negative_Bacteria",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "negative-bacteria",
+      "title": "Negative Bacteria",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Negative Bacteria"
+      ]
+    },
+    {
+      "name": "Positive_Bacteria",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "positive-bacteria",
+      "title": "Positive Bacteria",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Positive Bacteria"
+      ]
+    },
+    {
+      "name": "fission_yeast",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "fission-yeast",
+      "title": "Fission yeast",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Fission yeast"
+      ]
+    },
+    {
+      "name": "Archaea_cells",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "archaea-cells",
+      "title": "Archaea cells",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Archaea cells"
+      ]
+    },
+    {
+      "name": "Fungal_cells",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "fungal-cells",
+      "title": "Fungal cells",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Fungal cells"
+      ]
+    },
+    {
+      "name": "Yeast_cells",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "yeast-cells",
+      "title": "Yeast cells",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Yeast cells"
+      ]
+    },
+    {
+      "name": "Bacteria1M_coccus",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1m-coccus",
+      "title": "Bacteria1M coccus",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1M coccus"
+      ]
+    },
+    {
+      "name": "Bacteria1M_diplococci",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1m-diplococci",
+      "title": "Bacteria1M diplococci",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1M diplococci"
+      ]
+    },
+    {
+      "name": "Bacteria1M_filamentous",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1m-filamentous",
+      "title": "Bacteria1M filamentous",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1M filamentous"
+      ]
+    },
+    {
+      "name": "Bacteria1M_rod",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1m-rod",
+      "title": "Bacteria1M rod",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1M rod"
+      ]
+    },
+    {
+      "name": "Bacteria1M_tetrad",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1m-tetrad",
+      "title": "Bacteria1M tetrad",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1M tetrad"
+      ]
+    },
+    {
+      "name": "Bacteria1Mplus_rod",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria1mplus-rod",
+      "title": "Bacteria1Mplus rod",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria1Mplus rod"
+      ]
+    },
+    {
+      "name": "Bacteria2M_Nostoc",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria2m-nostoc",
+      "title": "Bacteria2M Nostoc",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria2M Nostoc"
+      ]
+    },
+    {
+      "name": "Bacteria2M_comma",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria2m-comma",
+      "title": "Bacteria2M comma",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria2M comma"
+      ]
+    },
+    {
+      "name": "Bacteria2M_spiral",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "bacteria2m-spiral",
+      "title": "Bacteria2M spiral",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Bacteria2M spiral"
+      ]
+    },
+    {
+      "name": "Apicomplexa_cells",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "apicomplexa-cells",
+      "title": "Apicomplexa cells",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Apicomplexa cells"
+      ]
+    },
+    {
+      "name": "Mollicutes_cells",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "mollicutes-cells",
+      "title": "Mollicutes cells",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Mollicutes cells"
+      ]
+    },
+    {
+      "name": "Trypanosoma",
+      "category": "Microbiology",
+      "license": "cc-by-4.0",
+      "author": "SwissBioPics",
+      "id": "trypanosoma",
+      "title": "Trypanosoma",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Microbiology",
+        "Trypanosoma"
+      ]
+    },
+    {
+      "name": "poxvirus",
+      "category": "Viruses",
+      "license": "cc-by-4.0",
+      "author": "Alejandro-Matía",
+      "id": "poxvirus",
+      "title": "Poxvirus",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Viruses",
+        "Poxvirus"
+      ]
+    },
+    {
+      "name": "Polyomaviridae",
+      "category": "Viruses",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "polyomaviridae",
+      "title": "Polyomaviridae",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Viruses",
+        "Polyomaviridae"
+      ]
+    },
+    {
+      "name": "SARS-CoV-2",
+      "category": "Viruses",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "sars-cov-2",
+      "title": "SARS CoV 2",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Viruses",
+        "SARS CoV 2"
+      ]
+    },
+    {
+      "name": "virus",
+      "category": "Viruses",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "virus",
+      "title": "Virus",
+      "topic": "Microbiology",
+      "tags": [
+        "Microbiology",
+        "Viruses",
+        "Virus"
+      ]
+    },
+    {
+      "name": "DicotSeedling",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "Gina-Vong",
+      "id": "dicotseedling",
+      "title": "DicotSeedling",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "DicotSeedling"
+      ],
+      "viewBox": "60.142 126.472 58.162 79.2"
+    },
+    {
+      "name": "Leaf",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "Gina-Vong",
+      "id": "leaf",
+      "title": "Leaf",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Leaf"
+      ],
+      "viewBox": "68.31 46.53 55.687 25.245"
+    },
+    {
+      "name": "Lemna",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "Gina-Vong",
+      "id": "lemna",
+      "title": "Lemna",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Lemna"
+      ]
+    },
+    {
+      "name": "ArabidopsisSeedlings",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "arabidopsisseedlings",
+      "title": "ArabidopsisSeedlings",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "ArabidopsisSeedlings"
+      ],
+      "viewBox": "58.08 427.02 491.04 217.14"
+    },
+    {
+      "name": "ArabidopsisTopView",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "arabidopsistopview",
+      "title": "ArabidopsisTopView",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "ArabidopsisTopView"
+      ]
+    },
+    {
+      "name": "MossColony",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "mosscolony",
+      "title": "MossColony",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "MossColony"
+      ]
+    },
+    {
+      "name": "Moss_Gametophore",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "moss-gametophore",
+      "title": "Moss Gametophore",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Moss Gametophore"
+      ]
+    },
+    {
+      "name": "Moss_Protonema",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "moss-protonema",
+      "title": "Moss Protonema",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Moss Protonema"
+      ]
+    },
+    {
+      "name": "Moss_Protonema_Buds",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "moss-protonema-buds",
+      "title": "Moss Protonema Buds",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Moss Protonema Buds"
+      ]
+    },
+    {
+      "name": "TomatoFruit",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "James-Lloyd",
+      "id": "tomatofruit",
+      "title": "TomatoFruit",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "TomatoFruit"
+      ],
+      "viewBox": "226.38 194.04 121.44 118.8"
+    },
+    {
+      "name": "Utricularia_trap",
+      "category": "Plants_Algae",
+      "license": "cc-0",
+      "author": "Samuel-Nestor-Meckoni",
+      "id": "utricularia-trap",
+      "title": "Utricularia trap",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Utricularia trap"
+      ]
+    },
+    {
+      "name": "Cyanobacteria",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "cyanobacteria",
+      "title": "Cyanobacteria",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Cyanobacteria"
+      ]
+    },
+    {
+      "name": "Fern_palm",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "fern-palm",
+      "title": "Fern palm",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Fern palm"
+      ]
+    },
+    {
+      "name": "Ginkgo",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "ginkgo",
+      "title": "Ginkgo",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Ginkgo"
+      ]
+    },
+    {
+      "name": "Rice",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "rice",
+      "title": "Rice",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Rice"
+      ]
+    },
+    {
+      "name": "earthmoss_antheridium",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-antheridium",
+      "title": "Earthmoss antheridium",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss antheridium"
+      ]
+    },
+    {
+      "name": "earthmoss_archegonium",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-archegonium",
+      "title": "Earthmoss archegonium",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss archegonium"
+      ]
+    },
+    {
+      "name": "earthmoss_early_sporophyte",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-early-sporophyte",
+      "title": "Earthmoss early sporophyte",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss early sporophyte"
+      ]
+    },
+    {
+      "name": "earthmoss_protoplast",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-protoplast",
+      "title": "Earthmoss protoplast",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss protoplast"
+      ]
+    },
+    {
+      "name": "earthmoss_rhizoid",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-rhizoid",
+      "title": "Earthmoss rhizoid",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss rhizoid"
+      ]
+    },
+    {
+      "name": "earthmoss_spore",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "earthmoss-spore",
+      "title": "Earthmoss spore",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Earthmoss spore"
+      ]
+    },
+    {
+      "name": "volvox",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "DBCLS",
+      "id": "volvox",
+      "title": "Volvox",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Volvox"
+      ]
+    },
+    {
+      "name": "Arabidopsis_Embryonic_Development",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "Erin Sparks",
+      "id": "arabidopsis-embryonic-development",
+      "title": "Arabidopsis Embryonic Development",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Arabidopsis Embryonic Development"
+      ]
+    },
+    {
+      "name": "Plant_Intercellular_Communication",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "Erin Sparks",
+      "id": "plant-intercellular-communication",
+      "title": "Plant Intercellular Communication",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Plant Intercellular Communication"
+      ]
+    },
+    {
+      "name": "Rice_Root_Anatomy",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "Erin Sparks",
+      "id": "rice-root-anatomy",
+      "title": "Rice Root Anatomy",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Rice Root Anatomy"
+      ]
+    },
+    {
+      "name": "Arabidopsis_root_cross_section",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "Frédéric Bouché",
+      "id": "arabidopsis-root-cross-section",
+      "title": "Arabidopsis root cross section",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Arabidopsis root cross section"
+      ]
+    },
+    {
+      "name": "Arabidopsis_root_longitudinal_section",
+      "category": "Plants_Algae",
+      "license": "cc-by-4.0",
+      "author": "Frédéric Bouché",
+      "id": "arabidopsis-root-longitudinal-section",
+      "title": "Arabidopsis root longitudinal section",
+      "topic": "Plant Biology",
+      "tags": [
+        "Plant Biology",
+        "Plants Algae",
+        "Arabidopsis root longitudinal section"
+      ]
+    },
+    {
+      "name": "simple_cardiomyocyte",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Marnie-Maddock",
+      "id": "simple-cardiomyocyte",
+      "title": "Simple cardiomyocyte",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "Simple cardiomyocyte"
+      ]
+    },
+    {
+      "name": "MII_Oocyte",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "mii-oocyte",
+      "title": "MII Oocyte",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "MII Oocyte"
+      ]
+    },
+    {
+      "name": "1cell_pn4_zygote",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "1cell-pn4-zygote",
+      "title": "1cell pn4 zygote",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "1cell pn4 zygote"
+      ]
+    },
+    {
+      "name": "2c_embryo",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "2c-embryo",
+      "title": "2c embryo",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "2c embryo"
+      ]
+    },
+    {
+      "name": "8c_embryo",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "8c-embryo",
+      "title": "8c embryo",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "8c embryo"
+      ]
+    },
+    {
+      "name": "morula_embryo",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "morula-embryo",
+      "title": "Morula embryo",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "Morula embryo"
+      ]
+    },
+    {
+      "name": "early_blastocyst_embryo",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "early-blastocyst-embryo",
+      "title": "Early blastocyst embryo",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "Early blastocyst embryo"
+      ]
+    },
+    {
+      "name": "late_blastocyst_embryo",
+      "category": "Cell_types",
+      "license": "cc-0",
+      "author": "Xi-Chen",
+      "id": "late-blastocyst-embryo",
+      "title": "Late blastocyst embryo",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell types",
+        "Late blastocyst embryo"
+      ]
+    },
+    {
+      "name": "pink_transporter",
+      "category": "Cell_membrane",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "pink-transporter",
+      "title": "Pink transporter",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell membrane",
+        "Pink transporter"
+      ]
+    },
+    {
+      "name": "engulfing_membrane",
+      "category": "Cell_membrane",
+      "license": "cc-by-4.0",
+      "author": "Helicase 11",
+      "id": "engulfing-membrane",
+      "title": "Engulfing membrane",
+      "topic": "Cell Biology",
+      "tags": [
+        "Cell Biology",
+        "Cell membrane",
+        "Engulfing membrane"
+      ]
+    }
+  ],
+  "excludedSelection": [
+    [
+      "leucine",
+      "ambiguous or missing allowed license"
+    ],
+    [
+      "sperm",
+      "ambiguous or missing allowed license"
+    ],
+    {
+      "asset": {
+        "name": "Stages_of_lateral_root_development",
+        "category": "Plants_Algae",
+        "license": "cc-by-4.0",
+        "author": "Alexis Maizel",
+        "id": "stages-of-lateral-root-development",
+        "title": "Stages of lateral root development",
+        "topic": "Plant Biology",
+        "tags": [
+          "Plant Biology",
+          "Plants Algae",
+          "Stages of lateral root development"
+        ]
+      },
+      "reason": "Visual QA: source title is clipped by its original page bounds; excluded pending source repair/review."
+    }
+  ]
+}

@@ -1366,5 +1366,3845 @@
     "internalLabels": false,
     "aspectRatio": 1.13333,
     "sha256": "93fc2a5d5e236b39f695d15781c898c7926a2a0c881f5bc243b9505a0d1e141a"
+  },
+  {
+    "id": "alanine",
+    "name": "Alanine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Alanine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/alanine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/alanine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "aa89bd2fd178b9dc591c0346b57d1155985c46f39476464633298f9ac97196da",
+    "file": "alanine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.12786,
+    "sha256": "1a41e0e069e071fff306a21a6431f0d4f3458fef28e37a5cdad00a158a7705e1"
+  },
+  {
+    "id": "arginine",
+    "name": "Arginine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Arginine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/arginine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/arginine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "aedaf31a554d5d41f4d62b3ac42b914820ff3b83fe63df16dac9981ad3e0cc4d",
+    "file": "arginine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.61939,
+    "sha256": "7aa581b6861423231e834fd588d5a554fe3be161d920f68b0e8504b837dfe663"
+  },
+  {
+    "id": "asparagine",
+    "name": "Asparagine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Asparagine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/asparagine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/asparagine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1c971d30fbcf07f01709cd15539c9fe548ecc80cb8e77ae145e128cc0920f153",
+    "file": "asparagine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.7366,
+    "sha256": "fcd5dbccbeb9163174f26146aca19f818f60de523d8e9e4aa4a8427f26644960"
+  },
+  {
+    "id": "aspartic-acid",
+    "name": "Aspartic acid",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Aspartic acid"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/aspartic_acid.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/aspartic_acid.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "d968d673849db896db573f19ba18db3f61d22281db7f6e453b6bb15ca26ef970",
+    "file": "aspartic-acid.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.92864,
+    "sha256": "53e416d50fdc3169a9023ffb3c8313fd2cdf18f9dcf73e9eaa0bcba7315dca28"
+  },
+  {
+    "id": "cysteine",
+    "name": "Cysteine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Cysteine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/cysteine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/cysteine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "82616e0a34655bba2a53bcf632fcc8723b6dac2245fac40a617edfcba1c880a8",
+    "file": "cysteine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.90644,
+    "sha256": "c7ed2708dbe45879aaaa18282afa13439800fc7a68b7de12a9ba6af49253f715"
+  },
+  {
+    "id": "glutamic-acid",
+    "name": "Glutamic acid",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Glutamic acid"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamic_acid.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamic_acid.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4e43dbd3102309e900bb1612614d8675402bcc59e4b78e3ddbe4c6d8ca4fcd71",
+    "file": "glutamic-acid.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.75479,
+    "sha256": "25042abd58bedcc4343a05b1efde86817f30ea58997cf8e91df5414c1a266322"
+  },
+  {
+    "id": "glutamine",
+    "name": "Glutamine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Glutamine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9e75144c159b62879f10699e2916c94fdedb3dcbecdff927b2b455373ca47f71",
+    "file": "glutamine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.63048,
+    "sha256": "e320fe07ba7f3eb1e8591ab354875caf162ce6f4f3372de8de45fd98f2baff08"
+  },
+  {
+    "id": "glycine",
+    "name": "Glycine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Glycine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glycine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glycine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "fa40ec5e91370cfa318e80355da1901abd4cbd5ef9b96b9c729fdc18f089a5a7",
+    "file": "glycine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.46797,
+    "sha256": "9a8e2c68758ff5771995f05a278c857567aad132581a80b5e56e6f3c744201ab"
+  },
+  {
+    "id": "histidine",
+    "name": "Histidine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Histidine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/histidine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/histidine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ddf35893859d9444e376da1962517de4d08621aad91882bcd01fc949f652f8b7",
+    "file": "histidine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.84882,
+    "sha256": "b169fe5819024300511eba228f36a04390b074e5aa23a2b761da59ff1c20f65b"
+  },
+  {
+    "id": "isoleucine",
+    "name": "Isoleucine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Isoleucine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/isoleucine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/isoleucine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "df27cba24f09f4574c1b1ee640904305b2d28cec68b205d9220568d0e6bc0eb2",
+    "file": "isoleucine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.71027,
+    "sha256": "d059ee0fd83ab109ca4f20b42372ebc6f98ac072357398bfcbdc43fc3873b0bc"
+  },
+  {
+    "id": "lysine",
+    "name": "Lysine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Lysine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/lysine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/lysine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "2dff6c3494eff7063b0c974b0468fa44cffd8043036401ebc4df9d0c5ad632c0",
+    "file": "lysine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.60612,
+    "sha256": "00df115e0c8b78a9befcf437bc81519fbe717f3d4eff99c89278ffff955b969a"
+  },
+  {
+    "id": "methionine",
+    "name": "Methionine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Methionine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/methionine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/methionine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6a8adef0e467d449c6b9fd434ae147b25cbbb7d1b4e9a496a1c4c39bdc323be2",
+    "file": "methionine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.684,
+    "sha256": "91b2e3d687c600a7bc9472c3b20fd764f9df0940989e219622d2782a5d12f24b"
+  },
+  {
+    "id": "phenylalanine",
+    "name": "Phenylalanine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Phenylalanine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/phenylalanine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/phenylalanine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1c7b54c72cb7ba770dfa1da4dcaf874d34c47c6330700de4d9c469bf488ee5c0",
+    "file": "phenylalanine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.70874,
+    "sha256": "006b35c5bfe3939bc1fb2453032f50120930fecdc2469cbc46641b7d7d11e36d"
+  },
+  {
+    "id": "proline",
+    "name": "Proline",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Proline"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/proline.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/proline.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9d7ba73fec8d007b7af784c7ec07217940e9acef12da5908429c98c4f1a13bb8",
+    "file": "proline.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.14654,
+    "sha256": "913a0085c89bbe72aba958323757eaa91121a10c20de522469e9b2fa27aebdba"
+  },
+  {
+    "id": "serine",
+    "name": "Serine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Serine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/serine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/serine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a0a98d671808c22ae8e45855d756ee9f53dec25401488d706a0c218a09c93c04",
+    "file": "serine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.98188,
+    "sha256": "53a809b95861da5e79b9ce8c805e1ff607f51abb9abab3d5687eecba54f21a79"
+  },
+  {
+    "id": "threonine",
+    "name": "Threonine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Threonine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/threonine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/threonine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "3736ff8c17226ef0844db913b6c093626286693b3d76e4e40c1fcd8c3db0d7a5",
+    "file": "threonine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.85281,
+    "sha256": "9f966adbbcc5d76335b21e2aeea461d0f22bb70dab5233578a9eae891b1cfca4"
+  },
+  {
+    "id": "tryptophan",
+    "name": "Tryptophan",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Tryptophan"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tryptophan.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tryptophan.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9dff6eeeafe66844ef37a959abf5859a5ca63f45e44ca8ec560bd15a4cf7cdee",
+    "file": "tryptophan.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.84798,
+    "sha256": "ca3f6ca759074968f44a4c68de533cdcf071bb480144c510d8e40ef44420d516"
+  },
+  {
+    "id": "tyrosine",
+    "name": "Tyrosine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Tyrosine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tyrosine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tyrosine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "958cb20cdee419e59a1b2b7b1fcf16df8c5c24dbe27fa6147620cbd30fc239c5",
+    "file": "tyrosine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.63019,
+    "sha256": "d0ea84ffbe4b51a2dd32ae7fe0731d63119833b19221fd2d0e6640a2bf67bace"
+  },
+  {
+    "id": "valine",
+    "name": "Valine",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Amino-Acids",
+      "Valine"
+    ],
+    "author": "B--Gideon-Bergheim",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/valine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/valine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "dff6ded59450ccc8689ab287d4b786e64e61adefdd435374c27dba88c16467a6",
+    "file": "valine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.88701,
+    "sha256": "eb30c6a1116dd4e8c9b2b30bdff02da33c0962aa2f68b47fc4d31242cc2781f1"
+  },
+  {
+    "id": "alpha-helix",
+    "name": "Alpha helix",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Intracellular components",
+      "Alpha helix"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/alpha-helix.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/alpha-helix.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "fc8b71ee49a48c9780c593c3af0dd64cdf5d85e033f115d42135db0fe06ff353",
+    "file": "alpha-helix.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.12963,
+    "sha256": "0b20918febd744544aff11e7a7870d58120d2808f744079c1f31e284889a64a4"
+  },
+  {
+    "id": "f-actin",
+    "name": "F actin",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Intracellular components",
+      "F actin"
+    ],
+    "author": "Hugo-Wioland",
+    "authorUrl": "https://x.com/HWioland",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Hugo-Wioland/F-actin.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Hugo-Wioland/F-actin.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a9da43aedfbe88f8c1b611510f9a3ac198817699d9aa097faf8674ec969e8cd6",
+    "file": "f-actin.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 17.81421,
+    "sha256": "ed0173887afa9fa85e7feda7d17074a9bf44e866306ff9b67a9e8634a5e541b4"
+  },
+  {
+    "id": "rubisco",
+    "name": "Rubisco",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Intracellular components",
+      "Rubisco"
+    ],
+    "author": "Margot Riggi",
+    "authorUrl": "https://www.margotriggi.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "f6b5d823bf5ad3aa39fed55bcfa6e3fede38f2109b59661207559867038dbb53",
+    "file": "rubisco.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.97967,
+    "sha256": "58ddec15cca51c9f7e6ffe33efe09fdafef159a922df7dca047764e286e9705e"
+  },
+  {
+    "id": "rubisco-activity",
+    "name": "Rubisco activity",
+    "category": "Biochemistry",
+    "subjects": [
+      "Biochemistry",
+      "Biology"
+    ],
+    "tags": [
+      "Biochemistry",
+      "Intracellular components",
+      "Rubisco activity"
+    ],
+    "author": "Margot Riggi",
+    "authorUrl": "https://www.margotriggi.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco-activity.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco-activity.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "69629f97b477251b2f12945f2008b756b4b8329ff165abaab069daab15d81807",
+    "file": "rubisco-activity.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.13208,
+    "sha256": "106c22237243fbcced25690cb359a518170d01b02559dc5960b1253b33002cf6"
+  },
+  {
+    "id": "adenine",
+    "name": "Adenine",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Adenine"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/adenine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/adenine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "78e05a5454154e543e648fc8e7a52a076d29d14ef3f62c2b63425d2c0a449f5e",
+    "file": "adenine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.17886,
+    "sha256": "bdca7859eb9c91681a6f1d06cae23937d974b246f3a0c0065eb6b3ff5b01b786"
+  },
+  {
+    "id": "cytosine",
+    "name": "Cytosine",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Cytosine"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/cytosine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/cytosine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a4c887e0cfa9ac6ee5f2447395427d54d05879c0a79e41dae58ae9da8c0ba2b5",
+    "file": "cytosine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.69048,
+    "sha256": "0e7b9148f268c74ebc4a564112654e9b3e42403ff4101698e1f399af19300e8d"
+  },
+  {
+    "id": "guanine",
+    "name": "Guanine",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Guanine"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/guanine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/guanine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1c4e8bc24b0bf54813d3ef24b9152f2354e957fefd8df1e8cdc132a9419a795e",
+    "file": "guanine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.17886,
+    "sha256": "75e32053d6dbbfe558f2178522b391e2d724a26671db134cf64d067761a73f53"
+  },
+  {
+    "id": "thymine",
+    "name": "Thymine",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Thymine"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/thymine.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/thymine.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "e2544d25b3e982af23a50c0fa77144fabdf4b15abe23e12a9c35bafe314f61f9",
+    "file": "thymine.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.88976,
+    "sha256": "c730fe7a7a3430267c12d94c11002589f7a58088ccd4cf6eb7d6e42f7058d2ad"
+  },
+  {
+    "id": "uracil",
+    "name": "Uracil",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Uracil"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/uracil.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/uracil.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "332124309465b71c08c164c6ed1dad5fd40cfd32fe70efbf95d440daf783d324",
+    "file": "uracil.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.68504,
+    "sha256": "b65c5b9c31de61aee3b147a607bddb7f92a934c985f0c9f82afa3cead530e347"
+  },
+  {
+    "id": "nucleotide-a-0",
+    "name": "Nucleotide a 0",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Nucleotide a 0"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-a-0.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-a-0.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "542ae635e7b3cf713844e3b022a6314e38e2028dcade12478c7f84f6931a64c8",
+    "file": "nucleotide-a-0.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.67961,
+    "sha256": "21d2858e780c496e33eaaf1d5246f439a506222cb8f68f5003916e9404988934"
+  },
+  {
+    "id": "nucleotide-c-0",
+    "name": "Nucleotide c 0",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Nucleotide c 0"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-c-0.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-c-0.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1d1ac5e8ef53dabf7b143344f68776bd0c35e5f56a0a936cf5950caf68e2038a",
+    "file": "nucleotide-c-0.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.67961,
+    "sha256": "48fcb9c570b090d2b62a9bc4b220fe4015a3a1d355f99752237a3ec32c8eff25"
+  },
+  {
+    "id": "nucleotide-g-0",
+    "name": "Nucleotide g 0",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Nucleotide g 0"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-g-0.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-g-0.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ec33a61493fcacb506454a6e6ec1ff8a6595b820cf7cea4c9bea57685482e634",
+    "file": "nucleotide-g-0.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.67742,
+    "sha256": "4c82106d6acced1231543e97d647972d14e7ff74977758a9fb5e4de7abed7fa4"
+  },
+  {
+    "id": "nucleotide-t-0",
+    "name": "Nucleotide t 0",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Nucleotide t 0"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-t-0.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-t-0.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "40e4b36deebc34cd088c2f45aafc459cc7942f6cc451448acd6c7ca79535151b",
+    "file": "nucleotide-t-0.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.67961,
+    "sha256": "d6c37ea28061a678930f0a9aa970891059003a4be85e965e675e145abb606893"
+  },
+  {
+    "id": "nucleotide-u-0",
+    "name": "Nucleotide u 0",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Nucleotide u 0"
+    ],
+    "author": "Emmett Leddin",
+    "authorUrl": "https://twitter.com/EmLedd1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-u-0.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-u-0.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "7a66ee7a438fc0a14d6f89849ce816cc2b065429270ff05534c5c07b398ba14a",
+    "file": "nucleotide-u-0.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.67961,
+    "sha256": "889437725f929925d12eb8e50b8c36a1d9d43230e3237e1a34cb14fe265bf666"
+  },
+  {
+    "id": "ssdna-single-stranded",
+    "name": "SsDNA single stranded",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "SsDNA single stranded"
+    ],
+    "author": "Samuel-Nestor-Meckoni",
+    "authorUrl": "https://mstdn.science/@samnm",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Samuel-Nestor-Meckoni/ssDNA-single-stranded.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Samuel-Nestor-Meckoni/ssDNA-single-stranded.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "3cbc3942a939bf31bea1077ef834e0d2dd1b47fec34045d3b286cea16d2a382a",
+    "file": "ssdna-single-stranded.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 15.61205,
+    "sha256": "376f054ebfec451b8241199470f1f35f650034a4f57f661bf7d19dd6d1928188"
+  },
+  {
+    "id": "rna-bulge",
+    "name": "RNA bulge",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "RNA bulge"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_bulge.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_bulge.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "aeec5fb6948c305fac8271d66d5bfe238bf0e9a3e050c50bcbba003bffcf826d",
+    "file": "rna-bulge.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.36202,
+    "sha256": "48b4e40adb1c0b3a3f8c8050a976754a55f980ae6daf662884146ef8efe5ffff"
+  },
+  {
+    "id": "rna-internal-loop",
+    "name": "RNA internal loop",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "RNA internal loop"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_internal_loop.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_internal_loop.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "bc20bfa0296dbec3c0487aab216cdc27101dcc02421d78ed79e5e5db5e3ced10",
+    "file": "rna-internal-loop.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.45306,
+    "sha256": "433115137c1e758399ea3dd0b5da722c5b777ee9f2552fe5958f6c316ae1d7cd"
+  },
+  {
+    "id": "chromatin-histones",
+    "name": "Chromatin histones",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Nucleic acids",
+      "Chromatin histones"
+    ],
+    "author": "Pauline Franz",
+    "authorUrl": "https://twitter.com/_paulinefranz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Pauline_Franz/chromatin-histones.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Pauline_Franz/chromatin-histones.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a06381f80b314dbab03a65db6f047e1796a4f9df75e817841be25bf638ffe4ea",
+    "file": "chromatin-histones.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 5.72608,
+    "sha256": "b398c0725086022dfdbda79912f8e6bd18deeba5ea928b99cba0be94132396ac"
+  },
+  {
+    "id": "linear-chromatin",
+    "name": "Linear chromatin",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Intracellular components",
+      "Linear chromatin"
+    ],
+    "author": "Margot Riggi",
+    "authorUrl": "https://www.margotriggi.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/linear_chromatin.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/linear_chromatin.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6f3cde59a7991d8f33eacd72eef5a81b6f965681608d79c1a710b9343ae45a67",
+    "file": "linear-chromatin.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 3.99298,
+    "sha256": "b247c0dc50214be0cbc13248399721de20631412daeda3502d843e57b907e808"
+  },
+  {
+    "id": "transcription-factor-rna",
+    "name": "Transcription factor rna",
+    "category": "Molecular Biology",
+    "subjects": [
+      "Molecular Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Molecular Biology",
+      "Intracellular components",
+      "Transcription factor rna"
+    ],
+    "author": "Margot Riggi",
+    "authorUrl": "https://www.margotriggi.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/transcription-factor-rna.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/transcription-factor-rna.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "e6cc042a942c9a621840a2c5646b8b0753803df635c91415bef4c078b62eb6aa",
+    "file": "transcription-factor-rna.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.76962,
+    "sha256": "d1e9e2a6269476b70f1ea3240d0fa0f635f233b7e238303f9df37a68573dacdb"
+  },
+  {
+    "id": "crispr-cas9",
+    "name": "CRISPR Cas9",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "CRISPR Cas9"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_Cas9.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_Cas9.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1eb035435becab59f87b5eb897d141d6efd85ad4e6806197c53d3d5c84bfc337",
+    "file": "crispr-cas9.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.95606,
+    "sha256": "74caf1915c1cd736daa474d41b1fa1865815380dfb711e98d4f24db6e266426c"
+  },
+  {
+    "id": "crispr-plasmid",
+    "name": "CRISPR plasmid",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "CRISPR plasmid"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_plasmid.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_plasmid.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4e220fa0e98491b2e6455859721819dc770a06a9f5e7840a5c8801d171044168",
+    "file": "crispr-plasmid.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.98812,
+    "sha256": "857d7dd1a818d6dbcb998f3b906b28c00e60b1809fec94b08ca53fe9773d8146"
+  },
+  {
+    "id": "snp",
+    "name": "SNP",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "SNP"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/SNP.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/SNP.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "89e0e373366e25d7591ff35e81a7d40b0324778266e09ccf225100d3d3af9ac2",
+    "file": "snp.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 3.38483,
+    "sha256": "c663d0f7794beabaca49d3348a88bba61bc79746b8ee4dbca0864d01ec39954d"
+  },
+  {
+    "id": "str",
+    "name": "STR",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "STR"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/STR.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/STR.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "b21586366dfced6bd272514fcad3178f2134c6b1cc87949f750e94bd6002cf72",
+    "file": "str.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 2.31323,
+    "sha256": "46006b6e8cc04913a15bbb2e99ddb01bf6ae7336eaa556c313cb689036150a99"
+  },
+  {
+    "id": "damaged-dna",
+    "name": "Damaged DNA",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "Damaged DNA"
+    ],
+    "author": "Rahel-Khdhr",
+    "authorUrl": "https://linktr.ee/rahe1",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Rahel-Khdhr/damaged_DNA.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Rahel-Khdhr/damaged_DNA.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "99eb3daa3ee249f8c14ab23b537bd05869367576d61f3b2b0543239f249de810",
+    "file": "damaged-dna.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 2.25513,
+    "sha256": "5da7868473740b21ffbd165026c140a66d1afd84408c40f2802b9822cfc61291"
+  },
+  {
+    "id": "chromatin-domain",
+    "name": "Chromatin domain",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "Chromatin domain"
+    ],
+    "author": "ChenxinLi",
+    "authorUrl": "https://twitter.com/ChenxinLi2",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Chromatin_domain.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Chromatin_domain.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ad43ee504028f3f12eadc3aa6fcdd4c55bfb72250477e86f597dc10d3b5cf8be",
+    "file": "chromatin-domain.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.3593,
+    "sha256": "17f152e7ff5780f755416c7fffc75fb11a11f4851ea8f34ade4283cc589ff1c4"
+  },
+  {
+    "id": "promoter-enhancer-loop",
+    "name": "Promoter enhancer loop",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "Promoter enhancer loop"
+    ],
+    "author": "ChenxinLi",
+    "authorUrl": "https://twitter.com/ChenxinLi2",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "44941e5379bac4f4a2051558be9228da79f056faa34127693c453337aa4105b0",
+    "file": "promoter-enhancer-loop.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.80738,
+    "sha256": "a067da8ec43c8f688c1446ec36d8e26483f734d0ca2ec74830ec060aed379190"
+  },
+  {
+    "id": "promoter-enhancer-loop-tf",
+    "name": "Promoter enhancer loop TF",
+    "category": "Genetics",
+    "subjects": [
+      "Genetics",
+      "Biology"
+    ],
+    "tags": [
+      "Genetics",
+      "Genetics",
+      "Promoter enhancer loop TF"
+    ],
+    "author": "ChenxinLi",
+    "authorUrl": "https://twitter.com/ChenxinLi2",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop_TF.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop_TF.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4e26e5db779bfb79fec55408eb4f2c258a20389f2bbcdd4ba5b814ad6da6c177",
+    "file": "promoter-enhancer-loop-tf.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 2.90823,
+    "sha256": "2fb4ceb4982c57f4c112be6cde17cffff6a936366f286385f0aec49a36404824"
+  },
+  {
+    "id": "mhc2",
+    "name": "MHC2",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "MHC2"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/MHC2.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/MHC2.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "14a8dbd23e368e23dbd3e8a849c74a6a4e86340149b2d8fd755ae97d07ce46e4",
+    "file": "mhc2.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.71472,
+    "sha256": "291ef414a7024e3280fc7a979463f4927e0c259cfa751dcc335dc578b6ae869b"
+  },
+  {
+    "id": "mhc1",
+    "name": "Mhc1",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Mhc1"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/mhc1.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/mhc1.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "0f9c128350ef980d14242591a7d9b863e588468475f4dd4a39d1892413f69880",
+    "file": "mhc1.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.7037,
+    "sha256": "66ee1eaf63cc4196c054eb8fae00f65fdd3b1f986ea8e2ff0467623e55bf3de8"
+  },
+  {
+    "id": "neutrophil",
+    "name": "Neutrophil",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Neutrophil"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/neutrophil.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/neutrophil.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "bb7863530395bf3fc52a23e2fb29df2d32ce5c965941a152ebcb0d8526cc793b",
+    "file": "neutrophil.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.09967,
+    "sha256": "1e484d53054256e404eef8642ac60ccf199336897e4d52c6ebefde03a3e283ea"
+  },
+  {
+    "id": "eosinophil",
+    "name": "Eosinophil",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Eosinophil"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/eosinophil.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/eosinophil.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "d0810a5afd8f7f82419133b568499d222d762686029becdb55edc1259dc85b66",
+    "file": "eosinophil.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.9936,
+    "sha256": "9b9391a6e196b180cc73841ed4842984db88c58e65575a8fb2e66e74c8794506"
+  },
+  {
+    "id": "t-cell-receptor",
+    "name": "T cell receptor",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "T cell receptor"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/t_cell_receptor.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/t_cell_receptor.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "5cf2b556feaa922eb2e784979b474dec866bb7b0479e47e72ed3ed995e8140c8",
+    "file": "t-cell-receptor.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.01062,
+    "sha256": "9b75d34c907d52b8f884c7a585c2ea9748e6b658f52373e3d955a1ed52fc13e7"
+  },
+  {
+    "id": "antibody-c1q",
+    "name": "Antibody c1q",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Antibody c1q"
+    ],
+    "author": "Sebastian-Reinig",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/Antibody_c1q.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/Antibody_c1q.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "482a76a77f18ed8e04f07426c4ddb92be3f423da1d9009768135d1c4d9c9e80b",
+    "file": "antibody-c1q.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.98344,
+    "sha256": "1053c7dfc4d21c82a5abfc27cb51341dafa1caac3143a9db59c8ff5362658da6"
+  },
+  {
+    "id": "mast-cell-1",
+    "name": "Mast cell 1",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Mast cell 1"
+    ],
+    "author": "Sebastian-Reinig",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_1.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_1.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "13511fec65e041ae818551da78167ca94c53c66261e0f1f98122eda1c3286442",
+    "file": "mast-cell-1.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.05779,
+    "sha256": "ef2942acfb9915b6079fdb88ccbe8927e7a02dbd2203d0cdc73567755dac8b4c"
+  },
+  {
+    "id": "mast-cell-degranulation-1",
+    "name": "Mast cell degranulation 1",
+    "category": "Immunology",
+    "subjects": [
+      "Immunology",
+      "Biology"
+    ],
+    "tags": [
+      "Immunology",
+      "Blood Immunology",
+      "Mast cell degranulation 1"
+    ],
+    "author": "Sebastian-Reinig",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_degranulation_1.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_degranulation_1.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "91a849b39f6ad87be1e3cf5e429d6911d9c9a3a49a60a362c264f59239c345c0",
+    "file": "mast-cell-degranulation-1.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.07177,
+    "sha256": "6169496862ec76c6f92a778541836ba8326b5b56d94f61d688067623cd2a0abd"
+  },
+  {
+    "id": "sonicator",
+    "name": "Sonicator",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Sonicator"
+    ],
+    "author": "KeHan",
+    "authorUrl": "https://github.com/kehantan",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/sonicator.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/sonicator.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6a5d38fc19754d7c21b400d0643d61029e9435d50f89947911e340b7eae90335",
+    "file": "sonicator.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.70707,
+    "sha256": "b217fefd2769faff11bc23dad177185e9c292211416422a98f39350f22b38353"
+  },
+  {
+    "id": "vortex-mixer",
+    "name": "Vortex mixer",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Vortex mixer"
+    ],
+    "author": "KeHan",
+    "authorUrl": "https://github.com/kehantan",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/vortex_mixer.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/vortex_mixer.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "eb1e16d3d3ab5cc095c9788a633d29e4892f88807a832b01a10f67514b85c007",
+    "file": "vortex-mixer.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.70707,
+    "sha256": "c98b4d1d90ee2d26ec9ca3c0b2526fb264168b80ddbce840d4733417e889bfa8"
+  },
+  {
+    "id": "water-bath",
+    "name": "Water bath",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Water bath"
+    ],
+    "author": "KeHan",
+    "authorUrl": "https://github.com/kehantan",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/water_bath.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/water_bath.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "cebd4a555c5ec9e79d98c066ef1537f01a77ee856004e49eaad7e2ccdeef6c0c",
+    "file": "water-bath.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "444e9f3671d87ef6e6ef95f4dda19692bb693ff50bc1f5fe87a1fc1e4dae789e"
+  },
+  {
+    "id": "chromatography",
+    "name": "Chromatography",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Chromatography"
+    ],
+    "author": "Graham-Delafield",
+    "authorUrl": "www.grahamdelafield.com",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Graham-Delafield/chromatography.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Graham-Delafield/chromatography.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4bfa5d80bc28e00ee7efca80d5db273e3318cd9f024d4ac17b16761cd36df4fb",
+    "file": "chromatography.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "672e5c5376b206b7742f0b416344464ae3ae7b92d5e6d9adbc28ca460639c15b"
+  },
+  {
+    "id": "flow-cytometer-cell-sorter",
+    "name": "Flow cytometer cell sorter",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Flow cytometer cell sorter"
+    ],
+    "author": "Derek-Croote",
+    "authorUrl": "https://derekcroote.com",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/flow-cytometer-cell-sorter.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/flow-cytometer-cell-sorter.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "43936e2266c829c09315089546050fcc017c9f0b2c2f9fc63997142bec4eff63",
+    "file": "flow-cytometer-cell-sorter.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.84615,
+    "sha256": "0f90dc5a152dc08679f25635e2fa03de36550b083f4696497ba9decbbf864978"
+  },
+  {
+    "id": "simple-syringe-cartoon",
+    "name": "Simple syringe cartoon",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Simple syringe cartoon"
+    ],
+    "author": "Derek-Croote",
+    "authorUrl": "https://derekcroote.com",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/simple-syringe-cartoon.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/simple-syringe-cartoon.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "c2013b3a3c7e6f9a909536299ad20abd23d8161e997c5c5333d703457bfd2f4d",
+    "file": "simple-syringe-cartoon.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "4cd823d874ede31c05ec90c5a19e2cf4eace856c23ae9effb6052b0ee49c9963"
+  },
+  {
+    "id": "bioreactor",
+    "name": "Bioreactor",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Bioreactor"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/bioreactor.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/bioreactor.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a404c7d4750abe88916817a9d9b6089a3702767f85d8743b3dace326a4460940",
+    "file": "bioreactor.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.44881,
+    "sha256": "5dd6c3c0248778ce7c37dd9b73d1e1b5f202c93da2061519957dcdf7fdf22cca"
+  },
+  {
+    "id": "microfluids-chip",
+    "name": "Microfluids chip",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Microfluids chip"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/microfluids_chip.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/microfluids_chip.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ee3d68ed586f9996d0beef06e100606d25bddb72b27eaa0c20a3c6431047aba0",
+    "file": "microfluids-chip.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.11169,
+    "sha256": "55bd0115e5db2e4cb4ecb44b611714c481f87c9db36ce8b6d43a39940d04395a"
+  },
+  {
+    "id": "recording-pipette",
+    "name": "Recording pipette",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Recording pipette"
+    ],
+    "author": "Marcel Tisch",
+    "authorUrl": "https://twitter.com/MarcelTisch",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/recording_pipette.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/recording_pipette.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "59725003c6e4a20ce65aa9448e9898b9e4f14e5868dd53507167c4b2a62dfde3",
+    "file": "recording-pipette.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.44,
+    "sha256": "b177d1a0ee00aefc7b1017484fb53bcad3b7a7b81ca2bd02e814f2844ad71c37"
+  },
+  {
+    "id": "centrifuge",
+    "name": "Low speed centrifuge",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Low speed centrifuge"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/Low_speed_centrifuge.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/Low_speed_centrifuge.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ebf2d4f256a66ab89651b9e2c569178496ed4585c59cfd0b0c8f6b489f9719ce",
+    "file": "centrifuge.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.7555,
+    "sha256": "cd2b92372191fc42e4b7a4b823dffe16ef5141c94af452c00dd49895e2a17583"
+  },
+  {
+    "id": "autoclave",
+    "name": "Autoclave",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Autoclave"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/autoclave.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/autoclave.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4256cd5f7575901b0fe3e9af5ceb2ec452d4fa678956d78b988ff01459700cf6",
+    "file": "autoclave.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.51305,
+    "sha256": "1f4c84be996f0e45ec8546792168fb949e01e7b7ce725d4035f0918869e48ff3"
+  },
+  {
+    "id": "cleanbench",
+    "name": "Cleanbench",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Cleanbench"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/cleanbench.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/cleanbench.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4609303d8ec26ec2fbbb1e9acd88af044af97eead1e9c03d165801a73ca42c0e",
+    "file": "cleanbench.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.76488,
+    "sha256": "2f8144180825aac1fa750cf2128d4ed3b65e0b940dce53e0e45028aaa308dc35"
+  },
+  {
+    "id": "confocal-scanning-laser-microscope-cslm",
+    "name": "Confocal scanning laser microscope CSLM",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Confocal scanning laser microscope CSLM"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/confocal-scanning-laser-microscope-CSLM.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/confocal-scanning-laser-microscope-CSLM.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "c5258c4d732bbf7abf28a516b1140ccd0b8a1696bc80280bb39480acfb25424a",
+    "file": "confocal-scanning-laser-microscope-cslm.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.89555,
+    "sha256": "42ccca6c10102de0bec7e1168b3c77fbe5eab4b1bab0ca8d728edda4712e0340"
+  },
+  {
+    "id": "desktop-electron-microscope",
+    "name": "Desktop electron microscope",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Desktop electron microscope"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/desktop_electron_microscope.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/desktop_electron_microscope.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "22e1a5a8b1d928148a65416ac76b80d874ccd0d1356dd7cf9963e16d8889d101",
+    "file": "desktop-electron-microscope.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.4226,
+    "sha256": "a9bf3321e63dffe72f6cb249a728a9b3e8bdbd848c6dbba8b55a91ae01c70768"
+  },
+  {
+    "id": "freezer",
+    "name": "Freezer",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Freezer"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/freezer.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/freezer.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "8115e73f3de09be4ed7a2271fa79314dc9d1b90ade2e9670abe74b3e2b70f0af",
+    "file": "freezer.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.42971,
+    "sha256": "a71419e231f9eb42d95a641ddda1b9d821c33a146f9aa3680479a18bcbda6fb9"
+  },
+  {
+    "id": "microtube-closed",
+    "name": "Microtube closed",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Microtube closed"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/microtube-closed.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/microtube-closed.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "057a7c35f61a2103c2b75e357a807bf336323dfe27cda781070aadf9a51b28b4",
+    "file": "microtube-closed.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.70708,
+    "sha256": "c4793bc76e22727e73e1edb5f4f3f7f20d035580d3415e34c9587b505a7400df"
+  },
+  {
+    "id": "ph-meter",
+    "name": "Ph meter",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Ph meter"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/ph-meter.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/ph-meter.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "35d802dba6ba3c71590241543cc29dfbcdac3221b832d2c96784345bb8d9e8d5",
+    "file": "ph-meter.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.81963,
+    "sha256": "f45bc21b8932c79c92a8d2c1419e5a2593bc74847d00eb261f4605a85e2703a4"
+  },
+  {
+    "id": "pipette-tip-box",
+    "name": "Pipette tip box",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Pipette tip box"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/pipette-tip-box.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/pipette-tip-box.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6295cc48c69725d978f45a942a2194e710cb00c20f354dbb45acd5661223a470",
+    "file": "pipette-tip-box.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.70708,
+    "sha256": "ae59e2a96aca0d1314588e04791611438a314dd097f30452e132d886d4ce7439"
+  },
+  {
+    "id": "shaker",
+    "name": "Shaker",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Shaker"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/shaker.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/shaker.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "07f5d57178a97d4c8d188d636c251b117deb48776974629882fb06c5be8b5a51",
+    "file": "shaker.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.95802,
+    "sha256": "a776cdbf96978a7fa1cba9ef1ac0c2b503142037c21b6a9b11da3f7c0711fb1a"
+  },
+  {
+    "id": "thermalcycler-pcr",
+    "name": "Thermalcycler pcr",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Thermalcycler pcr"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/thermalcycler-pcr.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/thermalcycler-pcr.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "86aaedb8364525d7fcee1c193612b8c08a97cc76ab9c82bf3cc029022af0661a",
+    "file": "thermalcycler-pcr.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.04927,
+    "sha256": "eae288d72ecc7a19c8dab1aa09003344de7188453b470af644c975fd99fa9ff0"
+  },
+  {
+    "id": "transmission-electron-microscope-tem",
+    "name": "Transmission electron microscope tem",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Transmission electron microscope tem"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/transmission-electron-microscope-tem.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/transmission-electron-microscope-tem.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "d6e990a02dc9c706d9dcb2a403fe2e139fd7e93d5fbe0f00df077131a123c782",
+    "file": "transmission-electron-microscope-tem.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.80493,
+    "sha256": "ecdcc0c707e5b4c178dcfb41115695e4f2aa11f520a68b28d4d2a73d952a59ee"
+  },
+  {
+    "id": "laboratory-scissor-jack",
+    "name": "Laboratory scissor jack",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Laboratory scissor jack"
+    ],
+    "author": "OpenClipart",
+    "authorUrl": "https://openclipart.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/laboratory-scissor-jack.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/laboratory-scissor-jack.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "5b5f8f77bc56034cd7bd109743ffb9d08587b0fa7c61c91f1fb3abc92bea59b6",
+    "file": "laboratory-scissor-jack.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.65866,
+    "sha256": "dedfb02128173879aa47cf4071e63459f535b020ce6e8b772ee24c583dff1c9e"
+  },
+  {
+    "id": "graduated-cylinder-tall-form-250ml",
+    "name": "Graduated Cylinder tall form 250ml",
+    "category": "Laboratory",
+    "subjects": [
+      "Laboratory",
+      "Biology"
+    ],
+    "tags": [
+      "Laboratory",
+      "Lab apparatus",
+      "Graduated Cylinder tall form 250ml"
+    ],
+    "author": "Xavax",
+    "authorUrl": "https://commons.wikimedia.org/wiki/User_talk:Xavax",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Graduated_Cylinder_tall_form_250ml.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Graduated_Cylinder_tall_form_250ml.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "afb8d0126bc06eaaae848f3062cabb6812266dd3d32d75eb9e43d7743c34f00a",
+    "file": "graduated-cylinder-tall-form-250ml.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.26358,
+    "sha256": "b2c2d12042276cc1f71e363e5d8134f5f957bb9745f32c6ecc5b4414340cad5a"
+  },
+  {
+    "id": "healthy-liver",
+    "name": "Healthy liver",
+    "category": "Human Anatomy",
+    "subjects": [
+      "Human Anatomy",
+      "Biology"
+    ],
+    "tags": [
+      "Human Anatomy",
+      "Human physiology",
+      "Healthy liver"
+    ],
+    "author": "Jan-Clusmann",
+    "authorUrl": "https://www.linkedin.com/in/jan-clusmann/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/healthy_liver.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/healthy_liver.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "ef460961abd03b4cbb72d82299736d0d2696c571f990b2be2b3b1db3a7e9012b",
+    "file": "healthy-liver.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.16667,
+    "sha256": "16c8db84efa0d9611d452def7d8bbc99e6d0686b59eed5383c45a0f2771756d2"
+  },
+  {
+    "id": "yeast",
+    "name": "Yeast",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Yeast"
+    ],
+    "author": "Ewa-Oz",
+    "authorUrl": "https://linktr.ee/ehvah",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Ewa-Oz/Yeast.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Ewa-Oz/Yeast.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "7f7fcb5c616103d8bdbb84d40ef5912c7c785b6e88ca2aa0fa6084bddacdc2a6",
+    "file": "yeast.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "d59acea3a69008efe23dbe70a4f202d82f93e1fb41f01729529d74ace47215e4"
+  },
+  {
+    "id": "phage",
+    "name": "Phage",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Phage"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Phage.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Phage.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4b810ca6cd57ed251141a4f701ff98bcbe7e905e0cb982d96304c218ba8cf57e",
+    "file": "phage.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.77273,
+    "sha256": "c423cea2439a3d46918dccac490d688589f09edf034d085da0bcbb3b30c0d1db"
+  },
+  {
+    "id": "conidia",
+    "name": "Conidia",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Conidia"
+    ],
+    "author": "Andi-Wilson",
+    "authorUrl": "https://twitter.com/DrAndiWilson",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Conidia.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Conidia.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "5680f711b194cae6a45ffa673e4db6e8e24e7c538b7a4ae7805e11276011562c",
+    "file": "conidia.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "2590a13c3aa1590eddef56a7784a70e05151423e9b21aae7074fdedfea1024f3"
+  },
+  {
+    "id": "germlings",
+    "name": "Germlings",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Germlings"
+    ],
+    "author": "Andi-Wilson",
+    "authorUrl": "https://twitter.com/DrAndiWilson",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Germlings.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Germlings.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6d70739b564740a115af56d52c408d9628a8085588f4e130698d501b23b17a24",
+    "file": "germlings.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "a9b123c45dc060c067a271323db4de4184ae8c3305f9e4b86ce8d3f8d3a36cc0"
+  },
+  {
+    "id": "mycelium",
+    "name": "Mycelium",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Mycelium"
+    ],
+    "author": "Andi-Wilson",
+    "authorUrl": "https://twitter.com/DrAndiWilson",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Mycelium.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Mycelium.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4cda3ffaae92ad3c39a685cf904c62d9477368549b705be5daab72617ca4050d",
+    "file": "mycelium.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "10915b59bd11f246226942d2ea0a9f5e8980a6f0135f61875dab1c0ed7ee67a1"
+  },
+  {
+    "id": "bacillus-subtilis",
+    "name": "Bacillus subtilis",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Bacillus subtilis"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/Bacillus_subtilis.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/Bacillus_subtilis.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "3a8f787271eaa59b52db47e6880a49ce775ab8e70b15f319cf28a86d838c1457",
+    "file": "bacillus-subtilis.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 2.58838,
+    "sha256": "b22ef580a2e8a42c2be13a4b0dae982fa5fd65bdc865d4b039b6f34aa1a6b85f"
+  },
+  {
+    "id": "fission-yeast",
+    "name": "Fission yeast",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Fission yeast"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/fission_yeast.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/fission_yeast.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9f9e0f4bbb682b051e52a830cfc71d57343736e67edb1672222799e7bceecaa1",
+    "file": "fission-yeast.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.55033,
+    "sha256": "336853514823ff21aa3171d9cb288c2a5baf19e64563782629f31a2de90bdadf"
+  },
+  {
+    "id": "fungal-cells",
+    "name": "Fungal cells",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Fungal cells"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Fungal_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Fungal_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "c22e432b4060a736744ed91c97a7624d87146c65ce3369ba82200ea3c8bfffcc",
+    "file": "fungal-cells.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.19048,
+    "sha256": "eb14f40e71fc65c88b69b6098f0b088a4a0adb0be8a19ebeceb31a3e0d1cd2e6"
+  },
+  {
+    "id": "yeast-cells",
+    "name": "Yeast cells",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Yeast cells"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Yeast_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Yeast_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "573e7d11c7d9fbd84f63daed6ce1fdc86488e4e1eea6de33a966bf3e15aad35b",
+    "file": "yeast-cells.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.19048,
+    "sha256": "50e679a9402ce728ec4552a825d28a9d35cfe5766d3978855d3678f729a3d290"
+  },
+  {
+    "id": "bacteria1m-diplococci",
+    "name": "Bacteria1M diplococci",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Bacteria1M diplococci"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_diplococci.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_diplococci.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "03ecd1bda3ef9d7ec134eedd3de8fe458209dbc5d43a24e9d48c3ce9ee587b85",
+    "file": "bacteria1m-diplococci.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.34088,
+    "sha256": "4a74fefdc4bbc1bd0a008003e5c07a5d31a7728ead5ac8e6d73541de1f94ddff"
+  },
+  {
+    "id": "bacteria1m-tetrad",
+    "name": "Bacteria1M tetrad",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Bacteria1M tetrad"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_tetrad.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_tetrad.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "126fd0835d3b2174c281705af545dc7c985da6e3c9413c66b68076a8be60fe8b",
+    "file": "bacteria1m-tetrad.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.34088,
+    "sha256": "7e5ce8fea482467cde258ccf9fb1740ab0b051db9ebe008cf4a5cf59e0dfe925"
+  },
+  {
+    "id": "apicomplexa-cells",
+    "name": "Apicomplexa cells",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Apicomplexa cells"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Apicomplexa_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Apicomplexa_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4dec77499e5d61cc1ec40b34a8d149000a168183da8fa973f562667a10cee22a",
+    "file": "apicomplexa-cells.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.24289,
+    "sha256": "46f3c79912d361764bd8bb29b77b1454fdd57e5aa924369d5c51ed80a4b12757"
+  },
+  {
+    "id": "mollicutes-cells",
+    "name": "Mollicutes cells",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Mollicutes cells"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Mollicutes_cells.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Mollicutes_cells.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "a47154dbda61b23470e01b4dab542e7c04f115a47646c71b5940168f93efdb43",
+    "file": "mollicutes-cells.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.34088,
+    "sha256": "38605b570106b7d4839ace1597b2345b33a6095e8eb40df91c8dea1e7f4cbf50"
+  },
+  {
+    "id": "trypanosoma",
+    "name": "Trypanosoma",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Microbiology",
+      "Trypanosoma"
+    ],
+    "author": "SwissBioPics / Philippe Le Mercier (SIB Swiss Institute of Bioinformatics)",
+    "authorUrl": "https://www.swissbiopics.org/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Trypanosoma.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Trypanosoma.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6e719f43cba5c109fcac258d7219c30668fe3ac86a2bd418ab9219c39db0a465",
+    "file": "trypanosoma.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Removed semantic text/RDFa links; retained source credits/descriptions and biological geometry. Disambiguated unreferenced semantic IDs.",
+    "aspectRatio": 1.24289,
+    "sha256": "e30d0d2921b343fb46982db778c9ea6e570332ea1e2dda162e8235e93b4ac6b2"
+  },
+  {
+    "id": "poxvirus",
+    "name": "Poxvirus",
+    "category": "Microbiology",
+    "subjects": [
+      "Microbiology",
+      "Biology"
+    ],
+    "tags": [
+      "Microbiology",
+      "Viruses",
+      "Poxvirus"
+    ],
+    "author": "Alejandro-Matía",
+    "authorUrl": "https://orcid.org/0000-0002-4246-5135",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Viruses/Alejandro-Mat%C3%ADa/poxvirus.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Viruses/Alejandro-Mat%C3%ADa/poxvirus.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "47cf909e2a1a0b3c52764ffad69e86a9c516a8ea403e38d45ad1d4d7958d6fb1",
+    "file": "poxvirus.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.70707,
+    "sha256": "bcdff80ff1bece3256c9f9cfc1482189fbc140cd89ad548b8c55d312b41b98a5"
+  },
+  {
+    "id": "dicotseedling",
+    "name": "DicotSeedling",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "DicotSeedling"
+    ],
+    "author": "Gina-Vong",
+    "authorUrl": "https://github.com/ginavong",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/DicotSeedling.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/DicotSeedling.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "6db203817ff9df0b5a7ed1d7ac2f4724b5c98dd75d269fbf074093919ed3d8dc",
+    "file": "dicotseedling.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Cropped empty source page margins using reviewed viewBox bounds; scientific vector paths unchanged.",
+    "aspectRatio": 0.73437,
+    "sha256": "9a83979ee8ae5447e85cb82ed3d2c3af652555f77a69f4b2630a2d6873cbdc62"
+  },
+  {
+    "id": "leaf",
+    "name": "Leaf",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Leaf"
+    ],
+    "author": "Gina-Vong",
+    "authorUrl": "https://github.com/ginavong",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/Leaf.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/Leaf.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "b5f8b57717567babbc7d9125963103fcf4e783af5646d8101167508fb446c2da",
+    "file": "leaf.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Cropped empty source page margins using reviewed viewBox bounds; scientific vector paths unchanged.",
+    "aspectRatio": 2.20586,
+    "sha256": "0b2b1c4d7604040ab0299ce33c486ffdd3ff07962da9d4c5245a357b21fc3357"
+  },
+  {
+    "id": "arabidopsisseedlings",
+    "name": "ArabidopsisSeedlings",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "ArabidopsisSeedlings"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisSeedlings.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisSeedlings.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "0d7b99972458c54bc9bc7dddeef015ec217a8391cae91bccb29006ecfd70f042",
+    "file": "arabidopsisseedlings.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Cropped empty source page margins using reviewed viewBox bounds; scientific vector paths unchanged.",
+    "aspectRatio": 2.2614,
+    "sha256": "0183cd759444e449c8b158ed38984d457f5ad903d34f4a7d8d21b5e6f29326c7"
+  },
+  {
+    "id": "arabidopsistopview",
+    "name": "ArabidopsisTopView",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "ArabidopsisTopView"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisTopView.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisTopView.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "848d32e494e61671294d361fd403e3795e39831fa07b2eef79cc4e43c552de2a",
+    "file": "arabidopsistopview.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.77273,
+    "sha256": "61db1f1f733e09624218c1888b195a404eb863c5dd7ed62eb4dcecef50e52e57"
+  },
+  {
+    "id": "mosscolony",
+    "name": "MossColony",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "MossColony"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/MossColony.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/MossColony.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "409e0e94f69dc2274b8aeb11404fe43812a8c71bdef89dd37bf514ac75dba0c0",
+    "file": "mosscolony.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.77273,
+    "sha256": "9a2581061a426953b81912e4c7e7965d181d322ed50910e3b370501a6f2af4e6"
+  },
+  {
+    "id": "moss-gametophore",
+    "name": "Moss Gametophore",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Moss Gametophore"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Gametophore.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Gametophore.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4cd1b1c690a83534617484ca483b64d18916668707b9a6c7d8627ddb5edc3094",
+    "file": "moss-gametophore.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.71215,
+    "sha256": "ca64840ea5c90038b4f6e2332c0b29e66307160bfd5321adfecee771a8757dd6"
+  },
+  {
+    "id": "moss-protonema",
+    "name": "Moss Protonema",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Moss Protonema"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "2952808b1057a94d0dda155ce405fb1d830cafeb730cf399c2a46eb5795151ee",
+    "file": "moss-protonema.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.68192,
+    "sha256": "5cecdad372208092bf865c777bed6607308f365940892ad6c8792acc7df369ed"
+  },
+  {
+    "id": "moss-protonema-buds",
+    "name": "Moss Protonema Buds",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Moss Protonema Buds"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema_Buds.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema_Buds.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "352b0a216c2872b9651e6bee7498a3cb9f439c36553879c476ffd6fb48742272",
+    "file": "moss-protonema-buds.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.68192,
+    "sha256": "1d309cda27ceb622aa12d2d6c668387f69aa0727705fcd6875f9af5d83e17306"
+  },
+  {
+    "id": "tomatofruit",
+    "name": "TomatoFruit",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "TomatoFruit"
+    ],
+    "author": "James-Lloyd",
+    "authorUrl": "https://www.badgrammargoodsyntax.com/",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/TomatoFruit.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/TomatoFruit.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "cdbf6bf10fdee0e224b6957453b0dd6a8fd88a757a62c5f96162edd1a2289679",
+    "file": "tomatofruit.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Cropped empty source page margins using reviewed viewBox bounds; scientific vector paths unchanged.",
+    "aspectRatio": 1.02222,
+    "sha256": "e8cacfb3ac8375bb8f6439c999b2eb8cf146fb8a40bbecd506484b071ff6fc12"
+  },
+  {
+    "id": "utricularia-trap",
+    "name": "Utricularia trap",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Utricularia trap"
+    ],
+    "author": "Samuel-Nestor-Meckoni",
+    "authorUrl": "https://mstdn.science/@samnm",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Samuel-Nestor-Meckoni/Utricularia_trap.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Samuel-Nestor-Meckoni/Utricularia_trap.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "cb058f0bd2f06f7e94187c034559f76a1b2742646da095cb9486c4305822cc15",
+    "file": "utricularia-trap.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.34757,
+    "sha256": "6d8de95b767672a5b04a0851bdad3828fe8cde45ea44f95562a2e118dddbe037"
+  },
+  {
+    "id": "fern-palm",
+    "name": "Fern palm",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Fern palm"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Fern_palm.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Fern_palm.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "707e1fb81b13d6e4551222ec81eadf23f34d13f45cb83d2306018fa1476eeec6",
+    "file": "fern-palm.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.53333,
+    "sha256": "37a74e222c5888af2aec13e0393d3e9bc179ad8a4f36fe399b63bce4b37d8485"
+  },
+  {
+    "id": "ginkgo",
+    "name": "Ginkgo",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Ginkgo"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Ginkgo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Ginkgo.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "7b560283a92eab9ac993c280d1353355f178b83fbe79a8798acce7fba6386019",
+    "file": "ginkgo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "dfc55bd42fd08c51edcae1dca70ef69c2ad20e984dce3e75fddee602ff7b4c0e"
+  },
+  {
+    "id": "rice",
+    "name": "Rice",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Rice"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Rice.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Rice.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "f2cbde958dc58b7dd686aca59bf82b7afd2e571f70bd745eb169a0e0adde9fc1",
+    "file": "rice.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 0.53333,
+    "sha256": "333f0cc5eba97e581f7c6bb46864eab7d34770b14aefe1388aba6a53bf2d8b99"
+  },
+  {
+    "id": "earthmoss-antheridium",
+    "name": "Earthmoss antheridium",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss antheridium"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_antheridium.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_antheridium.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "75d0b403bbb6af8967a0ef75e268bbfb969d58e249894e9c8a907a1e7dd631ca",
+    "file": "earthmoss-antheridium.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "bbd948d525893dd90451b356c3fe402c9393b16ba028711af6697d9ede4191bd"
+  },
+  {
+    "id": "earthmoss-archegonium",
+    "name": "Earthmoss archegonium",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss archegonium"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_archegonium.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_archegonium.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "9ef52c5a3fcc69dd6c60fd4d5531758d5575a146f34584e5bcea52447f8653b8",
+    "file": "earthmoss-archegonium.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "cc2e753143e82be2c7e31851c751faa581a428b1d2691372053e09097b2e9f2d"
+  },
+  {
+    "id": "earthmoss-early-sporophyte",
+    "name": "Earthmoss early sporophyte",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss early sporophyte"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_early_sporophyte.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_early_sporophyte.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "85a32291a03b089fee4d7caad7b46e2b0b08854caefed618b39652868c7d0050",
+    "file": "earthmoss-early-sporophyte.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "db534cc01b6c112c129084c3291f86b80f6d4c6d6eeade61df25e229cb7554b5"
+  },
+  {
+    "id": "earthmoss-protoplast",
+    "name": "Earthmoss protoplast",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss protoplast"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_protoplast.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_protoplast.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "db4bf61f1a8cbb0d522dbab8e2ce44a1866a26b237a1df41d991d35f89ac59f9",
+    "file": "earthmoss-protoplast.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "5e6c23139e5b9ba019e5af1cfb0bce4a66e37812e2b20cb035c57b80007f3418"
+  },
+  {
+    "id": "earthmoss-rhizoid",
+    "name": "Earthmoss rhizoid",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss rhizoid"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_rhizoid.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_rhizoid.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "40a9eb0375362d7860cc59ff0fcb2db134f2bfb544d694d60b819c85cfa602cc",
+    "file": "earthmoss-rhizoid.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "e0450d074b08ae22e0d0509008edd5b2b2c41bb58f145edba4eed4d0167335fb"
+  },
+  {
+    "id": "earthmoss-spore",
+    "name": "Earthmoss spore",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Earthmoss spore"
+    ],
+    "author": "DBCLS",
+    "authorUrl": "https://togotv.dbcls.jp/en/pics.html",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_spore.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_spore.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "cf07524d5ac5e01d7ad98939cf7a0ce3990f6828604d9cc626f5867ceb3d0a14",
+    "file": "earthmoss-spore.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object. Selected source SVG fallback where present; discarded Adobe-only editor references.",
+    "aspectRatio": 1.0,
+    "sha256": "66d9e569e815e997c41e6b12ed751f452f7e3b20ad53f56b5778381e835c2411"
+  },
+  {
+    "id": "arabidopsis-embryonic-development",
+    "name": "Arabidopsis Embryonic Development",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Arabidopsis Embryonic Development"
+    ],
+    "author": "Erin Sparks",
+    "authorUrl": "https://figshare.com/authors/Plant_Illustrations/3773596",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Arabidopsis_Embryonic_Development.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Arabidopsis_Embryonic_Development.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "34e11cd4a6088a2a23ba76427536791859b3930a73088f67dd0fdb0f12229817",
+    "file": "arabidopsis-embryonic-development.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.77273,
+    "sha256": "71e88eca09aaa5f6a8df867e6594c601dbc33e3a55e26386d2453aa7f8176cae"
+  },
+  {
+    "id": "plant-intercellular-communication",
+    "name": "Plant Intercellular Communication",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Plant Intercellular Communication"
+    ],
+    "author": "Erin Sparks",
+    "authorUrl": "https://figshare.com/authors/Plant_Illustrations/3773596",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Plant_Intercellular_Communication.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Plant_Intercellular_Communication.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "765b2c4f38ea0c5016085135e31ecd22f1ba2c2e8fb20a113f34d54e216c9a25",
+    "file": "plant-intercellular-communication.svg",
+    "internalLabels": true,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.02378,
+    "sha256": "6985ae347f8ad45f2688f32148c27210de24e8a926423b4e858dbd035677fc01"
+  },
+  {
+    "id": "rice-root-anatomy",
+    "name": "Rice Root Anatomy",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Rice Root Anatomy"
+    ],
+    "author": "Erin Sparks",
+    "authorUrl": "https://figshare.com/authors/Plant_Illustrations/3773596",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Rice_Root_Anatomy.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Rice_Root_Anatomy.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "bf30c2d5ac912e5547d3539602fa3103d65c979261f6599b98163240a7d0df92",
+    "file": "rice-root-anatomy.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.77273,
+    "sha256": "abc36b181023363f137cb91b600798a9b424a02c6e0bdc8c02a2686784beb79e"
+  },
+  {
+    "id": "arabidopsis-root-cross-section",
+    "name": "Arabidopsis root cross section",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Arabidopsis root cross section"
+    ],
+    "author": "Frédéric Bouché",
+    "authorUrl": "https://figshare.com/authors/Plant_Illustrations/3773596",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_cross_section.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_cross_section.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "e2816d9de95cc3fb963dd8b9dc947578d926e0b47e41213cb23f7faa447b64ac",
+    "file": "arabidopsis-root-cross-section.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.06034,
+    "sha256": "c6089a4d90ddd3804bc154e1739287251fbef193f12658c03d6cf49cdf62604d"
+  },
+  {
+    "id": "arabidopsis-root-longitudinal-section",
+    "name": "Arabidopsis root longitudinal section",
+    "category": "Plant Biology",
+    "subjects": [
+      "Plant Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Plant Biology",
+      "Plants Algae",
+      "Arabidopsis root longitudinal section"
+    ],
+    "author": "Frédéric Bouché",
+    "authorUrl": "https://figshare.com/authors/Plant_Illustrations/3773596",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_longitudinal_section.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_longitudinal_section.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "63d461b1dd8d9da909b1c9a7b86a981b3cd0e08c5137cee62956d85b5862cd17",
+    "file": "arabidopsis-root-longitudinal-section.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.38774,
+    "sha256": "f5d166698471dd86dde0144f6737a330823469119cf16225ca7fae90780850cc"
+  },
+  {
+    "id": "simple-cardiomyocyte",
+    "name": "Simple cardiomyocyte",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "Simple cardiomyocyte"
+    ],
+    "author": "Marnie-Maddock",
+    "authorUrl": "https://github.com/MarnieMaddock",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cardiomyocyte.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cardiomyocyte.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "c37037b444d7688d25c43e77627599e43b9df831abbb63c943de20c6f8d412cc",
+    "file": "simple-cardiomyocyte.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 2.37509,
+    "sha256": "582bee39e333134437eda89f10a7c971f725716acceaab301934e1ab6d85084c"
+  },
+  {
+    "id": "mii-oocyte",
+    "name": "MII Oocyte",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "MII Oocyte"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/MII_Oocyte.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/MII_Oocyte.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "1632ac808122fa9a4003817d60e120ccee3d6903918a5832ea34298a9c6fbd0b",
+    "file": "mii-oocyte.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "d3769573583307b68110ad60bc895171c3b355f623ff62484b3d0ca4074a9c94"
+  },
+  {
+    "id": "1cell-pn4-zygote",
+    "name": "1cell pn4 zygote",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "1cell pn4 zygote"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/1cell_pn4_zygote.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/1cell_pn4_zygote.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "172525262689d5f1cfeac3e8743278c38822c66255897da2915033f9c8957f0e",
+    "file": "1cell-pn4-zygote.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "f356d961cba3db4ee7414f844d93a5e990808aa548e8e3c1b8a3e73e396055b8"
+  },
+  {
+    "id": "2c-embryo",
+    "name": "2c embryo",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "2c embryo"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/2c_embryo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/2c_embryo.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "99d81acab08399edcca5bb4cd1e800383c93cf6eefb633e00d072adca6128110",
+    "file": "2c-embryo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "813319fa50b19e1d5a5e9383563518a02ad6867dabaa9a97715eb4f8c4e9fc88"
+  },
+  {
+    "id": "8c-embryo",
+    "name": "8c embryo",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "8c embryo"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/8c_embryo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/8c_embryo.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "e2f908061f271c68b71ab60f9f3dd9a919d03f9001865b5082245073043bc4ea",
+    "file": "8c-embryo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "0754d650afb2386aad768a10bc0f00cccaa659b2088ac43854a79cb151cf9dd8"
+  },
+  {
+    "id": "morula-embryo",
+    "name": "Morula embryo",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "Morula embryo"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/morula_embryo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/morula_embryo.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "65aee37c4300f724040a5d693c2b7cc33b573c5054aaa4416b60273272cef780",
+    "file": "morula-embryo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "39f7384df8469939b9931843b364e518bd3568f515d4007d3b83eae7e756010b"
+  },
+  {
+    "id": "early-blastocyst-embryo",
+    "name": "Early blastocyst embryo",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "Early blastocyst embryo"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/early_blastocyst_embryo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/early_blastocyst_embryo.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "859d047a13d1ee3c7e676c7a89ccd13b7f4436b550f85f09cb81841ee3f5a813",
+    "file": "early-blastocyst-embryo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "d6b2514daa479b615c15c388f75b97d07c4a79b210919577a94c2cc647294f87"
+  },
+  {
+    "id": "late-blastocyst-embryo",
+    "name": "Late blastocyst embryo",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell types",
+      "Late blastocyst embryo"
+    ],
+    "author": "Xi-Chen",
+    "authorUrl": "https://notarocketscientist.xyz",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/late_blastocyst_embryo.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/late_blastocyst_embryo.svg",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attributionRequired": false,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "4853a84832753389c2472aa71b483e5859a9e1f2d35415f9d3f24518df39bf0d",
+    "file": "late-blastocyst-embryo.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 1.0,
+    "sha256": "55bd8d27cc0ee6b2d267e127f4a2d2db3b75be1bbd40be8cfa9e7792c40a8c50"
+  },
+  {
+    "id": "pink-transporter",
+    "name": "Pink transporter",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell membrane",
+      "Pink transporter"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/pink_transporter.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/pink_transporter.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "5ea36b75024d299175820fc9180daaf8575e68586c640fdd6d9fefb8ca503c37",
+    "file": "pink-transporter.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 0.70707,
+    "sha256": "6919ae8e68aa3750f895c7734f8652c0131bf022b1df3c18d4e8a71011694404"
+  },
+  {
+    "id": "engulfing-membrane",
+    "name": "Engulfing membrane",
+    "category": "Cell Biology",
+    "subjects": [
+      "Cell Biology",
+      "Biology"
+    ],
+    "tags": [
+      "Cell Biology",
+      "Cell membrane",
+      "Engulfing membrane"
+    ],
+    "author": "Helicase 11",
+    "authorUrl": "",
+    "source": "Bioicons",
+    "sourceUrl": "https://github.com/duerrsimon/bioicons/blob/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/engulfing_membrane.svg",
+    "downloadUrl": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/engulfing_membrane.svg",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "attributionRequired": true,
+    "verifiedAt": "2026-11-08",
+    "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+    "sourceSha256": "8125ede124d4caa7ddbf7888547c8582c4647a61452fa40717951d2b99744c10",
+    "file": "engulfing-membrane.svg",
+    "internalLabels": false,
+    "modifications": "Normalized source SVG and local definition IDs; original metadata retained as escaped metadata. Internal artwork/lettering remains a single object.",
+    "aspectRatio": 3.49853,
+    "sha256": "10dfe8fa1ada15ff66102b32016c4275e4a3248b5f0815f1c795c7ddef2e698c"
   }
 ]

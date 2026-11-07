@@ -82,6 +82,9 @@
 .sci-asset-card small { font-size:7px; color:var(--sci-muted); margin-top:3px; }
 .sci-library-footer { padding:20px 2px 0; margin-top:18px; border-top:1px solid var(--sci-line); font-size:9px; line-height:1.9; color:var(--sci-muted); }
 .sci-no-results { font-size:12px; color:var(--sci-muted); padding:20px 0; line-height:1.8; }
+.sci-load-more { display:flex; width:100%; align-items:center; justify-content:space-between; gap:8px; padding:11px 12px; margin:18px 0 8px; border:1px solid var(--sci-line); border-radius:8px; color:var(--sci-accent); background:hsl(var(--background)); font-size:10px; }
+.sci-load-more:hover { border-color:var(--sci-accent); background:hsl(var(--accent)/.5); }
+.sci-load-more span { font-size:9px; color:var(--sci-muted); }
 .sci-inspector { padding-bottom:16px; border-bottom:1px solid var(--sci-line); margin-bottom:19px; }
 .sci-section-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; font-size:11px; font-weight:700; }
 .sci-section-heading button { padding:5px; color:var(--sci-muted); }

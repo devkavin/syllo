@@ -10,13 +10,24 @@ const read = file => readFileSync(new URL(file, import.meta.url), "utf8");
 it("ships safe real SVGs with individually verified provenance and matching server catalog", () => {
   expect(catalog.length).toBeGreaterThanOrEqual(20);
   expect(JSON.parse(read("../../../../backend/app/data/scientific-assets.json"))).toEqual(catalog);
-  for (const asset of catalog) {
-    const source = read(`./assets/${asset.file}`);
-    expect(sanitizeAssetSvg(source).querySelector("path, ellipse, circle, rect")).not.toBeNull();
-    expect(asset.author).toBeTruthy(); expect(asset.sourceUrl).toMatch(/^https:/);
-    expect(["CC0-1.0", "CC-BY-4.0", "MIT", "Public-Domain"]).toContain(asset.license);
-    expect(createHash("sha256").update(source).digest("hex")).toBe(asset.sha256);
-    expect(source).toContain("provenance"); expect(source).toContain(asset.license);
+  expect(new Set(catalog.map(a => a.id)).size).toBe(catalog.length);
+  expect(new Set(catalog.map(a => a.file)).size).toBe(catalog.length);
+});
+
+it.each(catalog)("verifies bundled artwork and retained provenance: $id", asset => {
+  const source = read(`./assets/${asset.file}`);
+  const vector = sanitizeAssetSvg(source);
+  expect(vector.querySelector("path, ellipse, circle, rect")).not.toBeNull();
+  expect(asset.author).toBeTruthy(); expect(asset.sourceUrl).toMatch(/^https:/);
+  expect(["CC0-1.0", "CC-BY-4.0", "MIT", "Public-Domain"]).toContain(asset.license);
+  expect(createHash("sha256").update(source).digest("hex")).toBe(asset.sha256);
+  expect(source).toContain("provenance"); expect(source).toContain(asset.license);
+  const ids = [...vector.querySelectorAll("[id]")].map(node => node.id);
+  expect(new Set(ids).size).toBe(ids.length);
+  const definitions = new Set(ids);
+  for (const element of [vector, ...vector.querySelectorAll("*")]) for (const attr of element.attributes) {
+    for (const match of attr.value.matchAll(/url\(["']?#([^)'"\s]+)["']?\)/g)) expect(definitions.has(match[1]), `${asset.id}: ${match[1]}`).toBe(true);
+    if (attr.localName === "href") expect(definitions.has(attr.value.slice(1)), `${asset.id}: ${attr.value}`).toBe(true);
   }
 });
 

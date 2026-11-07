@@ -1,5 +1,6 @@
 import { createDocument, createObject, duplicateDocument, usedAssets } from "./document";
 import { advancedTemplates } from "./templates/advancedTemplates";
+import { libraryTemplates } from "./templates/libraryTemplates";
 import { validateTemplate } from "./templateReview";
 
 const doc = { ...createDocument("Electron Transport Chain"), id: "template-etc-v1", width: 1600, height: 900 };
@@ -76,7 +77,7 @@ const registry = [{
     { title: "Biochemistry, Electron Transport Chain", url: "https://www.ncbi.nlm.nih.gov/books/NBK526105/" },
     { title: "Structure and function of mitochondrial membrane protein complexes", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC4625866/" },
   ],
-}, ...advancedTemplates];
+}, ...advancedTemplates, ...libraryTemplates];
 
 // A template cannot enter the editor with broken references or uncredited artwork.
 export const templates = registry.map(template => {

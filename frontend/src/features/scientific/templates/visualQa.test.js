@@ -9,8 +9,7 @@ import { assetById } from "../document";
 const assets = resolve(dirname(fileURLToPath(import.meta.url)), "..", "assets");
 const loadAsset = async id => readFileSync(resolve(assets, assetById[id].file), "utf8");
 
-it("exports every real scientific template with self-contained vectors and complete credits", async () => {
-  for (const item of templates) {
+it.each(templates)("exports $id with self-contained vectors and complete credits", async item => {
     const svg = await exportSvg(item.document, { loadAsset });
     const root = new DOMParser().parseFromString(svg, "image/svg+xml");
     expect(root.querySelector("parsererror"), item.id).toBeNull();
@@ -23,5 +22,4 @@ it("exports every real scientific template with self-contained vectors and compl
       const hidden = new DOMParser().parseFromString(await exportSvg({ ...item.document, showLabels: false }, { loadAsset }), "image/svg+xml");
       expect(hidden.querySelectorAll("text").length, item.id).toBeLessThan(root.querySelectorAll("text").length);
     }
-  }
 }, 15000);

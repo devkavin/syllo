@@ -1,0 +1,1099 @@
+{
+  "revision": "d29e766ea7580b8063c4f47b29e872db40a4d979",
+  "sources": {
+    "alanine": {
+      "sha256": "aa89bd2fd178b9dc591c0346b57d1155985c46f39476464633298f9ac97196da",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/alanine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "arginine": {
+      "sha256": "aedaf31a554d5d41f4d62b3ac42b914820ff3b83fe63df16dac9981ad3e0cc4d",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/arginine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "asparagine": {
+      "sha256": "1c971d30fbcf07f01709cd15539c9fe548ecc80cb8e77ae145e128cc0920f153",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/asparagine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "aspartic-acid": {
+      "sha256": "d968d673849db896db573f19ba18db3f61d22281db7f6e453b6bb15ca26ef970",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/aspartic_acid.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "cysteine": {
+      "sha256": "82616e0a34655bba2a53bcf632fcc8723b6dac2245fac40a617edfcba1c880a8",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/cysteine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "glutamic-acid": {
+      "sha256": "4e43dbd3102309e900bb1612614d8675402bcc59e4b78e3ddbe4c6d8ca4fcd71",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamic_acid.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "glutamine": {
+      "sha256": "9e75144c159b62879f10699e2916c94fdedb3dcbecdff927b2b455373ca47f71",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glutamine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "glycine": {
+      "sha256": "fa40ec5e91370cfa318e80355da1901abd4cbd5ef9b96b9c729fdc18f089a5a7",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/glycine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "histidine": {
+      "sha256": "ddf35893859d9444e376da1962517de4d08621aad91882bcd01fc949f652f8b7",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/histidine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "isoleucine": {
+      "sha256": "df27cba24f09f4574c1b1ee640904305b2d28cec68b205d9220568d0e6bc0eb2",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/isoleucine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "lysine": {
+      "sha256": "2dff6c3494eff7063b0c974b0468fa44cffd8043036401ebc4df9d0c5ad632c0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/lysine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "methionine": {
+      "sha256": "6a8adef0e467d449c6b9fd434ae147b25cbbb7d1b4e9a496a1c4c39bdc323be2",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/methionine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "phenylalanine": {
+      "sha256": "1c7b54c72cb7ba770dfa1da4dcaf874d34c47c6330700de4d9c469bf488ee5c0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/phenylalanine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "proline": {
+      "sha256": "9d7ba73fec8d007b7af784c7ec07217940e9acef12da5908429c98c4f1a13bb8",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/proline.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "serine": {
+      "sha256": "a0a98d671808c22ae8e45855d756ee9f53dec25401488d706a0c218a09c93c04",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/serine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "threonine": {
+      "sha256": "3736ff8c17226ef0844db913b6c093626286693b3d76e4e40c1fcd8c3db0d7a5",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/threonine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "tryptophan": {
+      "sha256": "9dff6eeeafe66844ef37a959abf5859a5ca63f45e44ca8ec560bd15a4cf7cdee",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tryptophan.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "tyrosine": {
+      "sha256": "958cb20cdee419e59a1b2b7b1fcf16df8c5c24dbe27fa6147620cbd30fc239c5",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/tyrosine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "valine": {
+      "sha256": "dff6ded59450ccc8689ab287d4b786e64e61adefdd435374c27dba88c16467a6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Amino-Acids/B--Gideon-Bergheim/valine.svg",
+      "author": "B--Gideon-Bergheim",
+      "license": "CC0-1.0"
+    },
+    "alpha-helix": {
+      "sha256": "fc8b71ee49a48c9780c593c3af0dd64cdf5d85e033f115d42135db0fe06ff353",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/DBCLS/alpha-helix.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "f-actin": {
+      "sha256": "a9da43aedfbe88f8c1b611510f9a3ac198817699d9aa097faf8674ec969e8cd6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Hugo-Wioland/F-actin.svg",
+      "author": "Hugo-Wioland",
+      "license": "CC-BY-4.0"
+    },
+    "rubisco": {
+      "sha256": "f6b5d823bf5ad3aa39fed55bcfa6e3fede38f2109b59661207559867038dbb53",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco.svg",
+      "author": "Margot Riggi",
+      "license": "CC-BY-4.0"
+    },
+    "rubisco-activity": {
+      "sha256": "69629f97b477251b2f12945f2008b756b4b8329ff165abaab069daab15d81807",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/Rubisco-activity.svg",
+      "author": "Margot Riggi",
+      "license": "CC-BY-4.0"
+    },
+    "adenine": {
+      "sha256": "78e05a5454154e543e648fc8e7a52a076d29d14ef3f62c2b63425d2c0a449f5e",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/adenine.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "cytosine": {
+      "sha256": "a4c887e0cfa9ac6ee5f2447395427d54d05879c0a79e41dae58ae9da8c0ba2b5",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/cytosine.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "guanine": {
+      "sha256": "1c4e8bc24b0bf54813d3ef24b9152f2354e957fefd8df1e8cdc132a9419a795e",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/guanine.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "thymine": {
+      "sha256": "e2544d25b3e982af23a50c0fa77144fabdf4b15abe23e12a9c35bafe314f61f9",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/thymine.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "uracil": {
+      "sha256": "332124309465b71c08c164c6ed1dad5fd40cfd32fe70efbf95d440daf783d324",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/uracil.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "nucleotide-a-0": {
+      "sha256": "542ae635e7b3cf713844e3b022a6314e38e2028dcade12478c7f84f6931a64c8",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-a-0.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "nucleotide-c-0": {
+      "sha256": "1d1ac5e8ef53dabf7b143344f68776bd0c35e5f56a0a936cf5950caf68e2038a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-c-0.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "nucleotide-g-0": {
+      "sha256": "ec33a61493fcacb506454a6e6ec1ff8a6595b820cf7cea4c9bea57685482e634",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-g-0.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "nucleotide-t-0": {
+      "sha256": "40e4b36deebc34cd088c2f45aafc459cc7942f6cc451448acd6c7ca79535151b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-t-0.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "nucleotide-u-0": {
+      "sha256": "7a66ee7a438fc0a14d6f89849ce816cc2b065429270ff05534c5c07b398ba14a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Emmett_Leddin/nucleotide-u-0.svg",
+      "author": "Emmett Leddin",
+      "license": "CC0-1.0"
+    },
+    "ssdna-single-stranded": {
+      "sha256": "3cbc3942a939bf31bea1077ef834e0d2dd1b47fec34045d3b286cea16d2a382a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Samuel-Nestor-Meckoni/ssDNA-single-stranded.svg",
+      "author": "Samuel-Nestor-Meckoni",
+      "license": "CC0-1.0"
+    },
+    "rna-bulge": {
+      "sha256": "aeec5fb6948c305fac8271d66d5bfe238bf0e9a3e050c50bcbba003bffcf826d",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_bulge.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "rna-internal-loop": {
+      "sha256": "bc20bfa0296dbec3c0487aab216cdc27101dcc02421d78ed79e5e5db5e3ced10",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Nucleic_acids/DBCLS/RNA_internal_loop.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "chromatin-histones": {
+      "sha256": "a06381f80b314dbab03a65db6f047e1796a4f9df75e817841be25bf638ffe4ea",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Nucleic_acids/Pauline_Franz/chromatin-histones.svg",
+      "author": "Pauline Franz",
+      "license": "CC0-1.0"
+    },
+    "linear-chromatin": {
+      "sha256": "6f3cde59a7991d8f33eacd72eef5a81b6f965681608d79c1a710b9343ae45a67",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/linear_chromatin.svg",
+      "author": "Margot Riggi",
+      "license": "CC-BY-4.0"
+    },
+    "transcription-factor-rna": {
+      "sha256": "e6cc042a942c9a621840a2c5646b8b0753803df635c91415bef4c078b62eb6aa",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Intracellular_components/Margot_Riggi/transcription-factor-rna.svg",
+      "author": "Margot Riggi",
+      "license": "CC-BY-4.0"
+    },
+    "crispr-cas9": {
+      "sha256": "1eb035435becab59f87b5eb897d141d6efd85ad4e6806197c53d3d5c84bfc337",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_Cas9.svg",
+      "author": "Marcel Tisch",
+      "license": "CC0-1.0"
+    },
+    "crispr-plasmid": {
+      "sha256": "4e220fa0e98491b2e6455859721819dc770a06a9f5e7840a5c8801d171044168",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Genetics/Marcel_Tisch/CRISPR_plasmid.svg",
+      "author": "Marcel Tisch",
+      "license": "CC0-1.0"
+    },
+    "snp": {
+      "sha256": "89e0e373366e25d7591ff35e81a7d40b0324778266e09ccf225100d3d3af9ac2",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/SNP.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "str": {
+      "sha256": "b21586366dfced6bd272514fcad3178f2134c6b1cc87949f750e94bd6002cf72",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Helicase_11/STR.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "damaged-dna": {
+      "sha256": "99eb3daa3ee249f8c14ab23b537bd05869367576d61f3b2b0543239f249de810",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/Rahel-Khdhr/damaged_DNA.svg",
+      "author": "Rahel-Khdhr",
+      "license": "CC-BY-4.0"
+    },
+    "chromatin-domain": {
+      "sha256": "ad43ee504028f3f12eadc3aa6fcdd4c55bfb72250477e86f597dc10d3b5cf8be",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Chromatin_domain.svg",
+      "author": "ChenxinLi",
+      "license": "CC-BY-4.0"
+    },
+    "promoter-enhancer-loop": {
+      "sha256": "44941e5379bac4f4a2051558be9228da79f056faa34127693c453337aa4105b0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop.svg",
+      "author": "ChenxinLi",
+      "license": "CC-BY-4.0"
+    },
+    "promoter-enhancer-loop-tf": {
+      "sha256": "4e26e5db779bfb79fec55408eb4f2c258a20389f2bbcdd4ba5b814ad6da6c177",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Genetics/ChenxinLi/Promoter_enhancer_loop_TF.svg",
+      "author": "ChenxinLi",
+      "license": "CC-BY-4.0"
+    },
+    "mhc2": {
+      "sha256": "14a8dbd23e368e23dbd3e8a849c74a6a4e86340149b2d8fd755ae97d07ce46e4",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/MHC2.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "mhc1": {
+      "sha256": "0f9c128350ef980d14242591a7d9b863e588468475f4dd4a39d1892413f69880",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/mhc1.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "neutrophil": {
+      "sha256": "bb7863530395bf3fc52a23e2fb29df2d32ce5c965941a152ebcb0d8526cc793b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/neutrophil.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "eosinophil": {
+      "sha256": "d0810a5afd8f7f82419133b568499d222d762686029becdb55edc1259dc85b66",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/eosinophil.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "t-cell-receptor": {
+      "sha256": "5cf2b556feaa922eb2e784979b474dec866bb7b0479e47e72ed3ed995e8140c8",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Helicase_11/t_cell_receptor.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "antibody-c1q": {
+      "sha256": "482a76a77f18ed8e04f07426c4ddb92be3f423da1d9009768135d1c4d9c9e80b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/Antibody_c1q.svg",
+      "author": "Sebastian-Reinig",
+      "license": "CC-BY-4.0"
+    },
+    "mast-cell-1": {
+      "sha256": "13511fec65e041ae818551da78167ca94c53c66261e0f1f98122eda1c3286442",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_1.svg",
+      "author": "Sebastian-Reinig",
+      "license": "CC-BY-4.0"
+    },
+    "mast-cell-degranulation-1": {
+      "sha256": "91a849b39f6ad87be1e3cf5e429d6911d9c9a3a49a60a362c264f59239c345c0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Blood_Immunology/Sebastian-Reinig/mast_cell_degranulation_1.svg",
+      "author": "Sebastian-Reinig",
+      "license": "CC-BY-4.0"
+    },
+    "sonicator": {
+      "sha256": "6a5d38fc19754d7c21b400d0643d61029e9435d50f89947911e340b7eae90335",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/sonicator.svg",
+      "author": "KeHan",
+      "license": "CC0-1.0"
+    },
+    "vortex-mixer": {
+      "sha256": "eb1e16d3d3ab5cc095c9788a633d29e4892f88807a832b01a10f67514b85c007",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/vortex_mixer.svg",
+      "author": "KeHan",
+      "license": "CC0-1.0"
+    },
+    "water-bath": {
+      "sha256": "cebd4a555c5ec9e79d98c066ef1537f01a77ee856004e49eaad7e2ccdeef6c0c",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/KeHan/water_bath.svg",
+      "author": "KeHan",
+      "license": "CC0-1.0"
+    },
+    "chromatography": {
+      "sha256": "4bfa5d80bc28e00ee7efca80d5db273e3318cd9f024d4ac17b16761cd36df4fb",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Graham-Delafield/chromatography.svg",
+      "author": "Graham-Delafield",
+      "license": "CC0-1.0"
+    },
+    "flow-cytometer-cell-sorter": {
+      "sha256": "43936e2266c829c09315089546050fcc017c9f0b2c2f9fc63997142bec4eff63",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/flow-cytometer-cell-sorter.svg",
+      "author": "Derek-Croote",
+      "license": "CC0-1.0"
+    },
+    "simple-syringe-cartoon": {
+      "sha256": "c2013b3a3c7e6f9a909536299ad20abd23d8161e997c5c5333d703457bfd2f4d",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Derek-Croote/simple-syringe-cartoon.svg",
+      "author": "Derek-Croote",
+      "license": "CC0-1.0"
+    },
+    "bioreactor": {
+      "sha256": "a404c7d4750abe88916817a9d9b6089a3702767f85d8743b3dace326a4460940",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/bioreactor.svg",
+      "author": "Marcel Tisch",
+      "license": "CC0-1.0"
+    },
+    "microfluids-chip": {
+      "sha256": "ee3d68ed586f9996d0beef06e100606d25bddb72b27eaa0c20a3c6431047aba0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/microfluids_chip.svg",
+      "author": "Marcel Tisch",
+      "license": "CC0-1.0"
+    },
+    "recording-pipette": {
+      "sha256": "59725003c6e4a20ce65aa9448e9898b9e4f14e5868dd53507167c4b2a62dfde3",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Marcel_Tisch/recording_pipette.svg",
+      "author": "Marcel Tisch",
+      "license": "CC0-1.0"
+    },
+    "centrifuge": {
+      "sha256": "ebf2d4f256a66ab89651b9e2c569178496ed4585c59cfd0b0c8f6b489f9719ce",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/Low_speed_centrifuge.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "autoclave": {
+      "sha256": "4256cd5f7575901b0fe3e9af5ceb2ec452d4fa678956d78b988ff01459700cf6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/autoclave.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "cleanbench": {
+      "sha256": "4609303d8ec26ec2fbbb1e9acd88af044af97eead1e9c03d165801a73ca42c0e",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/cleanbench.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "confocal-scanning-laser-microscope-cslm": {
+      "sha256": "c5258c4d732bbf7abf28a516b1140ccd0b8a1696bc80280bb39480acfb25424a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/confocal-scanning-laser-microscope-CSLM.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "desktop-electron-microscope": {
+      "sha256": "22e1a5a8b1d928148a65416ac76b80d874ccd0d1356dd7cf9963e16d8889d101",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/desktop_electron_microscope.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "freezer": {
+      "sha256": "8115e73f3de09be4ed7a2271fa79314dc9d1b90ade2e9670abe74b3e2b70f0af",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/freezer.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "microtube-closed": {
+      "sha256": "057a7c35f61a2103c2b75e357a807bf336323dfe27cda781070aadf9a51b28b4",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/microtube-closed.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "ph-meter": {
+      "sha256": "35d802dba6ba3c71590241543cc29dfbcdac3221b832d2c96784345bb8d9e8d5",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/ph-meter.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "pipette-tip-box": {
+      "sha256": "6295cc48c69725d978f45a942a2194e710cb00c20f354dbb45acd5661223a470",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/pipette-tip-box.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "shaker": {
+      "sha256": "07f5d57178a97d4c8d188d636c251b117deb48776974629882fb06c5be8b5a51",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/shaker.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "thermalcycler-pcr": {
+      "sha256": "86aaedb8364525d7fcee1c193612b8c08a97cc76ab9c82bf3cc029022af0661a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/thermalcycler-pcr.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "transmission-electron-microscope-tem": {
+      "sha256": "d6e990a02dc9c706d9dcb2a403fe2e139fd7e93d5fbe0f00df077131a123c782",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Lab_apparatus/DBCLS/transmission-electron-microscope-tem.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "laboratory-scissor-jack": {
+      "sha256": "5b5f8f77bc56034cd7bd109743ffb9d08587b0fa7c61c91f1fb3abc92bea59b6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/OpenClipart/laboratory-scissor-jack.svg",
+      "author": "OpenClipart",
+      "license": "CC0-1.0"
+    },
+    "graduated-cylinder-tall-form-250ml": {
+      "sha256": "afb8d0126bc06eaaae848f3062cabb6812266dd3d32d75eb9e43d7743c34f00a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Lab_apparatus/Xavax/Graduated_Cylinder_tall_form_250ml.svg",
+      "author": "Xavax",
+      "license": "CC0-1.0"
+    },
+    "healthy-liver": {
+      "sha256": "ef460961abd03b4cbb72d82299736d0d2696c571f990b2be2b3b1db3a7e9012b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Human_physiology/Jan-Clusmann/healthy_liver.svg",
+      "author": "Jan-Clusmann",
+      "license": "CC0-1.0"
+    },
+    "yeast": {
+      "sha256": "7f7fcb5c616103d8bdbb84d40ef5912c7c785b6e88ca2aa0fa6084bddacdc2a6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/Ewa-Oz/Yeast.svg",
+      "author": "Ewa-Oz",
+      "license": "CC0-1.0"
+    },
+    "phage": {
+      "sha256": "4b810ca6cd57ed251141a4f701ff98bcbe7e905e0cb982d96304c218ba8cf57e",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Microbiology/James-Lloyd/Phage.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "conidia": {
+      "sha256": "5680f711b194cae6a45ffa673e4db6e8e24e7c538b7a4ae7805e11276011562c",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Conidia.svg",
+      "author": "Andi-Wilson",
+      "license": "CC-BY-4.0"
+    },
+    "germlings": {
+      "sha256": "6d70739b564740a115af56d52c408d9628a8085588f4e130698d501b23b17a24",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Germlings.svg",
+      "author": "Andi-Wilson",
+      "license": "CC-BY-4.0"
+    },
+    "mycelium": {
+      "sha256": "4cda3ffaae92ad3c39a685cf904c62d9477368549b705be5daab72617ca4050d",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/Andi-Wilson/Mycelium.svg",
+      "author": "Andi-Wilson",
+      "license": "CC-BY-4.0"
+    },
+    "bacillus-subtilis": {
+      "sha256": "3a8f787271eaa59b52db47e6880a49ce775ab8e70b15f319cf28a86d838c1457",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/Bacillus_subtilis.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "fission-yeast": {
+      "sha256": "9f9e0f4bbb682b051e52a830cfc71d57343736e67edb1672222799e7bceecaa1",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/DBCLS/fission_yeast.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "fungal-cells": {
+      "sha256": "c22e432b4060a736744ed91c97a7624d87146c65ce3369ba82200ea3c8bfffcc",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Fungal_cells.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "yeast-cells": {
+      "sha256": "573e7d11c7d9fbd84f63daed6ce1fdc86488e4e1eea6de33a966bf3e15aad35b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Yeast_cells.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "bacteria1m-diplococci": {
+      "sha256": "03ecd1bda3ef9d7ec134eedd3de8fe458209dbc5d43a24e9d48c3ce9ee587b85",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_diplococci.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "bacteria1m-tetrad": {
+      "sha256": "126fd0835d3b2174c281705af545dc7c985da6e3c9413c66b68076a8be60fe8b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Bacteria1M_tetrad.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "apicomplexa-cells": {
+      "sha256": "4dec77499e5d61cc1ec40b34a8d149000a168183da8fa973f562667a10cee22a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Apicomplexa_cells.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "mollicutes-cells": {
+      "sha256": "a47154dbda61b23470e01b4dab542e7c04f115a47646c71b5940168f93efdb43",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Mollicutes_cells.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "trypanosoma": {
+      "sha256": "6e719f43cba5c109fcac258d7219c30668fe3ac86a2bd418ab9219c39db0a465",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Microbiology/SwissBioPics/Trypanosoma.svg",
+      "author": "SwissBioPics",
+      "license": "CC-BY-4.0"
+    },
+    "poxvirus": {
+      "sha256": "47cf909e2a1a0b3c52764ffad69e86a9c516a8ea403e38d45ad1d4d7958d6fb1",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Viruses/Alejandro-Mat%C3%ADa/poxvirus.svg",
+      "author": "Alejandro-Matía",
+      "license": "CC-BY-4.0"
+    },
+    "dicotseedling": {
+      "sha256": "6db203817ff9df0b5a7ed1d7ac2f4724b5c98dd75d269fbf074093919ed3d8dc",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/DicotSeedling.svg",
+      "author": "Gina-Vong",
+      "license": "CC0-1.0"
+    },
+    "leaf": {
+      "sha256": "b5f8b57717567babbc7d9125963103fcf4e783af5646d8101167508fb446c2da",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Gina-Vong/Leaf.svg",
+      "author": "Gina-Vong",
+      "license": "CC0-1.0"
+    },
+    "arabidopsisseedlings": {
+      "sha256": "0d7b99972458c54bc9bc7dddeef015ec217a8391cae91bccb29006ecfd70f042",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisSeedlings.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "arabidopsistopview": {
+      "sha256": "848d32e494e61671294d361fd403e3795e39831fa07b2eef79cc4e43c552de2a",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/ArabidopsisTopView.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "mosscolony": {
+      "sha256": "409e0e94f69dc2274b8aeb11404fe43812a8c71bdef89dd37bf514ac75dba0c0",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/MossColony.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "moss-gametophore": {
+      "sha256": "4cd1b1c690a83534617484ca483b64d18916668707b9a6c7d8627ddb5edc3094",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Gametophore.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "moss-protonema": {
+      "sha256": "2952808b1057a94d0dda155ce405fb1d830cafeb730cf399c2a46eb5795151ee",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "moss-protonema-buds": {
+      "sha256": "352b0a216c2872b9651e6bee7498a3cb9f439c36553879c476ffd6fb48742272",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/Moss_Protonema_Buds.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "tomatofruit": {
+      "sha256": "cdbf6bf10fdee0e224b6957453b0dd6a8fd88a757a62c5f96162edd1a2289679",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/James-Lloyd/TomatoFruit.svg",
+      "author": "James-Lloyd",
+      "license": "CC0-1.0"
+    },
+    "utricularia-trap": {
+      "sha256": "cb058f0bd2f06f7e94187c034559f76a1b2742646da095cb9486c4305822cc15",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Plants_Algae/Samuel-Nestor-Meckoni/Utricularia_trap.svg",
+      "author": "Samuel-Nestor-Meckoni",
+      "license": "CC0-1.0"
+    },
+    "stages-of-lateral-root-development": {
+      "sha256": "b7a6decd72a2a7930bc2342db418a7441639280fc28ff3f4b231a449e5c01520",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Alexis_Maizel/Stages_of_lateral_root_development.svg",
+      "author": "Alexis Maizel",
+      "license": "CC-BY-4.0"
+    },
+    "fern-palm": {
+      "sha256": "707e1fb81b13d6e4551222ec81eadf23f34d13f45cb83d2306018fa1476eeec6",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Fern_palm.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "ginkgo": {
+      "sha256": "7b560283a92eab9ac993c280d1353355f178b83fbe79a8798acce7fba6386019",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Ginkgo.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "rice": {
+      "sha256": "f2cbde958dc58b7dd686aca59bf82b7afd2e571f70bd745eb169a0e0adde9fc1",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/Rice.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-antheridium": {
+      "sha256": "75d0b403bbb6af8967a0ef75e268bbfb969d58e249894e9c8a907a1e7dd631ca",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_antheridium.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-archegonium": {
+      "sha256": "9ef52c5a3fcc69dd6c60fd4d5531758d5575a146f34584e5bcea52447f8653b8",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_archegonium.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-early-sporophyte": {
+      "sha256": "85a32291a03b089fee4d7caad7b46e2b0b08854caefed618b39652868c7d0050",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_early_sporophyte.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-protoplast": {
+      "sha256": "db4bf61f1a8cbb0d522dbab8e2ce44a1866a26b237a1df41d991d35f89ac59f9",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_protoplast.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-rhizoid": {
+      "sha256": "40a9eb0375362d7860cc59ff0fcb2db134f2bfb544d694d60b819c85cfa602cc",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_rhizoid.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "earthmoss-spore": {
+      "sha256": "cf07524d5ac5e01d7ad98939cf7a0ce3990f6828604d9cc626f5867ceb3d0a14",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/DBCLS/earthmoss_spore.svg",
+      "author": "DBCLS",
+      "license": "CC-BY-4.0"
+    },
+    "arabidopsis-embryonic-development": {
+      "sha256": "34e11cd4a6088a2a23ba76427536791859b3930a73088f67dd0fdb0f12229817",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Arabidopsis_Embryonic_Development.svg",
+      "author": "Erin Sparks",
+      "license": "CC-BY-4.0"
+    },
+    "plant-intercellular-communication": {
+      "sha256": "765b2c4f38ea0c5016085135e31ecd22f1ba2c2e8fb20a113f34d54e216c9a25",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Plant_Intercellular_Communication.svg",
+      "author": "Erin Sparks",
+      "license": "CC-BY-4.0"
+    },
+    "rice-root-anatomy": {
+      "sha256": "bf30c2d5ac912e5547d3539602fa3103d65c979261f6599b98163240a7d0df92",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Erin_Sparks/Rice_Root_Anatomy.svg",
+      "author": "Erin Sparks",
+      "license": "CC-BY-4.0"
+    },
+    "arabidopsis-root-cross-section": {
+      "sha256": "e2816d9de95cc3fb963dd8b9dc947578d926e0b47e41213cb23f7faa447b64ac",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_cross_section.svg",
+      "author": "Frédéric Bouché",
+      "license": "CC-BY-4.0"
+    },
+    "arabidopsis-root-longitudinal-section": {
+      "sha256": "63d461b1dd8d9da909b1c9a7b86a981b3cd0e08c5137cee62956d85b5862cd17",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Plants_Algae/Fr%C3%A9d%C3%A9ric_Bouch%C3%A9/Arabidopsis_root_longitudinal_section.svg",
+      "author": "Frédéric Bouché",
+      "license": "CC-BY-4.0"
+    },
+    "simple-cardiomyocyte": {
+      "sha256": "c37037b444d7688d25c43e77627599e43b9df831abbb63c943de20c6f8d412cc",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Marnie-Maddock/simple_cardiomyocyte.svg",
+      "author": "Marnie-Maddock",
+      "license": "CC0-1.0"
+    },
+    "mii-oocyte": {
+      "sha256": "1632ac808122fa9a4003817d60e120ccee3d6903918a5832ea34298a9c6fbd0b",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/MII_Oocyte.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "1cell-pn4-zygote": {
+      "sha256": "172525262689d5f1cfeac3e8743278c38822c66255897da2915033f9c8957f0e",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/1cell_pn4_zygote.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "2c-embryo": {
+      "sha256": "99d81acab08399edcca5bb4cd1e800383c93cf6eefb633e00d072adca6128110",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/2c_embryo.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "8c-embryo": {
+      "sha256": "e2f908061f271c68b71ab60f9f3dd9a919d03f9001865b5082245073043bc4ea",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/8c_embryo.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "morula-embryo": {
+      "sha256": "65aee37c4300f724040a5d693c2b7cc33b573c5054aaa4416b60273272cef780",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/morula_embryo.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "early-blastocyst-embryo": {
+      "sha256": "859d047a13d1ee3c7e676c7a89ccd13b7f4436b550f85f09cb81841ee3f5a813",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/early_blastocyst_embryo.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "late-blastocyst-embryo": {
+      "sha256": "4853a84832753389c2472aa71b483e5859a9e1f2d35415f9d3f24518df39bf0d",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-0/Cell_types/Xi-Chen/late_blastocyst_embryo.svg",
+      "author": "Xi-Chen",
+      "license": "CC0-1.0"
+    },
+    "pink-transporter": {
+      "sha256": "5ea36b75024d299175820fc9180daaf8575e68586c640fdd6d9fefb8ca503c37",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/pink_transporter.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    },
+    "engulfing-membrane": {
+      "sha256": "8125ede124d4caa7ddbf7888547c8582c4647a61452fa40717951d2b99744c10",
+      "url": "https://raw.githubusercontent.com/duerrsimon/bioicons/d29e766ea7580b8063c4f47b29e872db40a4d979/static/icons/cc-by-4.0/Cell_membrane/Helicase_11/engulfing_membrane.svg",
+      "author": "Helicase 11",
+      "license": "CC-BY-4.0"
+    }
+  },
+  "rejected": [
+    {
+      "id": "adp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "amp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "atp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "camp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "cgmp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "gdp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "gmp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "gtp",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "inorganic-phosphate",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "protein-primary-structure",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "protein-secondary-structure",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "protein-tertiary-structure",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "protein-quaternary-structure",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "chromosome",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "karyotype",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "duplication",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "insertion",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "inversion",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "isochromosome",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "deletion",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "translocation",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "iga",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "igd",
+      "reason": "Foreign content is not an Adobe-only editor reference"
+    },
+    {
+      "id": "ige",
+      "reason": "Foreign content is not an Adobe-only editor reference"
+    },
+    {
+      "id": "igg",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "igm",
+      "reason": "Foreign content is not an Adobe-only editor reference"
+    },
+    {
+      "id": "lymphocyte",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "b-cell-1",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bone-marrow",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "germinal-center",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "plasma-cell",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "plasmablast",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "incubator",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "microscope-stereo",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "mortar-2",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "pipette-stand",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "plate-reader",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "tube-rack",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "tweezers-no5",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "agarose-gel",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "glass-rod",
+      "reason": "No scientific vector paths"
+    },
+    {
+      "id": "laboratory-stands",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "dropper-plastic",
+      "reason": "Unresolved local source reference"
+    },
+    {
+      "id": "arteries-and-veins",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "continuous-capillary",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "fenestrated-capillary",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "sinusoidal-capillary",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "ear-structure",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "horizontal-section-of-tracheal",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "structure-of-lymph-nodes",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "white-adipocyte",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "anterior-view-of-knee-joint",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "anterior-view-of-the-elbow-joint",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "anterior-view-of-the-shoulder-joint",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "view-of-thoracic-skelton",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "cerebellum-dorsal-view",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "division-of-the-cerebellum",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "frontal-plane-of-the-brain-amygdala",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "frontal-plane-of-the-brain-hippocampus",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "horizontal-plane-of-the-brain",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "corticospinal-tract",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "corticobulbar-tract",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "negative-bacteria",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "positive-bacteria",
+      "reason": "XML entities forbidden"
+    },
+    {
+      "id": "archaea-cells",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria1m-coccus",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria1m-filamentous",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria1m-rod",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria1mplus-rod",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria2m-nostoc",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria2m-comma",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "bacteria2m-spiral",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "polyomaviridae",
+      "reason": "no element found: line 1, column 0"
+    },
+    {
+      "id": "sars-cov-2",
+      "reason": "no element found: line 1, column 0"
+    },
+    {
+      "id": "virus",
+      "reason": "no element found: line 1, column 0"
+    },
+    {
+      "id": "lemna",
+      "reason": "No scientific vector paths"
+    },
+    {
+      "id": "cyanobacteria",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    },
+    {
+      "id": "volvox",
+      "reason": "Embedded raster wrapper is not vector artwork"
+    }
+  ],
+  "visualExcluded": [
+    {
+      "id": "stages-of-lateral-root-development",
+      "reason": "Source title is clipped by original page bounds; source evidence retained but asset not bundled."
+    }
+  ]
+}
