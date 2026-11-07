@@ -20,7 +20,7 @@ const StudioCanvas = forwardRef(function StudioCanvas({ document: doc, selected,
     const el = viewport.current; if (!el) return;
     const visible = visibleObjects(doc);
     const box = content && visible.length ? boundsOf(visible) : { x: 0, y: 0, width: doc.width, height: doc.height };
-    const zoom = Math.max(0.1, Math.min(2, (el.clientWidth - 80) / box.width, (el.clientHeight - 80) / box.height));
+    const zoom = Math.max(0.1, Math.min(2, (el.clientWidth - 48) / box.width, (el.clientHeight - 48) / box.height));
     setView({ zoom, x: (el.clientWidth - box.width * zoom) / 2 - box.x * zoom, y: (el.clientHeight - box.height * zoom) / 2 - box.y * zoom });
   };
   useEffect(() => { fit(); }, [doc.id]);

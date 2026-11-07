@@ -1,0 +1,26 @@
+.sci-practice { flex: 1; min-width: 0; overflow: auto; padding: 20px; color: #293f38; background: #f5f7f3; }
+.sci-practice-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.sci-practice h2, .sci-practice h3 { margin: 0 0 6px; font-weight: 650; }
+.sci-practice h2 { font-size: 22px; }
+.sci-practice h3 { font-size: 18px; }
+.sci-practice p { margin: 6px 0 12px; line-height: 1.55; }
+.sci-practice-header p, .sci-practice-hint { color: #586c62; font-size: 13px; }
+.sci-practice button { padding: 8px 12px; border: 1px solid #c8d5c8; border-radius: 8px; background: #fff; color: #2e5142; cursor: pointer; font-size: 13px; }
+.sci-practice button:hover:not(:disabled) { background: #edf3e9; border-color: #91ac91; }
+.sci-practice button:disabled { cursor: default; opacity: .5; }
+.sci-practice button:focus-visible, .sci-practice input:focus-visible { outline: 3px solid #5b8264; outline-offset: 2px; }
+.sci-practice-disclosure { padding: 10px 14px; border: 1px solid #ded6b8; border-radius: 8px; background: #fffced; color: #6b603e; font-size: 13px; }
+.sci-practice-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 300px); align-items: start; gap: 18px; }
+.sci-practice-figure { min-width: 0; overflow: auto; border: 1px solid #d8e0d3; border-radius: 12px; background: #fffdf9; box-shadow: 0 8px 24px #243e3010; }
+.sci-practice-figure svg { display: block; width: 100%; height: auto; min-width: 440px; }
+.sci-practice-card { padding: 20px; border: 1px solid #d8e0d3; border-radius: 12px; background: #fff; }
+.sci-practice-progress { color: #586c62; font-size: 13px; }
+.sci-practice progress { width: 100%; height: 7px; margin-bottom: 20px; accent-color: #63866a; }
+.sci-practice label { display: block; margin: 18px 0 6px; font-size: 13px; font-weight: 600; }
+.sci-practice input { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #b9cbbd; border-radius: 7px; color: #293f38; background: #fff; }
+.sci-practice-result { min-height: 44px; padding: 8px 0; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
+.sci-practice-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sci-practice-actions button:last-child { flex-basis: 100%; background: #edf3e9; }
+.sci-practice-empty { max-width: 540px; padding: 32px 0; }
+@media (max-width: 1050px) { .sci-practice-layout { grid-template-columns: minmax(0, 1fr); } .sci-practice-card { max-width: 520px; } }
+@media (max-width: 600px) { .sci-practice { padding: 12px; } .sci-practice-card { padding: 16px; } }

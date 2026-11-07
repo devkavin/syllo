@@ -1,13 +1,16 @@
 import React from "react";
 import { ArrowDown, ArrowUp, Eye, EyeOff, LockKeyhole, UnlockKeyhole } from "lucide-react";
-import { assetById, expandSelection } from "./document";
+import { expandSelection } from "./document";
+import { objectName } from "./layerNames";
+import StudioLayerOutline from "./StudioLayerOutline";
 
-export const objectName = obj => obj.name || (obj.type === "asset" ? assetById[obj.assetId]?.name || "Unavailable asset" : obj.type === "text" ? obj.text.split("\n")[0] : obj.type === "arrow" ? "Directional arrow" : obj.type === "connector" ? "Connector" : "Annotation");
+export { objectName };
 
-export default function StudioLayers({ document: doc, selected, setSelected, onLayer, onReorder }) {
+export default function StudioLayers({ document: doc, selected, setSelected, onLayer, onReorder, compact = false }) {
+  if (compact) return <StudioLayerOutline document={doc} selected={selected} setSelected={setSelected} onLayer={onLayer} onReorder={onReorder} />;
   return <section className="sci-layers" aria-label="Canvas layers">
-    <div className="sci-library-intro"><h3>Layers & arrangement</h3><p>Top layers appear in front. Hide, lock or select any object.</p></div>
-    <label className="sci-label-toggle"><input type="checkbox" checked={doc.showLabels !== false} onChange={event => onLayer(null, { showLabels: event.target.checked })} />Show prepared labels</label>
+    {!compact && <><div className="sci-library-intro"><h3>Layers & arrangement</h3><p>Top layers appear in front. Hide, lock or select any object.</p></div>
+    <label className="sci-label-toggle"><input type="checkbox" checked={doc.showLabels !== false} onChange={event => onLayer(null, { showLabels: event.target.checked })} />Show prepared labels</label></>}
     {!doc.objects.length && <p className="sci-no-results">Your illustrations and annotations will appear here.</p>}
     <ol>{[...doc.objects].reverse().map((obj, i) => <li key={obj.id} className={`${selected.includes(obj.id) ? "is-selected" : ""} ${obj.hidden ? "is-hidden" : ""}`}>
       <button className="sci-layer-select" title={objectName(obj)} aria-label={`Select layer ${objectName(obj)}`} aria-pressed={selected.includes(obj.id)} onClick={() => setSelected(expandSelection(doc.objects, [obj.id]))}><span>{objectName(obj)}</span><small>{obj.groupId ? "Grouped · " : ""}{obj.type}{obj.isLabel ? " · label" : ""}</small></button>

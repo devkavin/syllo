@@ -39,11 +39,11 @@ export function ObjectContents({ obj, prefix = "figure" }) {
 
 export function objectTransform(obj) { return `translate(${obj.x} ${obj.y}) rotate(${obj.rotation} ${obj.width / 2} ${obj.height / 2})`; }
 
-export default function IllustrationSvg({ document: doc, children, prefix = doc.id, ...props }) {
+export default function IllustrationSvg({ document: doc, children, prefix = doc.id, descriptiveTitles = true, ...props }) {
   return <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${doc.width} ${doc.height}`} aria-label={doc.title} role="img" {...props}>
     <title>{doc.title}</title>
     <rect width={doc.width} height={doc.height} fill={doc.background} />
-    {visibleObjects(doc).map(obj => <g key={obj.id} transform={objectTransform(obj)} opacity={obj.opacity}><title>{obj.type === "asset" ? assetById[obj.assetId]?.name || "Unavailable asset" : obj.type === "text" ? obj.text : obj.type}</title><ObjectContents obj={obj} prefix={prefix} /></g>)}
+    {visibleObjects(doc).map(obj => <g key={obj.id} transform={objectTransform(obj)} opacity={obj.opacity}>{descriptiveTitles && <title>{obj.type === "asset" ? assetById[obj.assetId]?.name || "Unavailable asset" : obj.type === "text" ? obj.text : obj.type}</title>}<ObjectContents obj={obj} prefix={prefix} /></g>)}
     {children}
   </svg>;
 }

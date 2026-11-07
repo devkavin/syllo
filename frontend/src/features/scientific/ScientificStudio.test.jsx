@@ -22,6 +22,7 @@ it("saves selected editable components through the account-scoped library", asyn
   try {
     fireEvent.click(screen.getByRole("button", { name: "Canvas Mitochondrion" }));
     fireEvent.keyDown(screen.getByRole("button", { name: "Canvas Mitochondrion" }), { key: "Enter" });
+    fireEvent.click(screen.getByRole("tab", { name: "Assets", exact: true }));
     fireEvent.click(screen.getByRole("button", { name: "Components", exact: true }));
     fireEvent.change(screen.getByLabelText("Saved item name"), { target: { value: "Mitochondrial component" } });
     fireEvent.click(screen.getByRole("button", { name: "Save selected component" }));
@@ -48,8 +49,8 @@ it("keeps hidden group labels in place relative to moved and scaled artwork", ()
   const onDraft = vi.fn(), asset = createObject("asset", { assetId: "mitochondrion", name: "Grouped organelle", x: 100, groupId: "g" });
   const label = createObject("text", { text: "Hidden group label", x: 300, hidden: true, groupId: "g" });
   render(<ScientificStudio initialDocument={{ ...createDocument(), objects: [asset, label] }} onDraft={onDraft} onSave={vi.fn()} onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole("tab", { name: "Layers" }));
-  fireEvent.click(screen.getByRole("button", { name: "Select layer Grouped organelle" }));
+  expect(screen.getByRole("complementary", { name: "Figure outline" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Select group Grouped organelle" }));
   fireEvent.keyDown(screen.getByRole("dialog"), { key: "ArrowRight", shiftKey: true });
   let next = onDraft.mock.calls.at(-1)[0];
   expect(next.objects.map(obj => obj.x)).toEqual([110, 310]);
@@ -62,7 +63,7 @@ it("keeps hidden group labels in place relative to moved and scaled artwork", ()
 it("manages hidden and locked layers without deleting or moving protected artwork", () => {
   const onDraft = vi.fn(), asset = createObject("asset", { assetId: "mitochondrion", name: "My mitochondrion" });
   const view = render(<ScientificStudio initialDocument={{ ...createDocument(), objects: [asset] }} onDraft={onDraft} onSave={vi.fn()} onClose={vi.fn()} />);
-  fireEvent.click(screen.getByRole("tab", { name: "Layers" }));
+  expect(screen.getByRole("complementary", { name: "Figure outline" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Select layer My mitochondrion" }));
   fireEvent.click(screen.getByRole("button", { name: "Lock layer My mitochondrion" }));
   fireEvent.keyDown(screen.getByRole("dialog"), { key: "Delete" });
@@ -82,7 +83,7 @@ it("binds a connector to an illustration and retains it after moving the target"
   fireEvent.click(screen.getByRole("tab", { name: "Insert" }));
   fireEvent.click(within(screen.getByRole("tabpanel")).getByRole("button", { name: "Connector", exact: true }));
   fireEvent.change(screen.getByLabelText("Start target"), { target: { value: asset.id } });
-  fireEvent.click(screen.getByRole("tab", { name: "Layers" }));
+  expect(screen.getByRole("complementary", { name: "Figure outline" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Select layer Target organelle" }));
   fireEvent.change(screen.getByLabelText("X position"), { target: { value: "300" } });
   const line = onDraft.mock.calls.at(-1)[0].objects.find(obj => obj.type === "connector");
@@ -156,6 +157,7 @@ it("confirms template replacement inline and lets the user undo it", () => {
   fireEvent.click(screen.getByRole("button", { name: "Add label" }));
   fireEvent.click(screen.getByRole("tab", { name: "Templates" }));
   fireEvent.click(screen.getByRole("button", { name: "Use Electron Transport Chain" }));
+  fireEvent.click(screen.getByRole("tab", { name: "Properties", exact: true }));
   expect(screen.getByLabelText("Label text")).toHaveValue("Scientific label");
   fireEvent.click(screen.getByRole("button", { name: "Replace canvas", exact: true }));
   expect(screen.getByLabelText("Illustration title")).toHaveValue("Electron Transport Chain");

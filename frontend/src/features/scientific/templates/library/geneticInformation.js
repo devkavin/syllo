@@ -11,16 +11,42 @@ const chromatin = compose({ id: "chromatin-accessibility", name: "Chromatin acce
   note("Regulatory relationship diagram · Greater accessibility permits transcription; it does not guarantee it", 90, 860, 1430);
 });
 
-const transcription = compose({ id: "transcription-strand-direction", name: "Transcription strand direction", category: "Molecular biology", description: "A short sequence example connects template reading with complementary RNA synthesis.", references: [biology("15-2-prokaryotic-transcription", "Transcription")], notes: "The DNA artwork is context; nucleotide letters and prime marks are conventional sequence notation. The displayed sequence is invented solely to illustrate complementarity and is not a known gene. RNA polymerase reads the template 3′ to 5′ and builds RNA 5′ to 3′. Promoters, transcription bubbles, enzyme structure, RNA processing and coding-frame implications are omitted.", tags: ["transcription", "template strand", "RNA direction"] }, ({ text, asset, arrow, label, heading, note }) => {
-  const dna = asset("dna-double-helix", 80, 245, 300, 400); label("DNA context", dna, 90, 700, 340);
-  heading("DNA sequence notation", 540, 200, 800);
-  text("Coding strand     5′–ATG CCA TTT–3′", 540, 300, 940, 29, { bold: true });
-  const template = text("Template strand   3′–TAC GGT AAA–5′", 540, 425, 960, 29, { bold: true });
-  const rna = text("RNA product       5′–AUG CCA UUU–3′", 540, 690, 960, 29, { bold: true, color: "#537e76" });
-  arrow(template, rna, "bottom", "top", { role: "rna-synthesis" });
-  text("Template read 3′ → 5′\nRNA elongated 5′ → 3′", 1100, 530, 420, 25, { color: "#9c7050" });
-  note("Sequence example · RNA is complementary to the template and matches the coding strand with U replacing T", 90, 860, 1430);
+const transcription = compose({ id: "transcription-strand-direction", name: "Transcription strand direction", category: "Molecular biology", description: "A short sequence example connects template reading with complementary RNA synthesis.", references: [biology("15-2-prokaryotic-transcription", "Transcription")], notes: "The DNA artwork is context; nucleotide letters and prime marks are conventional sequence notation. The displayed sequence is invented solely to illustrate complementarity and is not a known gene. RNA polymerase reads the template 3′ to 5′ and builds RNA 5′ to 3′. Promoters, transcription bubbles, enzyme structure, RNA processing and coding-frame implications are omitted. Legend colors identify DNA and RNA notation; the direction arrow denotes template reading and RNA synthesis, not a molecular conversion of DNA into RNA.", tags: ["transcription", "template strand", "RNA direction"] }, ({ document, add, text, asset, arrow, label, heading, note }) => {
+  document.background = "#ffffff";
+  Object.assign(document.objects[0], { name: "Figure title", fontSize: 50, height: 74, color: "#15241e" });
+  Object.assign(document.objects[1], { name: "Figure subtitle", y: 117, fontSize: 25, height: 42, color: "#65716d" });
+
+  const dna = asset("dna-double-helix", 95, 230, 315, 515, { name: "DNA context", groupId: "transcription-dna-context" });
+  label("DNA context", dna, 151, 764, 260, 29, { name: "DNA context label", groupId: dna.groupId, color: "#263c36" });
+  Object.assign(heading("DNA sequence notation", 470, 215, 880), { name: "Sequence heading", fontSize: 34, height: 55, color: "#263c36" });
+
+  const strand = (name, sequence, y, color, groupId) => {
+    add("shape", { name: `${name} chip`, groupId, x: 470, y, width: 300, height: 66, color });
+    label(name, dna, 490, y + 11, 270, 29, { name: `${name} label`, groupId, bold: true, color: "#26332d" });
+    return label(sequence, dna, 805, y + 2, 480, 42, { name: `${name} sequence`, groupId, bold: true, color: "#17251e" });
+  };
+  strand("Coding strand", "5′–ATG CCA TTT–3′", 305, "#e2efff", "transcription-coding-strand");
+  const template = strand("Template strand", "3′–TAC GGT AAA–5′", 455, "#efe6fc", "transcription-template-strand");
+  const rna = strand("RNA product", "5′–AUG CCA UUU–3′", 685, "#e1f2dc", "transcription-rna-product");
+  arrow(template, rna, "right", "right", { name: "RNA synthesis direction", role: "rna-synthesis", color: "#315cbd", strokeWidth: 4 });
+  text("Template read 3′ → 5′", 1320, 460, 225, 28, { name: "Template reading direction", color: "#6941a5", groupId: "transcription-directions" });
+  text("RNA elongated 5′ → 3′", 1320, 685, 225, 28, { name: "RNA elongation direction", color: "#6941a5", groupId: "transcription-directions" });
+
+  const legendGroup = "transcription-legend";
+  add("shape", { name: "Legend background", groupId: legendGroup, x: 80, y: 840, width: 1440, height: 65, color: "#f5f7f6" });
+  text("Legend", 105, 855, 125, 25, { name: "Legend title", groupId: legendGroup, bold: true, role: "notation-legend" });
+  add("shape", { name: "DNA legend swatch", groupId: legendGroup, x: 255, y: 863, width: 49, height: 20, color: "#78aee6" });
+  text("DNA (double-stranded)", 320, 857, 345, 22, { name: "DNA legend", groupId: legendGroup, role: "notation-legend" });
+  add("shape", { name: "RNA legend swatch", groupId: legendGroup, x: 700, y: 863, width: 49, height: 20, color: "#9bcd89" });
+  text("RNA (single-stranded)", 765, 857, 330, 22, { name: "RNA legend", groupId: legendGroup, role: "notation-legend" });
+  add("arrow", { name: "Direction legend arrow", groupId: legendGroup, x: 1110, y: 875, width: 65, height: 1, color: "#315cbd", strokeWidth: 3 });
+  text("Read / synthesis direction", 1195, 857, 305, 20, { name: "Sequence notation legend", groupId: legendGroup, role: "notation-legend" });
+  note("Sequence example · RNA complements the template; U replaces T relative to the coding strand", 80, 915, 1440).name = "Sequence scope note";
 });
+// A new prepared composition gets a new identity; saved user documents keep their own version and objects.
+transcription.version = 2;
+transcription.document.id = "template-transcription-strand-direction-v2";
+transcription.document.objects.find(object => object.role === "review-status").name = "Draft review status";
 
 const processing = compose({ id: "eukaryotic-mrna-processing", name: "Eukaryotic mRNA maturation", category: "Molecular biology", description: "Separate splicing and terminal processing from the nuclear export of a mature transcript.", references: [biology("15-4-rna-processing-in-eukaryotes", "RNA processing")], notes: "Exon/intron names and terminal marks are editable sequence notation rather than physical RNA structures. Processing events can occur co-transcriptionally and are not forced into a universal strict temporal order here. Most canonical nuclear protein-coding transcripts are the context; exceptions such as non-polyadenylated histone mRNAs are omitted. Exons can include untranslated regions. Spliceosome structure and alternative splicing are omitted.", tags: ["splicing", "5 prime cap", "poly-A"] }, ({ text, asset, arrow, label, heading, note }) => {
   const nucleus = asset("nucleus", 90, 290, 330, 310); label("Nuclear context", nucleus, 90, 650, 370);
