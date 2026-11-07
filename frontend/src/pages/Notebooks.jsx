@@ -10,6 +10,7 @@ import StudyResponse from "@/components/StudyResponse";
 import { useResourceAutosave } from "@/hooks/useResourceAutosave";
 import AcademicSelector from "@/components/AcademicSelector";
 import NotebookEditor from "@/components/NotebookEditor";
+import { notebookMarkdown } from "@/lib/notebookContent";
 import NotebookFocus from "@/components/NotebookFocus";
 import ActiveFocusBar from "@/components/ActiveFocusBar";
 import NotebookPractice from "@/components/NotebookPractice";
@@ -266,6 +267,18 @@ function NotebookWorkspace({ accountId }) {
       setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (e) { setErr(formatError(e)); }
   };
+  const exportMarkdown = () => {
+    try {
+      const draft = autosave.getDraft();
+      const url = URL.createObjectURL(new Blob([notebookMarkdown(draft)], { type: "text/markdown;charset=utf-8" }));
+      const link = document.createElement("a"); link.href = url; link.download = `${(draft.title || "notebook").replace(/[<>:"/\\|?*]/g, "_")}.md`; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (e) { setErr(formatError(e)); }
+  };
+  const printNotebook = () => {
+    try { window.print(); }
+    catch (e) { setErr(formatError(e)); }
+  };
 
   return (
     <div className="flex flex-col gap-3 min-h-[75dvh] w-full min-w-0" data-testid="notebooks-page" data-expanded={expanded}>
@@ -354,7 +367,9 @@ function NotebookWorkspace({ accountId }) {
                   </div></fieldset>
                   <h3 className="border-t border-border pt-3 text-xs font-semibold text-muted-foreground">History & export</h3>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void loadHistory(); }}>Version history</button>
+                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); exportMarkdown(); }}>Export Markdown</button>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); exportNotebook(); }}>Export JSON</button>
+                  <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); printNotebook(); }}>Print / Save PDF</button>
                   <h3 className="border-t border-border pt-3 text-xs font-semibold text-muted-foreground">Recovery & safety</h3>
                   <p className="text-xs text-muted-foreground">Unsynced drafts and conflicts stay visible in the notebook. Use version history to recover an earlier save.</p>
                   <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => { setOptionsOpen(false); void removeNotebook(notebook.notebook_id); }} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>

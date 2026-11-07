@@ -1,6 +1,6 @@
 # Scientific template coverage
 
-The expanded library targets school/A-level and introductory university biology. Each composition teaches a distinct relationship, route, mechanism or experimental decision. None is counted simply because of a color, label, art style or layout change. The 25 additions below complement the original 10 templates.
+The expanded library targets school/A-level and introductory university biology. Each composition teaches a distinct relationship, route, mechanism or experimental decision. None is counted simply because of a color, label, art style or layout change. The 38 additions below complement the original 10 templates (48 total).
 
 All additions remain **drafts requiring subject matter review**. Structural checks and visual inspection establish portability and layout readiness, not scientific approval. There is no invented reviewer, approval date or expert sign-off.
 
@@ -31,6 +31,19 @@ All additions remain **drafts requiring subject matter review**. Structural chec
 | `restriction-digest-recognition` | EcoRI staggered cuts, cohesive pairing and ligase requirement | Generic restriction-enzyme source diagram | Source enzyme artwork is not relabeled as an EcoRI structure |
 | `light-microscopy-planning` | Preparation, focusing, magnification and resolving power | Light microscope and erythrocyte | Illustrated specimen is not a generated micrograph or calibration |
 | `pcr-experimental-controls` | Parallel sample, positive, no-template and conditional no-RT controls | Pipette and qPCR instrument | No fabricated curves/Cq values or diagnostic conclusions |
+| `crispr-cas9-editing` | Guide RNA target recognition, double-strand cleavage and NHEJ vs HDR repair | CRISPR plasmid, Cas9–gRNA and damaged DNA | Schematic complex; PAM/off-target kinetics omitted |
+| `enhancer-promoter-looping` | 3D chromatin looping brings distal enhancer factors to the core promoter | Chromatin domain and enhancer–promoter loop | Mediator, cohesin and CTCF boundaries omitted |
+| `dna-damage-mutagenesis` | Primary chemical DNA lesions versus repaired DNA or heritable SNPs | Damaged DNA, DNA helix and SNP | Specific excision enzymes and allele frequencies omitted |
+| `antigen-presentation-mhc` | Endogenous MHC I (CD8⁺) versus exogenous MHC II (CD4⁺) presentation | MHC I, MHC II and T-cell receptor | Cross-presentation and CD28/B7 co-stimulation omitted |
+| `humoral-complement-activation` | Antibody opsonization and C1q-initiated classical complement outcomes | Bacterium and antibody–C1q | C2–C9 cleavage intermediates and regulators omitted |
+| `mast-cell-degranulation-response` | IgE cross-linking triggers mast-cell granule exocytosis and histamine release | Resting and degranulating mast cells | Prior IgE sensitization and late-phase synthesis omitted |
+| `preimplantation-embryo-cleavage` | Zygote cleavage without net volume growth, compaction to morula and blastocyst | 1-cell zygote, 2c, 8c, morula and early blastocyst | Implantation, gastrulation and species timings omitted |
+| `membrane-receptor-transduction` | Extracellular reception, transmembrane relay and transcriptional response | Membrane receptor, cell membrane and nuclear regulator | Specific GPCR/RTK subtype and feedback loops omitted |
+| `endocytosis-vesicle-internalization` | Plasma-membrane invagination and intracellular vesicle pinching | Cell membrane and engulfing membrane | Clathrin/dynamin coats and exocytic recycling omitted |
+| `rubisco-carbon-fixation` | RuBisCO carboxylation (Calvin cycle) versus oxygenation (photorespiration) | Chloroplast and RuBisCO activity | Peroxisomal salvage steps and C4/CAM anatomy omitted |
+| `plant-root-transport-anatomy` | Radial root uptake across epidermis, cortex, Casparian strip and xylem | Arabidopsis root cross section and rice root anatomy | Individual transporter proteins and mycorrhizae omitted |
+| `acid-base-ph-measurement` | Two-point buffer calibration and Henderson–Hasselbalch buffering | Beakers, pH meter and Erlenmeyer flask | Ionic-strength corrections and polyprotic curves omitted |
+| `chromatography-flow-sorting` | Phase-partitioning chromatography versus single-cell optical sorting | Chromatography and flow cytometer / cell sorter | Column matrices and multi-laser compensation omitted |
 
 ## Scientific references and review boundaries
 

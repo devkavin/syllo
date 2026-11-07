@@ -60,4 +60,48 @@ const plant = compose({ id: "plant-photosynthesis-respiration", name: "Photosynt
   note("Plant-cell energy overview · Respiration occurs in living plant cells, including when light is absent", 90, 890, 1430);
 });
 
-export const metabolismTemplates = [pyruvate, lactate, atp, peptide, plant];
+const rubisco = compose({
+  id: "rubisco-carbon-fixation",
+  name: "RuBisCO carboxylation and oxygenation",
+  category: "Plant biology",
+  description: "RuBisCO catalyzes carbon fixation in the Calvin cycle but also reacts with O₂ to initiate photorespiration.",
+  references: [biology("8-3-using-light-energy-to-make-organic-molecules", "The Calvin cycle"), biology("30-4-leaves", "C3, C4 and CAM carbon fixation")],
+  notes: "RuBisCO and chloroplast illustrations are schematic context, not full catalytic mechanism diagrams. Ribulose-1,5-bisphosphate (RuBP) can react with CO₂ (carboxylation) or O₂ (oxygenation) at the same active site. Peroxisomal/mitochondrial photorespiratory salvage steps and C4/CAM spatial or temporal adaptations are omitted.",
+  tags: ["RuBisCO", "Calvin cycle", "photorespiration", "carbon fixation"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  const chloroplast = asset("chloroplast", 75, 260, 320, 280);
+  const enzyme = asset("rubisco-activity", 550, 250, 350, 300);
+  label("Chloroplast stroma context", chloroplast, 70, 585, 410);
+  label("RuBisCO active-site competition\nSubstrate: RuBP (5C)", enzyme, 525, 585, 450);
+  heading("Competing reactions", 1040, 190, 480);
+  const carboxylation = text("Carboxylation (+ CO₂)\nForms two 3-PGA molecules\nProductive Calvin-cycle carbon gain", 1040, 290, 480, 25, { bold: true, color: "#537e76" });
+  const oxygenation = text("Oxygenation (+ O₂)\nForms 3-PGA + 2-phosphoglycolate\nInitiates costly photorespiration", 1040, 560, 480, 25, { bold: true, color: "#9c7050" });
+  arrow(chloroplast, enzyme);
+  arrow(enzyme, carboxylation, "right", "left", { role: "rubisco-carboxylation" });
+  arrow(enzyme, oxygenation, "right", "left", { role: "rubisco-oxygenation", color: "#9c7050" });
+  note("Carbon-fixation overview · High O₂/CO₂ ratio and elevated temperature increase oxygenation relative to carboxylation", 80, 885, 1440);
+});
+
+const rootAnatomy = compose({
+  id: "plant-root-transport-anatomy",
+  name: "Root anatomy and radial transport",
+  category: "Plant biology",
+  description: "Water and minerals cross root tissues radially before entering the central vascular cylinder.",
+  references: [biology("30-3-roots", "Roots"), biology("30-5-transport-of-water-and-solutes-in-plants", "Transport of water and solutes in plants")],
+  notes: "Arabidopsis cross-section and rice root anatomy illustrations provide histological context. Radial movement combines apoplastic and symplastic routes until the endodermal Casparian strip forces selective plasma-membrane passage into the stele. Root-hair membrane transporters and mycorrhizal associations are omitted.",
+  tags: ["root", "xylem", "endodermis", "Casparian strip", "plant transport"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  const crossSection = asset("arabidopsis-root-cross-section", 85, 255, 340, 310);
+  const rootZones = asset("rice-root-anatomy", 1130, 255, 340, 310);
+  label("Root cross-section context\nConcentric tissue layers", crossSection, 75, 600, 420);
+  label("Comparative root anatomy\nMonocot/dicot organization", rootZones, 1090, 600, 430);
+  heading("Radial inward pathway", 540, 190, 520);
+  const epidermis = text("1  Epidermis & cortex\nApoplastic and symplastic uptake", 535, 285, 520, 25, { bold: true });
+  const endodermis = text("2  Endodermis (Casparian strip)\nSuberized barrier forces membrane entry", 535, 485, 520, 25, { bold: true, color: "#9c7050" });
+  const stele = text("3  Vascular cylinder (xylem)\nUpward transpiration stream to shoot", 535, 695, 520, 25, { bold: true, color: "#537e76" });
+  arrow(epidermis, endodermis, "bottom", "top", { role: "cortex-to-endodermis" });
+  arrow(endodermis, stele, "bottom", "top", { role: "endodermis-to-xylem" });
+  note("Radial transport overview · The Casparian strip blocks unregulated apoplastic entry into the vascular stele", 80, 885, 1440);
+});
+
+export const metabolismTemplates = [pyruvate, lactate, atp, peptide, plant, rubisco, rootAnatomy];

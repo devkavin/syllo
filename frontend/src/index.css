@@ -365,3 +365,20 @@
         animation: pulse-soft 2.4s ease-in-out infinite;
     }
 }
+
+@media print {
+    [data-testid="desktop-sidebar"],
+    nav[aria-label="Mobile navigation"],
+    .notebook-workspace-toolbar,
+    [role="toolbar"][aria-label="Notebook study tools"],
+    [role="group"][aria-label="Notebook mode"],
+    [data-testid="notebook-autosave-indicator"],
+    .scientific-note-actions {
+        display: none !important;
+    }
+    .notebook-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+}

@@ -11,8 +11,8 @@ const assetDirectory = resolve(dirname(fileURLToPath(import.meta.url)), "../asse
 const loadAsset = async id => readFileSync(resolve(assetDirectory, assetById[id].file), "utf8");
 
 describe("expanded scientific compositions", () => {
-  it("adds at least 24 distinct, referenced drafts with canonical provenance", () => {
-    expect(libraryTemplates.length).toBeGreaterThanOrEqual(24);
+  it("adds at least 38 distinct, referenced drafts with canonical provenance", () => {
+    expect(libraryTemplates.length).toBeGreaterThanOrEqual(38);
     expect(new Set(libraryTemplates.map(item => item.id)).size).toBe(libraryTemplates.length);
     expect(new Set(libraryTemplates.map(item => item.name)).size).toBe(libraryTemplates.length);
     for (const item of libraryTemplates) {

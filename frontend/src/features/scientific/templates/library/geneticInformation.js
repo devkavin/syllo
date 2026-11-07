@@ -92,4 +92,78 @@ const regulation = compose({ id: "transcription-factor-regulation", name: "Trans
   note("Regulatory overview · DNA-binding alone does not establish whether a protein activates or represses a gene", 90, 885, 1430);
 });
 
-export const geneticInformationTemplates = [chromatin, transcription, processing, decoding, coupling, regulation];
+const crispr = compose({
+  id: "crispr-cas9-editing",
+  name: "CRISPR–Cas9 targeted DNA cleavage",
+  category: "Molecular biology",
+  description: "Guide RNA directs Cas9 to a PAM-adjacent DNA sequence to introduce a double-strand break for cellular repair.",
+  references: [biology("17-1-biotechnology", "Biotechnology"), { title: "NHGRI · CRISPR Genome Editing Fact Sheet", url: "https://www.genome.gov/about-genomics/fact-sheets/CRISPR-Genome-Editing-Fact-Sheet" }],
+  notes: "CRISPR plasmid, Cas9–gRNA and damaged-DNA icons are schematic context illustrations rather than atomic models. Cas9 cleavage requires both guide-RNA complementarity and a protospacer-adjacent motif (PAM). Cellular repair pathways (NHEJ versus HDR), off-target effects and delivery mechanics are simplified.",
+  tags: ["CRISPR", "Cas9", "genome editing", "guide RNA", "double-strand break"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  const plasmid = asset("crispr-plasmid", 80, 260, 280, 280);
+  const cas9 = asset("crispr-cas9", 560, 250, 340, 290);
+  const breakSite = asset("damaged-dna", 1120, 260, 320, 280);
+  label("Expression construct\nCas9 + guide RNA", plasmid, 70, 580, 380);
+  label("Cas9–guide RNA complex\nPAM-dependent target binding", cas9, 535, 580, 440);
+  label("Targeted double-strand break\nTriggers host DNA repair", breakSite, 1080, 580, 440);
+  heading("Cellular DNA repair outcomes", 535, 700, 960);
+  const nhej = text("Non-homologous end joining\nError-prone indels can disrupt gene", 80, 755, 650, 25, { bold: true });
+  const hdr = text("Homology-directed repair\nDonor template enables precise edit", 830, 755, 680, 25, { bold: true, color: "#537e76" });
+  arrow(plasmid, cas9);
+  arrow(cas9, breakSite, "right", "left", { role: "cas9-cleavage" });
+  arrow(breakSite, nhej);
+  arrow(breakSite, hdr);
+  note("Genome-editing overview · Cas9 cuts DNA; the host cell's repair machinery determines the final sequence change", 80, 885, 1440);
+});
+
+const looping = compose({
+  id: "enhancer-promoter-looping",
+  name: "Enhancer–promoter chromatin looping",
+  category: "Gene regulation",
+  description: "Distal enhancers bound by transcription factors loop in 3D chromatin space to regulate transcription initiation.",
+  references: [biology("16-4-eukaryotic-transcription-gene-regulation", "Eukaryotic transcription gene regulation")],
+  notes: "Chromatin-domain and promoter–enhancer loop illustrations depict topological proximity rather than a fixed nucleotide scale. Mediator, cohesin, CTCF boundary elements and polymerase phosphorylation steps are omitted.",
+  tags: ["enhancer", "promoter", "chromatin loop", "transcription factor"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  heading("3D chromatin domain", 85, 190, 480);
+  heading("Enhancer–promoter contact", 640, 190, 520);
+  const domain = asset("chromatin-domain", 100, 270, 360, 290);
+  const loop = asset("promoter-enhancer-loop-tf", 660, 265, 380, 300);
+  label("Chromatin domain context\nDistal regulatory elements", domain, 80, 600, 440);
+  label("Enhancer loop with bound factors\nBrings activator near promoter", loop, 620, 600, 480);
+  const linear = text("Linear DNA separates enhancer\nand core promoter by kilobases", 80, 745, 480, 25, { bold: true });
+  const contact = text("Chromatin looping aligns bound\nactivators with the promoter", 620, 745, 480, 25, { bold: true, color: "#537e76" });
+  const output = text("Stabilizes transcription\ninitiation machinery\nat target gene", 1150, 400, 370, 26, { bold: true });
+  arrow(domain, loop);
+  arrow(linear, contact);
+  arrow(loop, output);
+  note("Eukaryotic gene-regulation overview · Insulators and topologically associating domains constrain which enhancers interact", 80, 885, 1440);
+});
+
+const mutagenesis = compose({
+  id: "dna-damage-mutagenesis",
+  name: "DNA lesions versus heritable SNPs",
+  category: "Genetics",
+  description: "Distinguish a primary chemical DNA lesion from a repaired duplex or a fixed single-nucleotide polymorphism.",
+  references: [biology("14-6-dna-repair", "DNA repair"), biology("17-2-mapping-genomes", "Single-nucleotide polymorphisms")],
+  notes: "Damaged-DNA, intact double-helix and SNP illustrations are conceptual schematics, not atomic base-pair structures. A DNA lesion is an acute physical or chemical alteration; a mutation or SNP is a heritable base-pair change that remains in undamaged double-stranded DNA after replication. Specific excision enzymes and population allele frequencies are omitted.",
+  tags: ["DNA damage", "mutation", "SNP", "DNA repair"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  const lesion = asset("damaged-dna", 85, 275, 320, 280);
+  const intact = asset("dna-double-helix", 620, 250, 280, 310);
+  const snp = asset("snp", 1120, 275, 320, 280);
+  label("Primary DNA lesion\nUnrepaired strand or base damage", lesion, 75, 600, 430);
+  label("Accurate DNA repair\nRestores original sequence", intact, 580, 600, 410);
+  label("Fixed sequence variant (SNP)\nUndamaged altered base pair", snp, 1080, 600, 440);
+  heading("Repair versus fixation during replication", 75, 190, 900);
+  const lesionText = text("Chemical/UV/oxidative lesion\nrecognized by repair enzymes", 75, 735, 430, 25, { bold: true });
+  const repairedText = text("Excision or resynthesis\nprevents mutation", 580, 735, 410, 25, { bold: true, color: "#537e76" });
+  const snpText = text("Unrepaired or mispaired change\nbecomes heritable after replication", 1070, 735, 450, 25, { bold: true, color: "#9c7050" });
+  arrow(lesion, intact, "right", "left", { role: "accurate-repair" });
+  arrow(lesionText, repairedText);
+  arrow(lesionText, snpText);
+  note("Conceptual distinction · Once fixed as a standard base pair, a SNP is no longer recognized as damaged DNA", 80, 885, 1440);
+});
+
+export const geneticInformationTemplates = [chromatin, transcription, processing, decoding, coupling, regulation, crispr, looping, mutagenesis];

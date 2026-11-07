@@ -4,7 +4,7 @@ import { templates } from "./templates";
 import { curriculumPacks, resolvePack } from "./packs";
 
 it("resolves every curriculum reference to actual artwork and prepared templates", () => {
-  expect(curriculumPacks).toHaveLength(4);
+  expect(curriculumPacks).toHaveLength(6);
   for (const pack of curriculumPacks) {
     const resolved = resolvePack(pack.id);
     expect(resolved.assets.length).toBeGreaterThan(2);

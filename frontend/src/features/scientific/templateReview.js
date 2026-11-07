@@ -42,3 +42,46 @@ export function validateTemplate(template) {
   }
   return { valid: issues.length === 0, issues: [...new Set(issues)] };
 }
+
+/** Summarize structural, provenance, editable-label, and human-review readiness without inventing approval. */
+export function inspectTemplateReadiness(template) {
+  const { valid, issues } = validateTemplate(template);
+  const objects = Array.isArray(template?.document?.objects) ? template.document.objects : [];
+  const assetCount = objects.filter(obj => obj.type === "asset").length;
+  const labelCount = objects.filter(obj => obj.type === "text" && obj.isLabel).length;
+  const boundArrowCount = objects.filter(obj => ["arrow", "connector"].includes(obj.type) && obj.startBinding && obj.endBinding).length;
+  const referenceCount = Array.isArray(template?.references) ? template.references.length : 0;
+  const hasScopeNote = Boolean(template?.reviewNotes && /omit|not |simplif|overview|context|schematic/i.test(template.reviewNotes));
+  const checks = {
+    schemaAndProvenance: valid,
+    editableLabels: labelCount > 0 || objects.some(obj => obj.type === "text"),
+    boundRelationships: boundArrowCount > 0 || objects.some(obj => ["arrow", "connector"].includes(obj.type)),
+    citationsAndScope: referenceCount > 0 && hasScopeNote,
+    humanSignOff: valid && template?.reviewStatus === "verified" && template?.review?.decision === "approved" && template?.review?.templateVersion === template?.version,
+  };
+  return {
+    valid,
+    issues,
+    status: checks.humanSignOff ? "verified" : "draft",
+    checks,
+    metrics: { assetCount, labelCount, boundArrowCount, referenceCount },
+  };
+}
+
+/** Promote a validated template to verified only when an explicit human reviewer record is supplied. */
+export function recordTemplateReview(template, { reviewer, reviewedAt, decision = "approved", notes } = {}) {
+  const next = {
+    ...template,
+    reviewStatus: "verified",
+    reviewNotes: nonempty(notes, 4000) ? notes.trim() : template?.reviewNotes,
+    review: {
+      reviewer: typeof reviewer === "string" ? reviewer.trim() : "",
+      reviewedAt,
+      templateVersion: template?.version,
+      decision,
+    },
+  };
+  const validation = validateTemplate(next);
+  if (!validation.valid) throw new Error(`Cannot record template review: ${validation.issues.join("; ")}`);
+  return next;
+}

@@ -235,3 +235,19 @@ it("preserves an edited question after conflict and can save it as a separate co
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "Save as a new question" })));
   expect(http.post).toHaveBeenCalledWith("/study/questions", expect.objectContaining({ prompt: "My revised question", notebook_id: "nb" }));
 });
+
+it("exports practice questions and mistakes as RFC-4180 CSV for Anki or spreadsheets", async () => {
+  let blob, download;
+  URL.createObjectURL = vi.fn(value => { blob = value; return "blob:csv"; });
+  URL.revokeObjectURL = vi.fn();
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function () { download = this.download; });
+  http.get.mockResolvedValue({ data: [{ ...question, prompt: 'Define "equilibrium"', answer: "Forward, reverse rates equal" }] });
+  render(<NotebookPractice notebook={{ ...notebook, title: "Chemistry 101" }} />);
+  await screen.findByRole("button", { name: 'Practise: Define "equilibrium"' });
+  fireEvent.click(screen.getByText("Practice options"));
+  fireEvent.click(screen.getByRole("button", { name: "Export CSV / Anki" }));
+  const csv = await new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsText(blob); });
+  expect(download).toBe("Chemistry 101-practice.csv");
+  expect(csv).toContain("Prompt,Answer,Kind,Format,Mistake,NextReview");
+  expect(csv).toContain('"Define ""equilibrium""","Forward, reverse rates equal","question","basic","","2020-01-01T00:00:00Z"');
+});

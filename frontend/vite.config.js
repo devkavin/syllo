@@ -48,5 +48,19 @@ export default defineConfig({
   },
   build: {
     sourcemap: false,
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const normalized = id.replace(/\\/g, "/");
+          if (normalized.includes("features/scientific/catalog.json")) return "scientific-catalog";
+          if (!normalized.includes("node_modules")) return undefined;
+          if (normalized.includes("@blocknote/math-block") || normalized.includes("/katex/")) return "math-vendor";
+          if (normalized.includes("/prosemirror-") || normalized.includes("/@tiptap/") || normalized.includes("/@blocknote/core/")) return "editor-core";
+          if (normalized.includes("/@radix-ui/") || normalized.includes("/lucide-react/")) return "ui-vendor";
+          return undefined;
+        },
+      },
+    },
   },
 });

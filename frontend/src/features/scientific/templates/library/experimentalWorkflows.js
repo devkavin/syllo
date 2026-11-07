@@ -43,4 +43,53 @@ const controls = compose({ id: "pcr-experimental-controls", name: "PCR experimen
   note("Study-design diagram · A control failure limits interpretation; absence of signal alone does not establish target absence", 90, 890, 1430);
 });
 
-export const experimentalTemplates = [pcr, restriction, microscopy, controls];
+const phMeasurement = compose({
+  id: "acid-base-ph-measurement",
+  name: "pH electrode calibration and buffering",
+  category: "Experimental workflows",
+  description: "Two-point standard calibration relates electrode potential to hydrogen-ion activity and buffer capacity.",
+  references: [biology("2-2-water", "Water, acids, bases and buffers"), { title: "OpenStax Chemistry 2e · Buffers", url: "https://openstax.org/books/chemistry-2e/pages/14-6-buffers" }],
+  notes: "The pH meter, beakers and flask are licensed laboratory apparatus illustrations, not calibrated volumetric records. A glass electrode responds to H⁺ activity; two-point calibration sets offset and slope at known buffer standards. Temperature compensation, ionic-strength effects and polyprotic titration curves are omitted.",
+  tags: ["pH", "buffer", "Henderson-Hasselbalch", "calibration", "chemistry"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  const standards = asset("beakers", 80, 275, 310, 280);
+  const meter = asset("ph-meter", 590, 250, 340, 310);
+  const sample = asset("erlenmeyer-flask", 1140, 270, 290, 290);
+  label("Standard reference buffers\ne.g. pH 7.00 and pH 4.01 / 10.01", standards, 65, 595, 420);
+  label("Calibrated pH meter\nRinse electrode between vessels", meter, 565, 595, 430);
+  label("Buffered reaction vessel\nResists pH drift near pKₐ", sample, 1090, 595, 430);
+  heading("Calibration and buffer relationship", 70, 190, 900);
+  const calibrate = text("1  Calibrate slope & offset\nwith two bracketing standards", 70, 730, 440, 25, { bold: true });
+  const measure = text("2  Measure sample pH\nat matched temperature", 565, 730, 430, 25, { bold: true, color: "#537e76" });
+  const equation = text("pH = pKₐ + log([A⁻] / [HA])\nMaximal buffering when [A⁻] ≈ [HA]", 1050, 730, 480, 24, { bold: true });
+  arrow(standards, meter);
+  arrow(meter, sample);
+  arrow(calibrate, measure, "right", "left", { role: "ph-workflow" });
+  note("Analytical workflow overview · Rinse and blot (do not wipe) the glass bulb to avoid static or cross-contamination", 80, 885, 1440);
+});
+
+const separationSorting = compose({
+  id: "chromatography-flow-sorting",
+  name: "Chromatography and flow-cytometric sorting",
+  category: "Experimental workflows",
+  description: "Compare molecular separation by phase partitioning with single-cell optical sorting in suspension.",
+  references: [biology("17-1-biotechnology", "Biotechnology and analytical methods"), { title: "OpenStax Microbiology · Fluorescent antibody and flow cytometry techniques", url: "https://openstax.org/books/microbiology/pages/20-5-fluorescent-antibody-techniques" }],
+  notes: "Chromatography and flow-cytometer artworks are schematic instrument illustrations. Chromatography separates dissolved molecules by differential partitioning between mobile and stationary phases; flow cytometry interrogates individual suspended cells by light scatter and fluorescence. Detector calibration, gating strategies and column matrices are omitted.",
+  tags: ["chromatography", "flow cytometry", "cell sorting", "separation"],
+}, ({ text, asset, arrow, label, heading, note }) => {
+  heading("Molecular phase separation", 85, 190, 620);
+  heading("Single-cell optical sorting", 860, 190, 640);
+  const column = asset("chromatography", 120, 265, 340, 310);
+  const sorter = asset("flow-cytometer-cell-sorter", 900, 265, 360, 310);
+  label("Chromatography system\nMobile versus stationary phase", column, 85, 605, 460);
+  label("Flow cytometer / cell sorter\nHydrodynamic focusing & lasers", sorter, 865, 605, 480);
+  const mixture = text("Soluble molecular mixture\ne.g. proteins, pigments or metabolites", 85, 705, 480, 24, { bold: true });
+  const fractions = text("Eluted fractions separated\nby affinity, size or charge", 85, 800, 480, 24, { color: "#537e76", bold: true });
+  const suspension = text("Single-cell suspension\nlabeled with fluorescent probes", 865, 705, 480, 24, { bold: true });
+  const sorted = text("Populations quantified and\nsorted by scatter/fluorescence", 865, 800, 480, 24, { color: "#537e76", bold: true });
+  arrow(mixture, fractions, "bottom", "top", { role: "chromatography-elution" });
+  arrow(suspension, sorted, "bottom", "top", { role: "cytometry-sorting" });
+  note("Method comparison · Choose chromatography for molecular mixtures and flow cytometry for intact cell populations", 80, 890, 1440);
+});
+
+export const experimentalTemplates = [pcr, restriction, microscopy, controls, phMeasurement, separationSorting];

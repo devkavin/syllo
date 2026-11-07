@@ -144,3 +144,25 @@ it("toggles a dropdown closed by clicking its trigger again", () => {
   fireEvent.click(trigger);
   expect(trigger.closest("details")).not.toHaveAttribute("open");
 });
+
+it("inserts block, inline and STEM equations from Insert while preserving selection", () => {
+  const editor = makeEditor();
+  render(<NotebookStudyTools editor={editor} />);
+  fireEvent.click(screen.getByText("Insert"));
+  fireEvent.click(screen.getByRole("button", { name: "Block equation" }));
+  expect(editor.insertBlocks).toHaveBeenCalledWith([{ type: "mathBlock", content: [] }], "existing", "after");
+  expect(editor.setTextCursorPosition).toHaveBeenCalledWith("inserted", "end");
+  expect(screen.getByText("Insert").closest("details")).not.toHaveAttribute("open");
+
+  fireEvent.click(screen.getByText("Insert"));
+  fireEvent.click(screen.getByRole("button", { name: "Inline equation" }));
+  expect(editor.insertInlineContent).toHaveBeenCalledWith([{ type: "math", content: [] }]);
+
+  fireEvent.click(screen.getByText("Insert"));
+  fireEvent.click(screen.getByRole("button", { name: "Water potential" }));
+  expect(editor.insertBlocks).toHaveBeenLastCalledWith(
+    [{ type: "mathBlock", content: [{ type: "text", text: "\\Psi = \\Psi_s + \\Psi_p", styles: {} }] }],
+    "existing",
+    "after"
+  );
+});

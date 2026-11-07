@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDocument, createObject, usedAssets } from "./document";
-import { validateTemplate } from "./templateReview";
+import { inspectTemplateReadiness, recordTemplateReview, validateTemplate } from "./templateReview";
 import { advancedTemplates } from "./templates/advancedTemplates";
 
 const template = () => {
@@ -66,5 +66,22 @@ describe("scientific template review", () => {
     const names = new Map(doc.objects.filter(o => o.type === "text").map(o => [o.text, o.id]));
     const sequence = ["Citrate", "Isocitrate", "α-Ketoglutarate", "Succinyl-CoA", "Succinate", "Fumarate", "Malate", "Oxaloacetate", "Citrate"];
     for (let i = 0; i < sequence.length - 1; i++) expect(doc.objects.some(o => o.type === "arrow" && o.startBinding?.objectId === names.get(sequence[i]) && o.endBinding?.objectId === names.get(sequence[i + 1]))).toBe(true);
+  });
+  it("inspects template readiness metrics and promotes a draft only with an explicit human sign-off", () => {
+    const draft = advancedTemplates[0];
+    const readiness = inspectTemplateReadiness(draft);
+    expect(readiness.status).toBe("draft");
+    expect(readiness.checks.schemaAndProvenance).toBe(true);
+    expect(readiness.checks.editableLabels).toBe(true);
+    expect(readiness.checks.boundRelationships).toBe(true);
+    expect(readiness.checks.citationsAndScope).toBe(true);
+    expect(readiness.checks.humanSignOff).toBe(false);
+    expect(readiness.metrics.assetCount).toBeGreaterThan(0);
+
+    const verified = recordTemplateReview(draft, { reviewer: "Dr. A. Patel", reviewedAt: "2026-11-08T10:00:00Z" });
+    expect(verified.reviewStatus).toBe("verified");
+    expect(inspectTemplateReadiness(verified).status).toBe("verified");
+    expect(inspectTemplateReadiness(verified).checks.humanSignOff).toBe(true);
+    expect(() => recordTemplateReview(draft, { reviewer: "", reviewedAt: "invalid" })).toThrow(/Cannot record template review/);
   });
 });

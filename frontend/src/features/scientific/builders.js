@@ -1,7 +1,7 @@
 import { assetById, createObject, uid } from "./document";
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-const proteinChoices = ["calcium-channel", "membrane-receptor", "etc-complex-i", "etc-complex-ii", "etc-complex-iii", "etc-complex-iv", "etc-atp-synthase"];
+const proteinChoices = ["calcium-channel", "membrane-receptor", "pink-transporter", "etc-complex-i", "etc-complex-ii", "etc-complex-iii", "etc-complex-iv", "etc-atp-synthase"];
 export const membraneProteinIds = proteinChoices.filter(id => assetById[id]);
 
 function approved(id) {

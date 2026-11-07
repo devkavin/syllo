@@ -412,6 +412,29 @@ it("exports the full rich draft including unsaved changes", async () => {
   expect(exported).toMatchObject({ title: "Unsaved title", paper_style: "dotted", font_style: "serif", rich_content: notebook.rich_content });
 });
 
+it("exports the rich draft as portable Markdown and supports print/PDF", async () => {
+  const notebook = { notebook_id: "export-md", title: "Cell Biology", content: "Mitochondria", revision: 2, rich_content: [{ type: "heading", props: { level: 2 }, content: [{ type: "text", text: "Mitochondria", styles: {} }], children: [] }, { type: "mathBlock", content: [{ type: "text", text: "\\Delta G < 0", styles: {} }] }] };
+  let blob, download;
+  URL.createObjectURL = vi.fn(value => { blob = value; return "blob:markdown"; });
+  URL.revokeObjectURL = vi.fn();
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function () { download = this.download; });
+  window.print = vi.fn();
+  http.get.mockImplementation(url => Promise.resolve({ data: url === "/subjects" ? [] : url === "/notebooks" ? [notebook] : notebook }));
+  render(<MemoryRouter><Notebooks /></MemoryRouter>);
+  await screen.findByRole("textbox", { name: "Notebook title" });
+  fireEvent.click(screen.getByText("Notebook options"));
+  fireEvent.click(screen.getByRole("button", { name: "Export Markdown" }));
+  const markdown = await new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsText(blob); });
+  expect(download).toBe("Cell Biology.md");
+  expect(markdown).toContain("# Cell Biology");
+  expect(markdown).toContain("## Mitochondria");
+  expect(markdown).toContain("$$\n\\Delta G < 0\n$$");
+
+  fireEvent.click(screen.getByText("Notebook options"));
+  fireEvent.click(screen.getByRole("button", { name: "Print / Save PDF" }));
+  expect(window.print).toHaveBeenCalledOnce();
+});
+
 it("restores history using the revision produced by flushing pending notes", async () => {
   const notebook = { notebook_id: "history-flush", title: "Limits", content: "Original", revision: 4 };
   const version = { version_id: "v1", revision: 1, title: "Limits", content: "Earlier", created_at: "2026-10-09T12:00:00Z" };

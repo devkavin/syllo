@@ -8,6 +8,20 @@ const itemDraft = item => ({ ...emptyDraft(item.kind), ...item, answer: item.ans
 const savedAnswer = item => item.kind === "mistake" ? item.correction : item.answer;
 const visiblePrompt = (item, revealed = false) => item.format === "reverse" ? item.answer || savedAnswer(item) : item.format === "cloze" ? item.prompt.replace(/\{\{([\s\S]*?)\}\}/g, (_, words) => revealed ? words : "[…]") : item.prompt;
 const clockLabel = seconds => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+const csvField = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+export function formatPracticeCsv(items) {
+  const header = "Prompt,Answer,Kind,Format,Mistake,NextReview";
+  const rows = (items || []).map(item => [
+    csvField(item.prompt),
+    csvField(savedAnswer(item)),
+    csvField(item.kind || "question"),
+    csvField(item.format || "basic"),
+    csvField(item.mistake || ""),
+    csvField(item.next_review_at || ""),
+  ].join(","));
+  return [header, ...rows].join("\n");
+}
 
 /** Manual recall and mistake practice. Ratings are self-assessments, never AI grades. */
 export default function NotebookPractice({ notebook, getSelectedText, beforeStart, dueOnly = false, lessonId = null, initialQuestionId = null }) {
@@ -109,6 +123,18 @@ export default function NotebookPractice({ notebook, getSelectedText, beforeStar
     setSession({ queue: [...items], index: 0, saved: 0 }); practise(items[0], true);
   }
 
+  function exportCsv() {
+    if (!items.length) return;
+    try {
+      const url = URL.createObjectURL(new Blob([formatPracticeCsv(items)], { type: "text/csv;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${((notebook?.title || "study").replace(/[<>:"/\\|?*]/g, "_").trim() || "study")}-practice.csv`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (failure) { setError(formatError(failure)); }
+  }
+
   function reveal() {
     if (practising.format === "exam") setElapsed(Math.max(0, Math.floor((Date.now() - startedAt.current) / 1000)));
     setRevealed(true);
@@ -169,6 +195,7 @@ export default function NotebookPractice({ notebook, getSelectedText, beforeStar
         <div className="segmented-control" role="group" aria-label="Practice type">{[["question", "Questions"], ["mistake", "Mistakes"], ["mixed", "Mixed"]].map(([value, label]) => <button key={value} className="segment" aria-pressed={kind === value} onClick={() => { setKind(value); setError(""); setMessage(""); }}>{label}</button>)}</div>
         <label className="inline-flex items-center gap-2 min-h-11"><input type="checkbox" checked={due} onChange={event => setDue(event.target.checked)} />Due only</label>
         <button className="btn btn-outline text-sm" onClick={() => openForm()}><Plus className="h-4 w-4" />{kind === "mistake" ? "Add mistake" : "Add question"}</button>
+        {items.length > 0 && <button type="button" className="btn btn-ghost text-sm" onClick={exportCsv}>Export CSV / Anki</button>}
       </div></details>}
     </>}
     {loadError && <p role="alert" className="notice">{loadError}<button className="btn btn-outline text-sm" onClick={() => setRetry(value => value + 1)}>Retry practice</button></p>}

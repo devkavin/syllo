@@ -2,7 +2,7 @@
 
 ## Delivered scope
 
-The collection now contains **174 bundled SVG illustrations** (46 existing + 128 additions) and **35 editable template drafts** (10 existing + 25 additions). The audience is school/A-level and introductory university biology, as confirmed by the user. This is a larger curated teaching collection, not comprehensive scientific coverage.
+The collection now contains **174 bundled SVG illustrations** (46 existing + 128 additions) and **48 editable template drafts** (10 existing + 38 additions) organized across **6 curriculum packs**. The audience is school/A-level and introductory university biology, as confirmed by the user. This is a larger curated teaching collection, not comprehensive scientific coverage.
 
 | Populated asset topic | Illustrations |
 | --- | ---: |

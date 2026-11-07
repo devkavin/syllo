@@ -39,6 +39,14 @@ const templates = {
   ],
 };
 
+const equationTemplates = {
+  "Quadratic formula": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
+  "Water potential": "\\Psi = \\Psi_s + \\Psi_p",
+  "Gibbs free energy": "\\Delta G = \\Delta H - T\\Delta S",
+  "Henderson–Hasselbalch": "\\text{pH} = \\text{p}K_a + \\log\\left(\\frac{[\\text{A}^-]}{[\\text{HA}]}\\right)",
+  "Michaelis–Menten": "v = \\frac{V_{\\max}[S]}{K_m + [S]}",
+};
+
 function inlineText(content) {
   if (typeof content === "string") return content;
   if (!Array.isArray(content)) return "";
@@ -119,11 +127,29 @@ export default function NotebookStudyTools({ editor, onIllustration }) {
     editor.focus();
   }
 
+  function insertMathBlock(latex = "") {
+    editor.focus();
+    const current = editor.getTextCursorPosition().block.id;
+    const inserted = editor.insertBlocks([{ type: "mathBlock", content: latex ? [{ type: "text", text: latex, styles: {} }] : [] }], current, "after");
+    if (inserted.length) editor.setTextCursorPosition(inserted[0].id, "end");
+    editor.focus();
+  }
+
+  function insertInlineMath(latex = "") {
+    editor.focus();
+    editor.insertInlineContent([{ type: "math", content: latex ? [{ type: "text", text: latex, styles: {} }] : [] }]);
+    editor.focus();
+  }
+
   return <div ref={toolbarRef} role="toolbar" aria-label="Notebook study tools" className="relative flex flex-wrap items-center gap-1 border-b border-border pb-2 mb-3 text-sm">
     <details className="static" open={openMenu === "insert"}>
       <summary className="btn btn-ghost cursor-pointer" aria-expanded={openMenu === "insert"} onMouseDown={preserveSelection} onClick={event => toggleMenu(event, "insert")}>Insert</summary>
       <div className="absolute left-0 top-full z-30 mt-1 w-64 max-w-full max-h-[60dvh] overflow-y-auto rounded-lg border border-border bg-popover p-2 shadow-md">
         {onIllustration && <><button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { closeMenu(); onIllustration(); }}><Microscope size={17} />Scientific Illustration</button><p className="px-3 py-2 text-xs text-muted-foreground">Scientific vectors and labels. No AI credits.</p></>}
+        <p className="px-3 py-2 text-xs font-semibold text-muted-foreground border-t border-border">Equations (LaTeX)</p>
+        <button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { insertMathBlock(); closeMenu(); }}>Block equation</button>
+        <button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { insertInlineMath(); closeMenu(); }}>Inline equation</button>
+        {Object.entries(equationTemplates).map(([name, latex]) => <button key={name} type="button" className="btn btn-ghost w-full justify-start text-xs" onMouseDown={preserveSelection} onClick={() => { insertMathBlock(latex); closeMenu(); }}>{name}</button>)}
         <p className="px-3 py-2 text-xs font-semibold text-muted-foreground border-t border-border">Study templates</p>
         {Object.keys(templates).map(name => <button key={name} type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { insertTemplate(name); closeMenu(); }}>{name}</button>)}
         <p className="px-3 py-2 text-xs text-muted-foreground">Insert after the current block.</p>
