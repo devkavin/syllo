@@ -88,3 +88,20 @@ it("recovers a reschedule conflict by refreshing the list before reopening the f
   fireEvent.click(screen.getByRole("button", { name: "Reschedule and ask everyone to confirm" }));
   await waitFor(() => expect(http.patch).toHaveBeenLastCalledWith("/circles/c/sessions/e", expect.objectContaining({ revision: 2 })));
 });
+it("supports inline availability sharing, readiness chips, and live focusing badges", async () => {
+  const event = { id: "e", topic: "Practise limits together", start: "2026-11-06T09:00:00Z", end: "2026-11-06T09:45:00Z", revision: 1, my_status: "accepted", organizer_id: "u", participants: [{ user_id: "u", status: "accepted" }, { user_id: "f", status: "accepted" }], focusing_user_ids: ["f"] };
+  http.get.mockResolvedValue({ data: [event] });
+  http.patch.mockResolvedValue({ data: { share_availability: true } });
+  http.post.mockResolvedValue({ data: { available: false, slots: [], reason: "Shared availability is not available", readiness: [{ user_id: "u", name: "You", shared: true, configured: true }, { user_id: "f", name: "Friend", shared: false, configured: false }] } });
+  const onRefresh = vi.fn();
+  render(<MemoryRouter><CircleSchedule circle={detail} user={{ user_id: "u", timezone: "UTC" }} onRefresh={onRefresh} /></MemoryRouter>);
+  expect(await screen.findByText(/Happening now · Friend is focusing/)).toBeVisible();
+  expect(screen.getByRole("link", { name: "Start studying" })).toHaveTextContent("Start studying · 45m");
+  fireEvent.click(screen.getByRole("button", { name: "Plan session" }));
+  fireEvent.click(screen.getByText("Find a time everyone can make"));
+  fireEvent.click(screen.getByRole("button", { name: "Share my availability in this circle" }));
+  await waitFor(() => expect(http.patch).toHaveBeenCalledWith("/circles/c/privacy", { share_availability: true }));
+  expect(onRefresh).toHaveBeenCalled();
+  expect(await screen.findByText("You: Shared")).toBeVisible();
+  expect(screen.getByText("Friend: Not shared yet")).toBeVisible();
+});

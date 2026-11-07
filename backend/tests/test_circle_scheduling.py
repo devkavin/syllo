@@ -140,8 +140,10 @@ async def test_timezone_change_cannot_shift_classes_into_accepted_sessions(sql_a
 
 
 @pytest.mark.asyncio
-async def test_fold_suggestions_use_first_occurrence_without_duplicate_clocks(sql_app):
+async def test_fold_suggestions_use_first_occurrence_without_duplicate_clocks(sql_app, monkeypatch):
     from zoneinfo import ZoneInfo
+    from backend.app.services import circle_scheduling
+    monkeypatch.setattr(circle_scheduling, "datetime", type("FixedDatetime", (datetime,), {"now": classmethod(lambda cls, tz=None: datetime(2026, 10, 30, tzinfo=tz or timezone.utc))}))
     app, _, owner, _, _, cid, _ = await setup_circle(sql_app)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as c:
         h = headers(app, owner)
@@ -153,3 +155,29 @@ async def test_fold_suggestions_use_first_occurrence_without_duplicate_clocks(sq
         starts = [datetime.fromisoformat(slot["start"]).astimezone(ZoneInfo("America/New_York")) for slot in result.json()["slots"]]
         assert all(start.fold == 0 for start in starts)
         assert len({start.strftime("%H:%M") for start in starts}) == len(starts)
+
+
+@pytest.mark.asyncio
+async def test_circles_overview_and_readiness_metadata(sql_app):
+    app, _, owner, friend, _, cid, day = await setup_circle(sql_app)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://testserver") as c:
+        a, b = headers(app, owner), headers(app, friend)
+        goal = (await c.post(f"/api/circles/{cid}/goals", headers=a, json={"title": "Practise three limits"})).json()
+        await c.patch(f"/api/circles/{cid}/goals/{goal['id']}", headers=a, json={"completed": True})
+        await c.post(f"/api/circles/{cid}/goals", headers=b, json={"title": "Revise chapter 4"})
+        event = (await c.post(f"/api/circles/{cid}/sessions", headers=a, json={"topic": "Limits together", "participants": [owner.user_id, friend.user_id], "start": day.isoformat(), "end": (day + timedelta(minutes=45)).isoformat()})).json()
+        assert event["circle_name"] == "Study friends"
+        await c.post("/api/focus-timer/action", headers=a, json={"action": "start", "expected_revision": 0, "request_id": str(uuid4()), "mode": "pomodoro", "duration_seconds": 2700, "circle_event_id": event["id"]})
+        overview = (await c.get("/api/circles", headers=a)).json()
+        assert len(overview) == 1
+        card = overview[0]
+        assert card["member_count"] == 2
+        assert len(card["member_names"]) == 2
+        assert card["goals_total"] == 2 and card["goals_completed"] == 1
+        assert card["next_session"]["topic"] == "Limits together"
+        assert card["focusing_count"] == 1
+        session_detail = (await c.get(f"/api/circle-sessions/{event['id']}", headers=a)).json()
+        assert owner.user_id in session_detail["focusing_user_ids"]
+        avail = (await c.post(f"/api/circles/{cid}/availability", headers=a, json={"participants": [owner.user_id, friend.user_id], "start": day.isoformat(), "end": (day + timedelta(hours=3)).isoformat(), "duration_minutes": 45})).json()
+        assert len(avail["readiness"]) == 2
+        assert all(item["shared"] is False for item in avail["readiness"])

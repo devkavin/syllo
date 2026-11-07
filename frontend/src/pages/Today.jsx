@@ -130,7 +130,22 @@ export default function Today() {
 
       {!!data.circle_invitations?.length && <section aria-label="Circle session invitations" className="border border-primary/25 bg-accent/40 rounded-xl p-5 space-y-3">
         <h2 className="text-lg font-semibold">You're invited to study together</h2>
-        {data.circle_invitations.map(event => <div key={event.id} className="space-y-2"><p className="font-medium">{event.topic}</p><p className="text-sm text-muted-foreground">{formatStudyTime(event.start, timezone, true)} · not confirmed yet</p><div className="flex flex-wrap gap-2"><Link className="btn btn-primary" to={`/circles?circle=${event.circle_id}`}>Review session</Link><button className="btn btn-outline" disabled={working != null} onClick={async () => { if (mutation.current) return; mutation.current = true; setWorking(event.id); try { await http.post(`/circles/${event.circle_id}/sessions/${event.id}/respond`, { status: "declined", revision: event.revision }); refresh(); } catch (e) { setError(formatError(e)); } finally { mutation.current = false; setWorking(null); } }}>Decline</button></div></div>)}
+        {data.circle_invitations.map(event => {
+          const mins = event.start && event.end ? Math.round((Date.parse(event.end) - Date.parse(event.start)) / 60000) : null;
+          const acceptedCount = (event.participants || []).filter(p => p.status === "accepted").length;
+          return <div key={event.id} className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-medium">{event.topic}</p>
+              {(mins || acceptedCount > 0) && <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground">{[mins && `${mins} min`, acceptedCount > 0 && `${acceptedCount} ${acceptedCount === 1 ? "friend" : "friends"} attending`].filter(Boolean).join(" · ")}</span>}
+            </div>
+            <p className="text-sm text-muted-foreground">{formatStudyTime(event.start, timezone, true)} · not confirmed yet</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <button className="btn btn-primary" disabled={working != null} onClick={async () => { if (mutation.current) return; mutation.current = true; setWorking(event.id); try { await http.post(`/circles/${event.circle_id}/sessions/${event.id}/respond`, { status: "accepted", revision: event.revision }); refresh(); } catch (e) { setError(formatError(e)); } finally { mutation.current = false; setWorking(null); } }}>Accept & add to Planner</button>
+              <button className="btn btn-outline" disabled={working != null} onClick={async () => { if (mutation.current) return; mutation.current = true; setWorking(event.id); try { await http.post(`/circles/${event.circle_id}/sessions/${event.id}/respond`, { status: "declined", revision: event.revision }); refresh(); } catch (e) { setError(formatError(e)); } finally { mutation.current = false; setWorking(null); } }}>Decline</button>
+              <Link className="btn btn-ghost text-sm" to={`/circles?circle=${event.circle_id}`}>{event.circle_name ? `View in ${event.circle_name}` : "Review session"}</Link>
+            </div>
+          </div>;
+        })}
       </section>}
 
       {hasPlan && <details className="rounded-xl border border-border p-4">

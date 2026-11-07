@@ -40,10 +40,20 @@ async def suggest_slots(session, actor, circle_id, body):
     now = datetime.now(timezone.utc)
     if end > now + timedelta(days=90): raise HTTPException(422, "Choose a range within 90 days")
     start = max(start, now)
-    unavailable = {"available": False, "slots": [], "reason": "Shared availability is not available for this group. You can still propose a time."}
-    if any(not members[uid].share_availability for uid in body.participants): return unavailable
     users = (await session.scalars(select(User).where(User.user_id.in_(body.participants)).with_for_update().execution_options(populate_existing=True))).all()
+    user_names = {u.user_id: u.name for u in users}
     windows = (await session.scalars(select(AvailabilityWindow).where(AvailabilityWindow.user_id.in_(body.participants)).with_for_update())).all()
+    readiness = [
+        {
+            "user_id": uid,
+            "name": user_names.get(uid, "Member"),
+            "shared": bool(members[uid].share_availability),
+            "configured": any(w.user_id == uid for w in windows) if members[uid].share_availability else False,
+        }
+        for uid in body.participants
+    ]
+    unavailable = {"available": False, "slots": [], "reason": "Shared availability is not available for this group. You can still propose a time.", "readiness": readiness}
+    if any(not members[uid].share_availability for uid in body.participants): return unavailable
     if any(not any(w.user_id == uid for w in windows) for uid in body.participants): return unavailable
     free = {}
     for user in users:
@@ -74,13 +84,28 @@ async def suggest_slots(session, actor, circle_id, body):
         first_occurrence = all(slot.astimezone(user_timezone(user)).fold == 0 for user in users)
         if first_occurrence and all(any(a <= slot and finish <= b for a, b in free[uid]) and not any(overlap(slot, finish, a, b) for a, b in busy[uid]) for uid in body.participants): slots.append({"start": slot.isoformat(), "end": finish.isoformat()})
         slot += timedelta(minutes=15)
-    return {"available": True, "slots": slots, "reason": None if slots else "No common time in this range. Try other dates or propose a time."}
+    return {"available": True, "slots": slots, "reason": None if slots else "No common time in this range. Try other dates or propose a time.", "readiness": readiness}
 
 
 async def event_view(session, event, user_id):
     parts = (await session.scalars(select(CircleParticipation).where(CircleParticipation.event_id == event.id).execution_options(populate_existing=True))).all()
     own = next((p for p in parts if p.user_id == user_id), None)
-    return {"id": event.id, "circle_id": event.circle_id, "organizer_id": event.organizer_id, "topic": event.topic, "start": utc(event.starts_at).isoformat(), "end": utc(event.ends_at).isoformat(), "revision": event.revision, "canceled": event.canceled, "my_status": own.status if own else None, "participants": [{"user_id": p.user_id, "status": p.status} for p in parts]}
+    circle = await session.get(Circle, event.circle_id)
+    from backend.app.models import FocusTimer
+    from backend.app.api.routes.focus_timer import elapsed as timer_elapsed
+    now = datetime.now(timezone.utc)
+    part_ids = [p.user_id for p in parts if p.status == "accepted"]
+    focusing_ids = []
+    if part_ids:
+        timers = (await session.scalars(select(FocusTimer).where(FocusTimer.user_id.in_(part_ids)))).all()
+        for ft in timers:
+            t = ft.timer
+            if not t or t.get("status") != "running" or t.get("circle_event_id") != event.id:
+                continue
+            if t.get("mode") != "stopwatch" and timer_elapsed(t, now) >= (t.get("duration_seconds") or 0):
+                continue
+            focusing_ids.append(ft.user_id)
+    return {"id": event.id, "circle_id": event.circle_id, "circle_name": circle.name if circle else "", "organizer_id": event.organizer_id, "topic": event.topic, "start": utc(event.starts_at).isoformat(), "end": utc(event.ends_at).isoformat(), "revision": event.revision, "canceled": event.canceled, "my_status": own.status if own else None, "participants": [{"user_id": p.user_id, "status": p.status} for p in parts], "focusing_user_ids": focusing_ids}
 
 
 async def locked_event(session, actor, circle_id, event_id):

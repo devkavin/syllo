@@ -321,3 +321,12 @@ it("preserves circle context when starting an accepted study session", async () 
   expect(await screen.findByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer?event=circle-session");
   expect(screen.getByRole("link", { name: "Start session" })).toHaveAttribute("href", "/timer?event=circle-session");
 });
+it("allows 1-click acceptance of a circle session invitation directly from Today", async () => {
+  day = { ...emptyDay, circle_invitations: [{ id: "inv-1", circle_id: "c1", circle_name: "Physics friends", topic: "Practise limits together", start: "2026-10-06T18:00:00Z", end: "2026-10-06T18:45:00Z", revision: 1, participants: [{ user_id: "f1", status: "accepted" }, { user_id: "f2", status: "accepted" }] }] };
+  http.post.mockResolvedValue({ data: {} });
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  expect(await screen.findByText("45 min · 2 friends attending")).toBeVisible();
+  expect(screen.getByRole("link", { name: "View in Physics friends" })).toHaveAttribute("href", "/circles?circle=c1");
+  fireEvent.click(screen.getByRole("button", { name: "Accept & add to Planner" }));
+  await waitFor(() => expect(http.post).toHaveBeenCalledWith("/circles/c1/sessions/inv-1/respond", { status: "accepted", revision: 1 }));
+});

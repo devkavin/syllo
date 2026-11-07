@@ -57,7 +57,69 @@ async def membership(session, circle_id, user_id):
 @router.get("")
 async def list_circles(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     rows = (await session.scalars(select(Circle).join(CircleMember).where(CircleMember.user_id == user.user_id).order_by(Circle.created_at))).all()
-    return [{"id": c.circle_id, "name": c.name, "owner_id": c.owner_id} for c in rows]
+    if not rows:
+        return []
+    circle_ids = [c.circle_id for c in rows]
+    member_rows = (await session.execute(select(CircleMember.circle_id, User.user_id, User.name).join(User).where(CircleMember.circle_id.in_(circle_ids)))).all()
+    members_by_circle: dict[str, list[dict]] = {cid: [] for cid in circle_ids}
+    member_user_ids: set[str] = set()
+    for cid, uid, name in member_rows:
+        members_by_circle.setdefault(cid, []).append({"id": uid, "name": name})
+        member_user_ids.add(uid)
+    goal_rows = (await session.scalars(select(CircleGoal).where(CircleGoal.circle_id.in_(circle_ids)))).all()
+    goals_by_circle: dict[str, list[CircleGoal]] = {cid: [] for cid in circle_ids}
+    for g in goal_rows:
+        goals_by_circle.setdefault(g.circle_id, []).append(g)
+    now = datetime.now(timezone.utc)
+    events = (await session.scalars(select(CircleStudyEvent).where(CircleStudyEvent.circle_id.in_(circle_ids), CircleStudyEvent.ends_at >= now, CircleStudyEvent.canceled.is_(False)).order_by(CircleStudyEvent.starts_at))).all()
+    event_ids = [e.id for e in events]
+    part_rows = (await session.scalars(select(CircleParticipation).where(CircleParticipation.event_id.in_(event_ids)))).all() if event_ids else []
+    parts_by_event: dict[str, list[CircleParticipation]] = {}
+    for p in part_rows:
+        parts_by_event.setdefault(p.event_id, []).append(p)
+    next_by_circle: dict[str, dict] = {}
+    event_to_circle = {e.id: e.circle_id for e in events}
+    for e in events:
+        if e.circle_id in next_by_circle:
+            continue
+        eparts = parts_by_event.get(e.id, [])
+        own_part = next((p for p in eparts if p.user_id == user.user_id), None)
+        if own_part and own_part.status == "declined":
+            continue
+        next_by_circle[e.circle_id] = {
+            "id": e.id,
+            "topic": e.topic,
+            "start": e.starts_at.replace(tzinfo=timezone.utc).isoformat() if e.starts_at.tzinfo is None else e.starts_at.astimezone(timezone.utc).isoformat(),
+            "end": e.ends_at.replace(tzinfo=timezone.utc).isoformat() if e.ends_at.tzinfo is None else e.ends_at.astimezone(timezone.utc).isoformat(),
+            "my_status": own_part.status if own_part else None,
+        }
+    from backend.app.models import FocusTimer
+    from backend.app.api.routes.focus_timer import elapsed as timer_elapsed
+    timers = (await session.scalars(select(FocusTimer).where(FocusTimer.user_id.in_(member_user_ids)))).all() if member_user_ids else []
+    focusing_by_circle: dict[str, set[str]] = {cid: set() for cid in circle_ids}
+    for ft in timers:
+        t = ft.timer
+        if not t or t.get("status") != "running":
+            continue
+        if t.get("mode") != "stopwatch" and timer_elapsed(t, now) >= (t.get("duration_seconds") or 0):
+            continue
+        ev_id = t.get("circle_event_id")
+        if ev_id and ev_id in event_to_circle:
+            focusing_by_circle[event_to_circle[ev_id]].add(ft.user_id)
+    return [
+        {
+            "id": c.circle_id,
+            "name": c.name,
+            "owner_id": c.owner_id,
+            "member_count": len(members_by_circle.get(c.circle_id, [])),
+            "member_names": [m["name"] for m in members_by_circle.get(c.circle_id, [])[:4]],
+            "goals_total": len(goals_by_circle.get(c.circle_id, [])),
+            "goals_completed": sum(1 for g in goals_by_circle.get(c.circle_id, []) if g.completed),
+            "next_session": next_by_circle.get(c.circle_id),
+            "focusing_count": len(focusing_by_circle.get(c.circle_id, set())),
+        }
+        for c in rows
+    ]
 
 
 @router.post("", status_code=201)

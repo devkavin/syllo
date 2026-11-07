@@ -178,7 +178,15 @@ export default function FocusTimer() {
     http.get(`/circle-sessions/${encodeURIComponent(id)}`).then(({ data }) => {
       if (!live) return;
       if (data.my_status !== "accepted" || data.canceled) { setEventId(null); setEventTopic(""); setErr("Confirm the current session in Circles first, or study on your own."); }
-      else { setEventId(data.id); setEventTopic(data.topic); }
+      else {
+        setEventId(data.id); setEventTopic(data.topic);
+        const mins = data.start && data.end ? Math.round((Date.parse(data.end) - Date.parse(data.start)) / 60000) : null;
+        if (validMinutes(mins) && mode !== "stopwatch") {
+          const secs = mins * 60;
+          clockRef.current = { seconds: secs, startedAt: null };
+          setSeconds(secs); setSessionSeconds(secs); setMinutes(String(mins));
+        }
+      }
     }).catch(e => { if (live) { setEventId(null); setErr(`Could not open this Circle session. You can still focus on your own. ${formatError(e)}`); } }).finally(() => { if (live) setEventLoading(false); });
     return () => { live = false; };
   }, [params, syncPending, remoteTimer?.timer_id]);

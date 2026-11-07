@@ -450,15 +450,22 @@ describe("focus fullscreen", () => {
     expect(http.post.mock.calls[1][1].circle_event_id).toBeNull();
   });
   it("links accepted Circle study to actual recorded time only", async () => {
-    http.get.mockImplementation(url => Promise.resolve({ data: url === "/circle-sessions/e" ? { id: "e", topic: "Limits with friends", my_status: "accepted", canceled: false } : [] }));
-    http.post.mockResolvedValue({ data: { session_id: "s", duration_seconds: 30 } });
+    http.get.mockImplementation(url => Promise.resolve({ data: url === "/circle-sessions/e" ? { id: "e", circle_id: "c1", topic: "Limits with friends", start: "2026-10-06T18:00:00Z", end: "2026-10-06T18:45:00Z", my_status: "accepted", canceled: false } : url === "/circles/c1" ? { id: "c1", goals: [{ id: "g1", user_id: "u", title: "Practise three limits", completed: false }] } : [] }));
+    http.post.mockResolvedValue({ data: { session_id: "s", duration_seconds: 30, circle_event_id: "e" } });
+    http.patch.mockResolvedValue({ data: { completed: true } });
     rtlRender(<MemoryRouter initialEntries={["/timer?event=e"]}><FocusTimer /></MemoryRouter>);
     expect(await screen.findByText("Limits with friends")).toBeInTheDocument();
+    expect(screen.getByTestId("timer-display")).toHaveTextContent("45:00");
     vi.useFakeTimers();
     fireEvent.click(screen.getByTestId("timer-start"));
     act(() => vi.advanceTimersByTime(30000));
     await act(async () => fireEvent.click(screen.getByTestId("timer-save")));
     expect(http.post).toHaveBeenCalledWith("/sessions", expect.objectContaining({ circle_event_id: "e", duration_seconds: 30 }));
+    vi.useRealTimers();
+    const goalCheckbox = await screen.findByRole("checkbox", { name: "Practise three limits" });
+    expect(goalCheckbox).not.toBeChecked();
+    fireEvent.click(goalCheckbox);
+    expect(http.patch).toHaveBeenCalledWith("/circles/c1/goals/g1", { completed: true });
   });
   it("contains keyboard focus and isolates background controls in fallback fullscreen", async () => {
     const view = render(<><button>Background control</button><FocusTimer /></>);

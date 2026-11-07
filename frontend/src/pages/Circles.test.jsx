@@ -115,3 +115,21 @@ it("waits for the new invitation after replacing a link", async () => {
   expect(screen.getByLabelText("Invite link")).toHaveValue(`https://syllo.app/join/${"B".repeat(43)}`);
   vi.restoreAllMocks();
 });
+it("displays rich scannable circle overview metadata including live focus, next session and goal progress", async () => {
+  http.get.mockImplementation(url => Promise.resolve({
+    data: url === "/circles" ? [{
+      ...circle,
+      member_count: 4,
+      member_names: ["Sam", "Maya", "Leo", "Zoe"],
+      focusing_count: 2,
+      next_session: { id: "s1", topic: "Practise limits", start: "2026-11-08T18:00:00Z", end: "2026-11-08T18:45:00Z" },
+      goals_total: 8,
+      goals_completed: 5,
+    }] : circle,
+  }));
+  show();
+  expect(await screen.findByText("2 focusing now")).toBeVisible();
+  expect(screen.getByText(/Next session:.*Practise limits/)).toBeVisible();
+  expect(screen.getByText("5/8 weekly goals completed")).toBeVisible();
+  expect(screen.getByText(/Created by you · 4 members/)).toBeVisible();
+});
