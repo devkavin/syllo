@@ -68,3 +68,13 @@ it("keeps older unsaved local sessions recoverable before starting a new one", (
   expect(screen.getByRole("button", { name: "Start focus" })).toBeDisabled();
   expect(screen.getByRole("link", { name: "Recover earlier session" })).toHaveAttribute("href", "/timer");
 });
+
+it("keeps the real focus controls and save protection available in the compact notebook header", async () => {
+  const flush = vi.fn().mockResolvedValue(false);
+  render(<MemoryRouter><NotebookFocus compact notebook={notebook} beforeStart={flush} /></MemoryRouter>);
+  expect(screen.getByRole("button", { name: "Start focus" })).toHaveTextContent("45 min");
+  expect(screen.queryByText(/Make room to study/)).not.toBeInTheDocument();
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Start focus" })));
+  expect(shared.act).not.toHaveBeenCalled();
+  expect(screen.getByRole("alert")).toHaveTextContent("Save your notebook");
+});

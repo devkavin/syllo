@@ -7,7 +7,7 @@ import { formatTimer, formatSeconds } from "@/lib/palette";
 import { useSharedFocusTimer } from "@/hooks/useSharedFocusTimer";
 import { useSubjectsQuery } from "@/hooks/useAcademicQueries";
 
-export default function NotebookFocus({ notebook, beforeStart }) {
+export default function NotebookFocus({ notebook, beforeStart, compact = false }) {
   const userId = useAuth()?.user?.user_id;
   const shared = useSharedFocusTimer({ userId, enabled: !!userId });
   const { data: subjects = [], isPending: subjectsPending, isError: subjectsFailed, refetch: retrySubjects } = useSubjectsQuery();
@@ -45,14 +45,14 @@ export default function NotebookFocus({ notebook, beforeStart }) {
     finally { setPreparing(false); }
   }
 
-  return <section aria-label="Notebook focus" className="rounded-lg border border-border bg-background/70 px-3 py-2 mb-5">
+  return <section aria-label="Notebook focus" className={compact ? "min-w-0 flex-1 basis-64 text-xs" : "rounded-lg border border-border bg-background/70 px-3 py-2 mb-5"}>
     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
       <Timer className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />
-      <div className="min-w-0 flex-1 basis-40 text-sm">
-        {timer ? <><span className="font-mono tabular-nums font-semibold">{formatTimer(shared.displaySeconds)}</span><span className="text-muted-foreground ml-2">{timer.status === "paused" ? "Paused" : timer.mode === "stopwatch" ? "Studying" : ["short", "long"].includes(timer.mode) ? "Break" : "Focus"}</span></> : <span className="text-muted-foreground">{presetPending ? "Loading focus preset…" : `Make room to study · ${minutes} min`}</span>}
+      <div className={`min-w-0 ${compact ? "text-xs" : "flex-1 basis-40 text-sm"}`}>
+        {timer ? <><span className="font-mono tabular-nums font-semibold">{formatTimer(shared.displaySeconds)}</span><span className="text-muted-foreground ml-2">{timer.status === "paused" ? "Paused" : timer.mode === "stopwatch" ? "Studying" : ["short", "long"].includes(timer.mode) ? "Break" : "Focus"}</span></> : presetPending ? <span className="text-muted-foreground">Loading focus preset…</span> : !compact && <span className="text-muted-foreground">Make room to study · {minutes} min</span>}
       </div>
       <button className="btn btn-primary text-sm" disabled={timer ? disabled : startDisabled} onClick={() => change(!timer ? "start" : timer.status === "running" ? "pause" : "resume")} aria-label={!timer ? "Start focus" : timer.status === "running" ? "Pause focus" : "Resume focus"}>
-        {timer?.status === "running" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}{!timer ? "Start focus" : timer.status === "running" ? "Pause" : "Resume"}
+        {timer?.status === "running" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}{!timer ? `${compact ? `${minutes} min · ` : ""}Start focus` : timer.status === "running" ? "Pause" : "Resume"}
       </button>
       {timer && <button className="btn btn-ghost text-sm" disabled={disabled} onClick={() => change("finish")}><Check className="h-4 w-4" />{["short", "long"].includes(timer.mode) ? "End break" : "Finish session"}</button>}
       <Link className="btn btn-ghost btn-icon" to={href} aria-label="Open Focus settings" title="Open Focus settings"><Settings2 className="h-4 w-4" /></Link>

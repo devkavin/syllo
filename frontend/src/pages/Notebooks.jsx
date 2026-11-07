@@ -332,14 +332,14 @@ function NotebookWorkspace({ accountId }) {
           </div>
         ) : (
           <div inert={busy || undefined} aria-busy={busy} className="notebook-paper paper card p-3 sm:p-4 lg:p-5 min-h-[70dvh] flex flex-col relative min-w-0" data-testid="notebook-editor" data-paper-style={notebook.paper_style || "plain"} data-font-style={notebook.font_style || "sans"} ref={editorRef}>
-            <NotebookFocus notebook={notebook} beforeStart={autosave.flush} />
             {autosave.conflict && <NotebookRecovery busy={busy} error={recoveryError} onCopy={recoverCopy} onLoadServer={loadServer} />}
-            <div className="flex flex-wrap gap-3 items-center justify-between mb-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-3 items-start mb-4 text-sm text-muted-foreground">
               <div className="segmented-control" role="group" aria-label="Notebook mode">
                 <button className="segment" aria-pressed={mode === "write"} onMouseDown={event => event.preventDefault()} onClick={() => setMode("write")}>Write</button>
                 <button className="segment" aria-pressed={mode === "practice"} onMouseDown={event => event.preventDefault()} onClick={() => { setPracticeOpen(true); setMode("practice"); }}>Practice</button>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <NotebookFocus compact notebook={notebook} beforeStart={autosave.flush} />
+              <div className="ml-auto flex flex-wrap items-center gap-2">
                 <span role="status" data-testid="notebook-autosave-indicator" className="inline-flex items-center gap-1">
                   {saveState === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving</>}
                   {saveState === "saved" && <><Check className="w-3 h-3" /> Saved</>}
@@ -348,12 +348,15 @@ function NotebookWorkspace({ accountId }) {
                 </span>
                 <Sheet open={optionsOpen} onOpenChange={setOptionsOpen}><SheetTrigger asChild><button ref={optionsTrigger} aria-label="Notebook options" className="btn btn-ghost min-h-11 text-sm"><span className="sm:hidden">Options</span><span className="hidden sm:inline">Notebook options</span></button></SheetTrigger><SheetContent onCloseAutoFocus={event => { event.preventDefault(); const trigger = optionsTrigger.current; if (trigger?.isConnected && !trigger.closest("[inert]")) trigger.focus(); else notebookMenuTrigger.current?.focus(); }} side="right" className="w-96 max-w-[95vw] overflow-y-auto p-4 pt-12" closeLabel="Close notebook options" aria-describedby={undefined}><SheetTitle className="mb-4">Notebook options</SheetTitle><div className="space-y-3">
                   <NotebookLinks key={activeId} notebook={notebook} subjects={subjects} update={autosave.update} />
-                  <fieldset className="border-t border-border pt-3 space-y-2"><legend className="text-xs text-muted-foreground">Page settings</legend><div className="flex flex-wrap gap-3">
+                  <fieldset className="border-t border-border pt-3 space-y-2"><legend className="text-xs font-semibold text-muted-foreground">Page appearance</legend><div className="flex flex-wrap gap-3">
                     <label className="flex items-center gap-2">Paper<select aria-label="Notebook paper" className="input w-auto! text-sm" value={notebook.paper_style || "plain"} onChange={e => autosave.update({ paper_style: e.target.value })}><option value="plain">Plain</option><option value="ruled">Ruled</option><option value="dotted">Dotted</option></select></label>
                     <label className="flex items-center gap-2">Font<select aria-label="Notebook font" className="input w-auto! text-sm" value={notebook.font_style || "sans"} onChange={e => autosave.update({ font_style: e.target.value })}><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select></label>
                   </div></fieldset>
+                  <h3 className="border-t border-border pt-3 text-xs font-semibold text-muted-foreground">History & export</h3>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void loadHistory(); }}>Version history</button>
                   <button className="btn btn-ghost w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); exportNotebook(); }}>Export JSON</button>
+                  <h3 className="border-t border-border pt-3 text-xs font-semibold text-muted-foreground">Recovery & safety</h3>
+                  <p className="text-xs text-muted-foreground">Unsynced drafts and conflicts stay visible in the notebook. Use version history to recover an earlier save.</p>
                   <button className="btn btn-ghost w-full justify-start text-sm text-destructive" disabled={busy} onClick={() => { setOptionsOpen(false); void removeNotebook(notebook.notebook_id); }} data-testid="notebook-delete-btn"><Trash2 className="w-3.5 h-3.5" /> Move to Trash</button>
                   <button className="btn btn-outline w-full justify-start text-sm" onClick={() => { setOptionsOpen(false); void summarize(); }} disabled={summarizing} data-testid="notebook-summarize-btn" aria-label="Summarize with Study Companion" title="Summarize with Study Companion">{summarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Summarize</button>
                   <AiPrivacyNote />

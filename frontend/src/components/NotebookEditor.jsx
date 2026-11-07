@@ -14,6 +14,7 @@ import { notebookSchema, calloutKinds } from "./notebookSchema";
 import NotebookStudyTools from "./NotebookStudyTools";
 import { NotebookIllustrationContext } from "@/features/scientific/ScientificIllustrationBlock";
 import { createDocument } from "@/features/scientific/document";
+import StudyGuidance from "./StudyGuidance";
 
 const mediaCommands = new Set(["image", "video", "audio", "file"]);
 
@@ -58,7 +59,7 @@ export default function NotebookEditor({ notebook, theme, editorRef, onChange, r
 
   return <NotebookIllustrationContext.Provider value={{ editingId, setEditingId, persist, saveNow, saveState, saveError, accountId }}>
     {!readOnly && <><NotebookStudyTools editor={editor} onIllustration={() => insertIllustration()} />
-    <p className="text-xs text-muted-foreground">Type / for equations, diagrams and callouts. Equations use LaTeX; diagrams use Mermaid.</p></>}
+    <StudyGuidance accountId={accountId} context="notebook"><p>Type / for equations, diagrams and callouts. Use Insert for study templates and scientific illustrations, Format for symbols, and Practice to test your recall. Your notes save as you write.</p></StudyGuidance></>}
     <BlockNoteView className="notebook-writing" editor={editor} theme={theme} slashMenu={false} filePanel={false}
     editable={!readOnly} formattingToolbar={readOnly ? false : undefined} sideMenu={readOnly ? false : undefined}
     onChange={() => { if (!readOnly) onChange?.({ rich_content: editor.document, content: notebookText(editor.document) }); }}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Microscope } from "lucide-react";
 
 const symbolGroups = {
@@ -53,11 +53,40 @@ function headingOutline(blocks) {
 }
 
 const preserveSelection = event => event.preventDefault();
-const closeMenu = event => { event.currentTarget.closest("details").open = false; };
 
 export default function NotebookStudyTools({ editor, onIllustration }) {
   const [outline, setOutline] = useState(() => headingOutline(editor.document));
   const [styles, setStyles] = useState(() => editor.getActiveStyles());
+  const [openMenu, setOpenMenu] = useState(null);
+  const toolbarRef = useRef(null);
+  const closeMenu = () => setOpenMenu(null);
+  const toggleMenu = (event, name) => {
+    event.preventDefault();
+    setOpenMenu(current => current === name ? null : name);
+  };
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const onOutside = event => {
+      const menu = toolbarRef.current?.querySelector("details[open]");
+      if (menu && !menu.contains(event.target)) setOpenMenu(null);
+    };
+    const onEscape = event => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      toolbarRef.current?.querySelector("details[open] > summary")?.focus();
+      setOpenMenu(null);
+    };
+    document.addEventListener("pointerdown", onOutside, true);
+    document.addEventListener("focusin", onOutside, true);
+    document.addEventListener("keydown", onEscape, true);
+    return () => {
+      document.removeEventListener("pointerdown", onOutside, true);
+      document.removeEventListener("focusin", onOutside, true);
+      document.removeEventListener("keydown", onEscape, true);
+    };
+  }, [openMenu]);
 
   useEffect(() => {
     const refresh = () => setOutline(headingOutline(editor.document));
@@ -90,33 +119,36 @@ export default function NotebookStudyTools({ editor, onIllustration }) {
     editor.focus();
   }
 
-  return <div role="toolbar" aria-label="Notebook study tools" className="flex flex-wrap items-center gap-2 border-b border-border pb-3 mb-3 text-sm">
-    {onIllustration && <details className="relative"><summary className="btn btn-ghost cursor-pointer">Insert</summary><div className="absolute left-0 top-full z-30 mt-1 w-64 rounded-lg border border-border bg-popover p-2 shadow-md"><button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={event => { closeMenu(event); onIllustration(); }}><Microscope size={17} />Scientific Illustration</button><p className="px-3 py-2 text-xs text-muted-foreground">Scientific vectors, labels and templates. No AI credits.</p></div></details>}
-    <details className="relative">
-      <summary className="btn btn-ghost cursor-pointer">Symbols</summary>
-      <div className="absolute left-0 top-full z-30 mt-1 w-72 max-w-[80vw] rounded-lg border border-border bg-popover p-3 shadow-md">
+  return <div ref={toolbarRef} role="toolbar" aria-label="Notebook study tools" className="relative flex flex-wrap items-center gap-1 border-b border-border pb-2 mb-3 text-sm">
+    <details className="static" open={openMenu === "insert"}>
+      <summary className="btn btn-ghost cursor-pointer" aria-expanded={openMenu === "insert"} onMouseDown={preserveSelection} onClick={event => toggleMenu(event, "insert")}>Insert</summary>
+      <div className="absolute left-0 top-full z-30 mt-1 w-64 max-w-full max-h-[60dvh] overflow-y-auto rounded-lg border border-border bg-popover p-2 shadow-md">
+        {onIllustration && <><button type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { closeMenu(); onIllustration(); }}><Microscope size={17} />Scientific Illustration</button><p className="px-3 py-2 text-xs text-muted-foreground">Scientific vectors and labels. No AI credits.</p></>}
+        <p className="px-3 py-2 text-xs font-semibold text-muted-foreground border-t border-border">Study templates</p>
+        {Object.keys(templates).map(name => <button key={name} type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={() => { insertTemplate(name); closeMenu(); }}>{name}</button>)}
+        <p className="px-3 py-2 text-xs text-muted-foreground">Insert after the current block.</p>
+      </div>
+    </details>
+    <details className="static" open={openMenu === "format"}>
+      <summary className="btn btn-ghost cursor-pointer" aria-expanded={openMenu === "format"} onMouseDown={preserveSelection} onClick={event => toggleMenu(event, "format")}>Format</summary>
+      <div className="absolute left-0 top-full z-30 mt-1 w-72 max-w-full max-h-[60dvh] overflow-y-auto rounded-lg border border-border bg-popover p-3 shadow-md">
+        <div className="flex flex-wrap gap-2 border-b border-border pb-2 mb-3">
+          <button type="button" className="btn btn-ghost" aria-label="Superscript" aria-pressed={!!styles.superscript} onMouseDown={preserveSelection} onClick={() => { scriptStyle("superscript", "subscript"); closeMenu(); }}>x<sup>2</sup><span className="text-xs">Superscript</span></button>
+          <button type="button" className="btn btn-ghost" aria-label="Subscript" aria-pressed={!!styles.subscript} onMouseDown={preserveSelection} onClick={() => { scriptStyle("subscript", "superscript"); closeMenu(); }}>x<sub>2</sub><span className="text-xs">Subscript</span></button>
+        </div>
         {Object.entries(symbolGroups).map(([group, symbols]) => <fieldset key={group} className="mb-2 last:mb-0">
           <legend className="text-xs text-muted-foreground mb-1">{group}</legend>
           <div className="flex flex-wrap gap-1">{symbols.map(symbol => <button key={symbol} type="button" className="btn btn-ghost min-w-10 px-2 font-mono" aria-label={`Insert ${symbol}`} onMouseDown={preserveSelection}
-            onClick={event => { editor.focus(); editor.insertInlineContent(symbol); closeMenu(event); }}>{symbol}</button>)}</div>
+            onClick={() => { editor.focus(); editor.insertInlineContent(symbol); closeMenu(); }}>{symbol}</button>)}</div>
         </fieldset>)}
       </div>
     </details>
-    <button type="button" className="btn btn-ghost" aria-label="Superscript" aria-pressed={!!styles.superscript} onMouseDown={preserveSelection} onClick={() => scriptStyle("superscript", "subscript")}>x<sup>2</sup></button>
-    <button type="button" className="btn btn-ghost" aria-label="Subscript" aria-pressed={!!styles.subscript} onMouseDown={preserveSelection} onClick={() => scriptStyle("subscript", "superscript")}>x<sub>2</sub></button>
-    <details className="relative">
-      <summary className="btn btn-ghost cursor-pointer">Templates</summary>
-      <div className="absolute left-0 top-full z-30 mt-1 w-64 rounded-lg border border-border bg-popover p-2 shadow-md">
-        <p className="px-2 py-1 text-xs text-muted-foreground">Insert after the current block.</p>
-        {Object.keys(templates).map(name => <button key={name} type="button" className="btn btn-ghost w-full justify-start" onMouseDown={preserveSelection} onClick={event => { insertTemplate(name); closeMenu(event); }}>{name}</button>)}
-      </div>
-    </details>
-    <details className="relative">
-      <summary className="btn btn-ghost cursor-pointer">Outline</summary>
-      <nav aria-label="Notebook outline" className="absolute right-0 top-full z-30 mt-1 w-64 max-h-72 overflow-y-auto rounded-lg border border-border bg-popover p-2 shadow-md">
+    <details className="static" open={openMenu === "outline"}>
+      <summary className="btn btn-ghost cursor-pointer" aria-expanded={openMenu === "outline"} onMouseDown={preserveSelection} onClick={event => toggleMenu(event, "outline")}>Outline</summary>
+      <nav aria-label="Notebook outline" className="absolute left-0 top-full z-30 mt-1 w-64 max-w-full max-h-[60dvh] overflow-y-auto rounded-lg border border-border bg-popover p-2 shadow-md">
         {outline.length ? outline.map(heading => <button key={heading.id} type="button" className="btn btn-ghost w-full justify-start text-left" style={{ paddingLeft: `${0.5 + (heading.level - 1) * 0.75}rem` }} onMouseDown={preserveSelection}
-          onClick={event => {
-            editor.setTextCursorPosition(heading.id, "start"); editor.focus(); closeMenu(event);
+          onClick={() => {
+            editor.setTextCursorPosition(heading.id, "start"); editor.focus(); closeMenu();
             Array.from(editor.domElement?.querySelectorAll("[data-id]") || []).find(node => node.dataset.id === heading.id)
               ?.scrollIntoView?.({ block: "start", behavior: "smooth" });
           }}>{heading.text}</button>) : <p className="p-2 text-muted-foreground">Add headings to navigate your notes.</p>}

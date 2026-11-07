@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useRef } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
@@ -64,9 +64,13 @@ function Protected({ children }) {
 
 function OnboardingRoute() {
   const { user } = useAuth();
+  const { search } = useLocation();
+  const flow = useRef({ owner: null, started: false });
+  if (flow.current.owner !== user?.user_id) flow.current = { owner: user?.user_id, started: user?.onboarded === false };
+  if (user?.onboarded === false) flow.current.started = true;
   if (user === undefined) return <div className="min-h-screen grid place-items-center text-muted-foreground text-sm">Loading</div>;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.onboarded) return <Navigate to="/today" replace />;
+  if (user.onboarded && !flow.current.started && new URLSearchParams(search).get("guide") !== "1") return <Navigate to="/today" replace />;
   return <Onboarding />;
 }
 

@@ -10,6 +10,7 @@ import ActivityDialog from "@/components/ActivityDialog";
 import StudyDesk, { DeskResourceNotice } from "@/components/StudyDesk";
 import StudyWorkDialog from "@/components/StudyWorkDialog";
 import NewNoteDialog from "@/components/NewNoteDialog";
+import StudyGuidance from "@/components/StudyGuidance";
 import useStudyDesk, { studyFocusHref } from "@/hooks/useStudyDesk";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { nextStudyAction, reviewHref } from "@/lib/nextStudyAction";
@@ -55,10 +56,14 @@ export default function Today() {
     } catch (e) { setError(formatError(e)); }
     finally { mutation.current = false; setWorking(null); }
   };
-  const next = data && nextStudyAction({ today: data.today, agenda: data.agenda, reviews: data.reviews_due, tasks: data.tasks, practice });
+  const suggested = data && nextStudyAction({ today: data.today, agenda: data.agenda, reviews: data.reviews_due, tasks: data.tasks, practice });
+  const recentNote = !desk.notes.failed && [...(desk.notes.data || [])].sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || ""))[0];
+  const next = recentNote && suggested?.kind === "focus"
+    ? { kind: "note", item: recentNote, label: recentNote.title || "Untitled note", href: `/notebooks?notebook=${encodeURIComponent(recentNote.notebook_id)}` }
+    : suggested;
   const lesson = desk.lesson;
-  const firstUse = quiet && data.subjects_count === 0 && desk.history.data?.length === 0 && desk.timetable.data?.length === 0 && !desk.history.failed && !desk.timetable.failed;
-  const focusHref = lesson ? `/timer?lesson=${encodeURIComponent(lesson.lesson_id)}` : "/timer";
+  const firstUse = quiet && data.subjects_count === 0 && desk.notes.data?.length === 0 && desk.history.data?.length === 0 && desk.timetable.data?.length === 0 && !desk.notes.failed && !desk.history.failed && !desk.timetable.failed;
+  const focusHref = lesson ? `/lessons/${encodeURIComponent(lesson.lesson_id)}` : "/timer";
   const dueReviewCount = (data?.reviews_due || []).filter(review => new Date(review.next_review_at).getTime() <= Date.now()).length;
   const remainingTasks = (data?.tasks || []).filter(t => !t.completed && !(next?.kind === "task" && next.item.task_id === t.task_id));
   const remainingReviews = (data?.reviews_due || []).filter(r => !(next?.kind === "review" && next.item.review_id === r.review_id));
@@ -69,9 +74,9 @@ export default function Today() {
   const openWork = (item, isTask = false) => { setError(""); setWorkItem({ item, isTask }); };
   const contextName = next?.kind === "focus" ? desk.subjectName(lesson?.subject_id) : desk.subjectName(next?.item?.subject_id);
   const practiceDescription = `${practice?.questions_count || 0} questions · ${practice?.mistakes_count || 0} mistakes ready to revisit.`;
-  const nextDescription = next?.kind === "task" ? taskMeta(next.item) : next?.kind === "practice" ? practiceDescription : next?.kind === "review" ? "A chance to revisit what you've learned." :
+  const nextDescription = next?.kind === "note" ? "Pick up where you left off. Your saved note is ready to open." : next?.kind === "task" ? taskMeta(next.item) : next?.kind === "practice" ? practiceDescription : next?.kind === "review" ? "A chance to revisit what you've learned." :
     ["current", "upcoming"].includes(next?.kind) ? `${formatStudyTime(next.item.starts_at, timezone)} – ${formatStudyTime(next.item.ends_at, timezone)} · ${next.item.kind?.replaceAll("_", " ") || "Activity"}` :
-    lesson ? "Pick up where you left off." : firstUse ? "Start a session, jot down a note, or add one thing to work on. Subjects can wait." : quiet ? "Choose a subject, write a note, or take a little time to focus." : "There's room for a focus session. Your due work is below.";
+    lesson ? "Pick up where you left off." : firstUse ? "Write about something you're learning. Subjects and timetable setup can wait." : quiet ? "Choose a subject, write a note, or take a little time to focus." : "There's room for a focus session. Your due work is below.";
 
   return <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8" data-testid="today-page">
     <header className="flex flex-wrap items-center justify-between gap-4">
@@ -90,28 +95,35 @@ export default function Today() {
     {notice && <p role="status" className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-primary" />{notice}</p>}
     {!data && !error && <p role="status" className="py-8 text-muted-foreground">Loading your day…</p>}
     {data && <>
-      <div className="grid grid-cols-1 min-[1200px]:grid-cols-[minmax(0,1fr)_19rem] gap-8 min-[1200px]:gap-10">
+      <div className="space-y-6">
       <div className="min-w-0 space-y-7 sm:space-y-9">
-      <section aria-label="Suggested next step" className="border-l-2 border-primary pl-5 py-1 sm:pl-6">
+      <section aria-label="Suggested next step" className="rounded-2xl border border-primary/15 bg-accent/40 p-5 sm:p-8">
         <div className="flex items-start gap-4">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-muted-foreground mb-2">{next.kind === "current" ? "Happening now" : next.kind === "upcoming" ? "Later today" : next.kind === "practice" ? "Ready for practice" : next.kind === "review" ? "Ready for review" : next.kind === "task" ? "One thing to work on" : lesson ? "Continue learning" : firstUse ? "Welcome to your study space" : "Make some room to study"}</p>
-            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight break-words">{next.kind === "focus" ? lesson?.title || "What would you like to work on?" : next.label}</h2>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Your next step · {next.kind === "current" ? "Happening now" : next.kind === "upcoming" ? "Later today" : next.kind === "practice" ? "Practice" : next.kind === "review" ? "Review" : next.kind === "task" ? "Due work" : "Continue learning"}</p>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight break-words">{next.kind === "focus" ? lesson?.title || (firstUse ? "Start with one note" : "What would you like to work on?") : next.label}</h2>
             {contextName && <p className="text-sm font-medium mt-1 text-primary break-words">{contextName}</p>}
             <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl">{nextDescription}</p>
             <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
-              {next.kind === "practice" ? <Link to="/reviews" className="btn btn-primary">Practice due questions</Link> : next.kind === "focus" ? <Link to={focusHref} className="btn btn-primary">{lesson ? "Continue studying" : "Start Focus"}</Link> :
+              {next.kind === "note" ? <Link to={next.href} className="btn btn-primary">Continue studying</Link> : next.kind === "practice" ? <Link to="/reviews" className="btn btn-primary">Practice due questions</Link> : next.kind === "focus" ? (firstUse ? <button className="btn btn-primary" onClick={() => setDialog("note")}>Write your first note</button> : <Link to={focusHref} className="btn btn-primary">{lesson ? "Continue studying" : "Start Focus"}</Link>) :
                 next.kind === "task" ? <button className="btn btn-primary" onClick={() => openWork(next.item, true)}>Work on task</button> :
                 next.kind === "review" || next.item.kind === "circle_study" ? <Link to={next.href} className="btn btn-primary">{next.kind === "review" ? `Review ${dueReviewCount} due ${dueReviewCount === 1 ? "topic" : "topics"}` : "Start session"}</Link> :
                 <button className="btn btn-primary" onClick={() => openWork(next.item)}>{next.item.kind === "class" ? "Open class" : "Open activity"}</button>}
-              {next.kind === "task" && completion(next.item)}
-              {next.kind !== "focus" && <Link to={studyFocusHref(next.item)} className="btn btn-ghost">Start Focus</Link>}
-              {next.kind === "focus" && (lesson ? <Link to="/timer" className="btn btn-ghost">Choose something else</Link> : <button className="btn btn-ghost" onClick={() => setDialog("task")}>Add task</button>)}
             </div>
-            {firstUse && <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm"><Link to="/subjects" className="action-link">Add your subjects</Link><Link to="/timetable?new=1" className="action-link">Add your timetable</Link></div>}
           </div>
         </div>
       </section>
+
+      <details className="text-sm">
+        <summary className="cursor-pointer action-link min-h-11 flex items-center gap-2 w-fit">Choose something else<ChevronDown className="w-4 h-4" /></summary>
+        <div className="flex flex-wrap items-center gap-2 py-3">
+          <Link to={studyFocusHref(next.item || lesson)} className="btn btn-outline">Start Focus</Link>
+          <button className="btn btn-ghost" onClick={() => setDialog("task")}>Add task</button>
+          {next.kind === "task" && completion(next.item)}
+          <Link to="/subjects" className="btn btn-ghost">Your subjects</Link>
+          <Link to="/timetable?new=1" className="btn btn-ghost">Set up timetable</Link>
+        </div>
+      </details>
 
       {practiceError && <p role="alert" className="notice">Practice counts could not load. {practiceError}<button className="btn btn-ghost" onClick={refresh}>Retry practice</button></p>}
       {practice?.due_count > 0 && next.kind !== "practice" && <section aria-label="Due practice" className="flex flex-wrap items-center gap-4 border-y border-border py-4"><div className="flex-1 min-w-0"><h2 className="font-semibold">Keep your recall fresh</h2><p className="text-sm text-muted-foreground mt-1">{practiceDescription}</p></div><Link to="/reviews" className="btn btn-outline">Practice due questions</Link></section>}
@@ -121,8 +133,9 @@ export default function Today() {
         {data.circle_invitations.map(event => <div key={event.id} className="space-y-2"><p className="font-medium">{event.topic}</p><p className="text-sm text-muted-foreground">{formatStudyTime(event.start, timezone, true)} · not confirmed yet</p><div className="flex flex-wrap gap-2"><Link className="btn btn-primary" to={`/circles?circle=${event.circle_id}`}>Review session</Link><button className="btn btn-outline" disabled={working != null} onClick={async () => { if (mutation.current) return; mutation.current = true; setWorking(event.id); try { await http.post(`/circles/${event.circle_id}/sessions/${event.id}/respond`, { status: "declined", revision: event.revision }); refresh(); } catch (e) { setError(formatError(e)); } finally { mutation.current = false; setWorking(null); } }}>Decline</button></div></div>)}
       </section>}
 
-      {hasPlan && <section aria-labelledby="today-plan-heading">
-        <h2 id="today-plan-heading" className="text-lg font-semibold mb-3">Due work & reviews</h2>
+      {hasPlan && <details className="rounded-xl border border-border p-4">
+        <summary className="cursor-pointer flex min-h-11 items-center justify-between gap-3"><span className="font-semibold">Other due work</span><span className="ml-auto text-sm text-muted-foreground">{remainingTasks.length + remainingReviews.length}</span><ChevronDown className="w-4 h-4" /></summary>
+        <section aria-label="Due work and reviews">
         <ul className="divide-y divide-border">
           {remainingTasks.map(task => <li key={task.task_id} className="flex items-center gap-3 py-3">
             {completion(task)}<div className="min-w-0 flex-1"><button onClick={() => openWork(task, true)} className="row-link -ml-3 text-left break-words">{task.title}</button><p className="text-sm text-muted-foreground">{taskMeta(task)}{desk.subjectName(task.subject_id) && ` · ${desk.subjectName(task.subject_id)}`}</p></div>
@@ -132,10 +145,12 @@ export default function Today() {
             <Link className="btn btn-outline" to={reviewHref(review)}>Review lesson<span className="sr-only">: {review.lesson_title || review.title || "lesson"}</span></Link>
           </li>)}
         </ul>
-      </section>}
+      </section></details>}
       <StudyDesk desk={desk} onNewNote={() => setDialog("note")} />
       </div>
-      <aside className="min-w-0 space-y-6 border-t min-[1200px]:border-t-0 min-[1200px]:border-l border-border pt-6 min-[1200px]:pt-0 min-[1200px]:pl-7">
+      <div className="min-w-0 space-y-5">
+      <details className="rounded-xl border border-border p-4">
+      <summary className="cursor-pointer flex min-h-11 items-center gap-3"><CalendarDays className="w-5 h-5" /><span className="font-semibold">Upcoming activities</span><span className="ml-auto text-sm text-muted-foreground">{schedule.length}</span><ChevronDown className="w-4 h-4" /></summary>
       <section aria-labelledby="schedule-heading" className="space-y-3">
         <div className="flex items-center justify-between gap-2"><h2 id="schedule-heading" className="text-lg font-semibold">Your schedule</h2><Link to="/planner" className="btn btn-ghost btn-icon" aria-label="Open Planner"><CalendarDays className="h-5 w-5" /></Link></div>
         {schedule.length ? <ol className="relative space-y-1">{schedule.map(item => <li key={`${item.source}-${item.id}`}>
@@ -146,12 +161,14 @@ export default function Today() {
         <DeskResourceNotice resource={desk.timetable} label="timetable" />
       </section>
       {!!data.upcoming_deadlines?.length && <section aria-labelledby="coming-up-heading" className="border-t border-border pt-5"><h2 id="coming-up-heading" className="text-lg font-semibold mb-2">Coming up</h2><AgendaList items={data.upcoming_deadlines} timezone={timezone} withDate /></section>}
+      </details>
       {data.schedule_warnings?.map(w => <p key={w.id} role="status" className="notice">{w.message}<Link to={w.href || "/timetable"} className="action-link">Check timetable</Link></p>)}
       <footer className="border-t border-border pt-4 space-y-4 text-sm">
         <Link to="/analytics" className="action-link"><Clock className="h-4 w-4" />{Math.round((data.seconds_today || 0) / 60)} min studied today</Link>
         <StarterSteps />
+        <StudyGuidance accountId={user?.user_id} context="today"><p>Start with the suggested next step, or choose something else. Your other due work and upcoming activities expand when you need them. Subjects and timetable setup are always optional.</p></StudyGuidance>
       </footer>
-      </aside>
+      </div>
       </div>
     </>}
     {dialog === "task" && <TaskDialog initialDueDate={data.today} fallbackFocusRef={addTrigger} onClose={() => setDialog(null)} onCreated={() => saved("Task added")} />}

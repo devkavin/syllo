@@ -42,7 +42,7 @@ it("makes focus and due work visible without analytics cards", async () => {
 it("offers a single useful starting state instead of several empty modules", async () => {
   render(<MemoryRouter><Today /></MemoryRouter>);
   const start = await screen.findByRole("region", { name: "Suggested next step" });
-  expect(within(start).getByRole("link", { name: "Start Focus" })).toHaveAttribute("href", "/timer");
+  expect(await within(start).findByRole("button", { name: "Write your first note" })).toBeVisible();
   expect(screen.queryByText("No reviews due. Your next review will appear here.")).not.toBeInTheDocument();
   expect(screen.queryByText("Nothing due today.")).not.toBeInTheDocument();
   expect(screen.queryByText("Reflect on my week")).not.toBeInTheDocument();
@@ -101,7 +101,7 @@ it("does not mistake a quiet day for a missing timetable and resumes a real rece
   sessions = [{ session_id: "s", lesson_id: "limits", duration_seconds: 1500, mode: "pomodoro" }];
   http.get.mockImplementation(url => Promise.resolve({ data: url === "/today" ? day : url === "/timetable" ? timetable : url === "/sessions?limit=10" ? sessions : url === "/lessons/limits" ? { lesson_id: "limits", title: "Limits", subject_id: "math", unit_id: "calc" } : [] }));
   render(<MemoryRouter><Today /></MemoryRouter>);
-  expect(await screen.findByRole("link", { name: "Continue studying" })).toHaveAttribute("href", "/timer?lesson=limits");
+  expect(await screen.findByRole("link", { name: "Continue studying" })).toHaveAttribute("href", "/lessons/limits");
   expect(screen.getByRole("heading", { name: "Limits" })).toBeVisible();
   expect(screen.queryByRole("link", { name: "Add your timetable" })).not.toBeInTheDocument();
 });
@@ -152,7 +152,8 @@ it("confirms a saved future task even when it is not due in today's plan", async
 it("does not describe today as empty when a review is scheduled for later", async () => {
   day = { ...emptyDay, reviews_due: [{ review_id: "r", lesson_id: "limits", lesson_title: "Limits", next_review_at: "2026-10-06T16:00:00Z", state: "upcoming" }] };
   render(<MemoryRouter><Today /></MemoryRouter>);
-  expect(await screen.findByText("Limits")).toBeVisible();
+  fireEvent.click(await screen.findByText("Other due work"));
+  expect(screen.getByText("Limits")).toBeVisible();
   expect(screen.queryByText(/Nothing planned today/)).not.toBeInTheDocument();
 });
 
@@ -182,6 +183,7 @@ it("keeps real recent work visible alongside a busy day's schedule", async () =>
   const work = await screen.findByRole("region", { name: "Continue working" });
   expect(await within(work).findByRole("link", { name: /Limits revision/ })).toHaveAttribute("href", "/notebooks?notebook=notes");
   expect(await within(work).findByRole("link", { name: /Limits Lesson notes/ })).toHaveAttribute("href", "/lessons/limits");
+  fireEvent.click(screen.getByText("Upcoming activities"));
   expect(screen.getByRole("region", { name: "Your schedule" })).toBeVisible();
   expect(http.get).not.toHaveBeenCalledWith("/notebooks/notes");
 });
@@ -217,6 +219,47 @@ it("distinguishes failed recent-work loading from empty work and retries", async
   expect(await screen.findByRole("link", { name: /Limits revision/ })).toBeVisible();
 });
 function Location() { return <p data-testid="location">{useLocation().pathname}{useLocation().search}</p>; }
+
+it("gives the recommendation one primary action and keeps other work collapsed but reachable", async () => {
+  day = { ...emptyDay, tasks: [{ task_id: "urgent", title: "Physics worksheet", due_date: "2026-10-05" }, { task_id: "other", title: "Read chemistry", due_date: "2026-10-06" }], agenda: [{ id: "class", kind: "class", source: "timetable", title: "Math class", starts_at: "2026-10-06T12:00:00Z", ends_at: "2026-10-06T13:00:00Z" }] };
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const recommendation = await screen.findByRole("region", { name: "Suggested next step" });
+  expect(within(recommendation).getByRole("button", { name: "Work on task" })).toBeVisible();
+  expect(within(recommendation).queryByRole("link", { name: "Start Focus" })).not.toBeInTheDocument();
+  const due = screen.getByText("Other due work").closest("details");
+  expect(due).not.toHaveAttribute("open");
+  fireEvent.click(screen.getByText("Other due work"));
+  expect(screen.getByRole("button", { name: "Read chemistry" })).toBeVisible();
+  const schedule = screen.getByText("Upcoming activities").closest("details");
+  expect(schedule).not.toHaveAttribute("open");
+  fireEvent.click(screen.getByText("Upcoming activities"));
+  expect(screen.getByRole("button", { name: /Math class/ })).toBeVisible();
+});
+
+it("continues the exact recent notebook directly instead of sending the student to the timer", async () => {
+  http.get.mockImplementation(url => Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const recommendation = await screen.findByRole("region", { name: "Suggested next step" });
+  expect(await within(recommendation).findByRole("link", { name: "Continue studying" })).toHaveAttribute("href", "/notebooks?notebook=notes");
+});
+
+it("keeps an upcoming class ahead of an older notebook in the main recommendation", async () => {
+  day = { ...emptyDay, agenda: [{ id: "soon", kind: "class", source: "timetable", title: "Math class", starts_at: "2026-10-06T06:01:00Z", ends_at: "2026-10-06T07:00:00Z" }] };
+  http.get.mockImplementation(url => Promise.resolve(deskResponses(url)));
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  await screen.findByRole("link", { name: /Limits revision/ });
+  const recommendation = screen.getByRole("region", { name: "Suggested next step" });
+  expect(within(recommendation).getByRole("heading", { name: "Math class" })).toBeVisible();
+  expect(within(recommendation).getByRole("button", { name: "Open class" })).toBeVisible();
+});
+
+it("lets a first-time student start a note without setting up subjects", async () => {
+  render(<MemoryRouter><Today /></MemoryRouter>);
+  const recommendation = await screen.findByRole("region", { name: "Suggested next step" });
+  fireEvent.click(await within(recommendation).findByRole("button", { name: "Write your first note" }));
+  expect(screen.getByRole("dialog", { name: "New note" })).toBeVisible();
+  expect(screen.getByText(/Linking a subject or lesson is optional/)).toBeVisible();
+});
 it("creates an optionally unlinked note and opens that exact notebook", async () => {
   http.post.mockResolvedValue({ data: { notebook_id: "new-note" } });
   render(<MemoryRouter><Today /><Location /></MemoryRouter>);
