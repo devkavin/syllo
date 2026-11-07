@@ -59,7 +59,7 @@ export default function NotebookEditor({ notebook, theme, editorRef, onChange, r
 
   return <NotebookIllustrationContext.Provider value={{ editingId, setEditingId, persist, saveNow, saveState, saveError, accountId }}>
     {!readOnly && <><NotebookStudyTools editor={editor} onIllustration={() => insertIllustration()} />
-    <StudyGuidance accountId={accountId} context="notebook"><p>Type / for equations, diagrams and callouts. Use Insert for study templates and scientific illustrations, Format for symbols, and Practice to test your recall. Your notes save as you write.</p></StudyGuidance></>}
+    <StudyGuidance accountId={accountId} context="notebook"><p>Type / for equations, diagrams and callouts. Open Illustration Studio in the toolbar to create scientific figures with free illustrations and editable templates. Use Insert for study templates, Format for symbols, and Practice to test your recall. Your notes save as you write.</p></StudyGuidance></>}
     <BlockNoteView className="notebook-writing" editor={editor} theme={theme} slashMenu={false} filePanel={false}
     editable={!readOnly} formattingToolbar={readOnly ? false : undefined} sideMenu={readOnly ? false : undefined}
     onChange={() => { if (!readOnly) onChange?.({ rich_content: editor.document, content: notebookText(editor.document) }); }}>

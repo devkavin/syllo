@@ -154,5 +154,6 @@ export default function NotebookStudyTools({ editor, onIllustration }) {
           }}>{heading.text}</button>) : <p className="p-2 text-muted-foreground">Add headings to navigate your notes.</p>}
       </nav>
     </details>
+    {onIllustration && <button type="button" className="btn btn-outline ml-auto gap-2 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10" aria-haspopup="dialog" title="Create a scientific diagram with licensed illustrations and editable templates. No AI credits." onMouseDown={preserveSelection} onClick={() => { closeMenu(); onIllustration(); }}><Microscope size={17} aria-hidden="true" /><span>Illustration Studio</span><span aria-hidden="true" className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold">Free</span></button>}
   </div>;
 }

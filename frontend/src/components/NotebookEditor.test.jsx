@@ -35,6 +35,7 @@ it("shows review notes without allowing edits or writing controls", async () => 
   expect(await screen.findByLabelText("Callout type")).toBeDisabled();
   expect(screen.queryByText(/Type \/ for equations/)).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Insert/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Illustration Studio", exact: true })).not.toBeInTheDocument();
 });
 
 it("saves real heading, ink and highlight edits with readable plain text", async () => {
@@ -97,6 +98,15 @@ it("inserts an editable scientific figure between paragraphs and reopens it", as
   fireEvent.click(screen.getByRole("button", { name: "Return to Notes" }));
   fireEvent.click(await screen.findByRole("button", { name: "Edit scientific illustration" }));
   expect(await screen.findByRole("dialog", {}, { timeout: 10000 })).toBeVisible();
+});
+
+it("opens the studio from the visible shortcut and retains a paragraph for continuing notes", async () => {
+  const editorRef = createRef(), onChange = vi.fn();
+  render(<NotebookEditor notebook={{ content: "Biology notes" }} theme="light" editorRef={editorRef} onChange={onChange} />);
+  fireEvent.click(screen.getByRole("button", { name: "Illustration Studio", exact: true }));
+  expect(await screen.findByRole("dialog", {}, { timeout: 10000 })).toHaveTextContent("Scientific Illustration Studio");
+  expect(editorRef.current.document.map(block => block.type)).toEqual(["paragraph", "scientificIllustration", "paragraph"]);
+  expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ rich_content: expect.arrayContaining([expect.objectContaining({ type: "scientificIllustration" })]) }));
 });
 
 it("restores independent figure objects, caption and display size and duplicates safely", async () => {

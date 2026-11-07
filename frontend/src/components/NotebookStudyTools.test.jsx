@@ -17,6 +17,18 @@ function makeEditor() {
   };
 }
 
+it("opens Illustration Studio directly from the visible toolbar without a menu", () => {
+  const onIllustration = vi.fn();
+  render(<NotebookStudyTools editor={makeEditor()} onIllustration={onIllustration} />);
+  const launcher = screen.getByRole("button", { name: "Illustration Studio", exact: true });
+  expect(launcher).toBeVisible();
+  expect(launcher.closest("details")).toBeNull();
+  fireEvent.mouseDown(launcher);
+  fireEvent.click(launcher);
+  expect(onIllustration).toHaveBeenCalledOnce();
+  expect(screen.getByText("Insert").closest("details")).not.toHaveAttribute("open");
+});
+
 it("groups symbols and script styles under Format and templates beside scientific illustrations under Insert", () => {
   render(<NotebookStudyTools editor={makeEditor()} onIllustration={vi.fn()} />);
   expect(screen.getByText("Format")).toBeVisible();
